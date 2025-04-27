@@ -14,7 +14,7 @@ function Navigation({isLoggedin}) {
                         <a href="/login">
                             <button className="my-btn">Login</button>
                         </a>
-                        <a href="/register">
+                        <a href="/submit-pg">
                             <button className="my-btn">Submit PG</button>
                         </a>
                     </div>
