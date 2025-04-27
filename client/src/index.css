@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 #root{
-    @apply flex flex-col h-screen justify-between;
+    @apply flex flex-col min-h-screen justify-between;
 }
 
 .my-nav{
