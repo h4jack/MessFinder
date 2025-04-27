@@ -28,9 +28,9 @@ const SearchBar = ({ onSearch }) => {
     };
 
     return (
-        <div className="p-4 bg-gray-100 rounded-lg shadow-md w-ful">
+        <div className="p-4   w-ful">
             <div className="flex flex-col items-center gap-4">
-                <div className="flex flex-wrap justify-center items-center gap-4 w-full">
+                <div className="flex flex-wrap justify-center items-center gap-4 w-full sm:w-10/12">
                     <input
                         type="text"
                         name="keyword"
@@ -54,7 +54,7 @@ const SearchBar = ({ onSearch }) => {
                 </div>
                 <div className="">
                     {showFilters && (
-                        <div className="flex flex-wrap mt-2 bg-white shadow-lg p-2 rounded-md gap-2 justify-center">
+                        <div className="flex flex-wrap gap-2 justify-center">
                             <div className="mb-2 w-32">
                                 <label className="block text-sm">Gender</label>
                                 <select
@@ -127,7 +127,7 @@ const SearchBar = ({ onSearch }) => {
 const SearchResultCard = ({ result }) => {
     return (
         <a href={result.href}>
-            <div className="bg-white rounded-lg shadow-md flex flex-col w-72 h-max overflow-hidden">
+            <div className="bg-white rounded-lg shadow-md flex flex-col w-72 h-max overflow-hidden transition-transform transform hover:scale-105 focus:scale-105 hover:shadow-lg focus:shadow-lg">
                 <div className="relative">
                     <img
                         src={result.thumbnail}

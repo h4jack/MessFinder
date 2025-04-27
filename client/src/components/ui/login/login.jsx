@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { InputField, Button } from "../universal/input";
-
+import { FaGoogle } from "react-icons/fa";
 
 // ForgetPassword Component
 function ForgetPassword() {
