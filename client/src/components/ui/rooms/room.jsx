@@ -21,21 +21,21 @@ const RoomDetails = () => {
                         >
                             <div>
                                 <img
-                                    src="/src/assets/room.png"
+                                    src="/assets/room.png"
                                     alt="Room Image 1"
                                     className="aspect-video object-cover"
                                 />
                             </div>
                             <div>
                                 <img
-                                    src="/src/assets/room.png"
+                                    src="/assets/room.png"
                                     alt="Room Image 2"
                                     className="aspect-video object-cover"
                                 />
                             </div>
                             <div>
                                 <img
-                                    src="/src/assets/room.png"
+                                    src="/assets/room.png"
                                     alt="Room Image 3"
                                     className="aspect-video object-cover"
                                 />
