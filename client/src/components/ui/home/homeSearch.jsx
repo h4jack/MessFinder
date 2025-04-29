@@ -1,97 +1,111 @@
 import { useState } from "react";
 
+function FilterButton({ label, isActive, onClick }) {
+    return (
+        <button
+            className={`px-4 py-2 text-sm font-medium rounded-lg transition ${isActive
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                }`}
+            onClick={onClick}
+        >
+            {label}
+        </button>
+    );
+}
+
+function Dropdown({ label, options }) {
+    return (
+        <div className="flex flex-col">
+            <label className="text-sm font-medium text-gray-700 mb-1">{label}</label>
+            <select className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">{`Select ${label}`}</option>
+                {options.map((option, index) => (
+                    <option key={index} value={option.value}>
+                        {option.label}
+                    </option>
+                ))}
+            </select>
+        </div>
+    );
+}
+
 function HomeSearch() {
     const [isAdvancedFilter, setIsAdvancedFilter] = useState(false);
-
     const [selectedFilter, setSelectedFilter] = useState("ALL");
 
     return (
-        <main className="flex flex-col items-center justify-center bg-[url('/assets/rooms-cover.png')] bg-cover bg-center min-h-[calc(100vh-64px)] px-4 sm:px-6 lg:px-8">
-            <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-3xl">
-                <h2 className="text-2xl font-bold text-gray-800 mb-2 text-center sm:text-left">Search</h2>
-                <p className="text-gray-600 mb-4 text-center sm:text-left">
-                    Find what you're looking for with our advanced search options.
+        <main className="flex flex-row items-center justify-center bg-[url(/assets/rooms-cover.png)] bg-cover bg-center bg-no-repeat  min-h-[calc(100vh-72px)] md:min-h-[calc(100vh-80px)] px-6 py-8">
+            <div className="bg-white shadow-xl rounded-lg p-8 w-full max-w-2xl">
+                <h2 className="text-3xl font-bold text-gray-800 mb-4 text-center">
+                    Find Your Perfect Space
+                </h2>
+                <p className="text-gray-600 mb-6 text-center">
+                    Use our search options to find the best match for your needs.
                 </p>
-                <div className="flex flex-col space-y-4">
-                    {/* Conditional Rendering for Search Input or Advanced Filters */}
+                <div className="space-y-6">
+                    {/* Search Input or Advanced Filters */}
                     {!isAdvancedFilter ? (
                         <input
+                            autoFocus={true}
                             type="text"
-                            placeholder="Enter address e.g. street, city and state or zip"
-                            className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Enter address (e.g., street, city, state, or zip)"
+                            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <select className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">Select State/UT</option>
-                                <option value="state1">State 1</option>
-                                <option value="state2">State 2</option>
-                            </select>
-                            <select className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">Select District</option>
-                                <option value="district1">District 1</option>
-                                <option value="district2">District 2</option>
-                            </select>
-                            <select className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">Select City</option>
-                                <option value="city1">City 1</option>
-                                <option value="city2">City 2</option>
-                            </select>
-                            <select className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">Select Area</option>
-                                <option value="area1">Area 1</option>
-                                <option value="area2">Area 2</option>
-                            </select>
+                            <Dropdown
+                                label="State/UT"
+                                options={[
+                                    { value: "state1", label: "State 1" },
+                                    { value: "state2", label: "State 2" },
+                                ]}
+                            />
+                            <Dropdown
+                                label="District"
+                                options={[
+                                    { value: "district1", label: "District 1" },
+                                    { value: "district2", label: "District 2" },
+                                ]}
+                            />
+                            <Dropdown
+                                label="City"
+                                options={[
+                                    { value: "city1", label: "City 1" },
+                                    { value: "city2", label: "City 2" },
+                                ]}
+                            />
+                            <Dropdown
+                                label="Area"
+                                options={[
+                                    { value: "area1", label: "Area 1" },
+                                    { value: "area2", label: "Area 2" },
+                                ]}
+                            />
                         </div>
                     )}
+
                     {/* Filter Options */}
-                    <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
-                        <button
-                            className={`px-3 py-1 text-sm rounded-lg ${
-                                selectedFilter === "ALL"
-                                    ? "bg-blue-500 text-white"
-                                    : "bg-gray-300 text-gray-800 hover:bg-gray-400"
-                            }`}
-                            onClick={() => setSelectedFilter("ALL")}
-                        >
-                            ALL
-                        </button>
-                        <button
-                            className={`px-3 py-1 text-sm rounded-lg ${
-                                selectedFilter === "BOY"
-                                    ? "bg-blue-500 text-white"
-                                    : "bg-gray-300 text-gray-800 hover:bg-gray-400"
-                            }`}
-                            onClick={() => setSelectedFilter("BOY")}
-                        >
-                            BOY
-                        </button>
-                        <button
-                            className={`px-3 py-1 text-sm rounded-lg ${
-                                selectedFilter === "GIRL"
-                                    ? "bg-blue-500 text-white"
-                                    : "bg-gray-300 text-gray-800 hover:bg-gray-400"
-                            }`}
-                            onClick={() => setSelectedFilter("GIRL")}
-                        >
-                            GIRL
-                        </button>
-                        <button
-                            className="px-3 py-1 text-sm bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 cursor-pointer"
+                    <div className="flex flex-wrap gap-3 justify-center">
+                        {["ALL", "BOY", "GIRL"].map((filter) => (
+                            <FilterButton
+                                key={filter}
+                                label={filter}
+                                isActive={selectedFilter === filter}
+                                onClick={() => setSelectedFilter(filter)}
+                            />
+                        ))}
+                        <FilterButton
+                            label={isAdvancedFilter ? "NORMAL SEARCH" : "ADVANCED SEARCH"}
+                            isActive={false}
                             onClick={() => setIsAdvancedFilter(!isAdvancedFilter)}
-                        >
-                            {!isAdvancedFilter ? 
-                                "ADVANCE SEARCH"
-                             : (
-                                "NORMAL SEARCH"   
-                             )
-                            }
-                        </button>
+                        />
                     </div>
+
                     {/* Search Button */}
-                    <div className="flex justify-center mt-4">
+                    <div className="flex justify-center">
                         <button
-                            className="px-6 py-3 bg-blue-500 text-white text-lg font-bold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="px-8 py-3 bg-blue-600 text-white text-lg font-bold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                             Search
                         </button>
@@ -102,6 +116,4 @@ function HomeSearch() {
     );
 }
 
-export {
-    HomeSearch
-};
+export { HomeSearch };

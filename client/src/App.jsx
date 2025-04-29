@@ -16,9 +16,9 @@ function App() {
   return (
     <>
       <Navigation />
-      {/* <HomeSearch /> */}
+      <HomeSearch />
       {/* <Contact /> */}
-      <RoomDetails />
+      {/* <RoomDetails /> */}
       {/* <Faqs /> */}
       {/* <ReportOwner /> */}
       {/* <SearchResult /> */}
