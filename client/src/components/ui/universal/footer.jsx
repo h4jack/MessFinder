@@ -1,9 +1,10 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const FooterLink = ({ href, children }) => (
-    <a href={href} className="hover:underline text-gray-300 text-sm">
+    <Link to={href} className="hover:underline text-gray-300 text-sm">
         {children}
-    </a>
+    </Link>
 );
 
 const FooterSection = ({ title, children }) => (
@@ -19,9 +20,9 @@ function Footer() {
             <div className="container mx-auto flex flex-wrap justify-center items-start gap-8 p-8">
                 {/* Logo and Description */}
                 <FooterSection>
-                    <a href="/">
+                    <Link to="/">
                         <div className="bg-[url('/assets/Logo.png')] h-10 w-32 bg-center bg-no-repeat bg-contain"></div>
-                    </a>
+                    </Link>
                     <p className="text-left text-sm">
                         Find the perfect mess or room with ease! Our platform connects you to the best accommodations in your area. Simplify your search with detailed listings and user reviews.
                     </p>
@@ -30,12 +31,14 @@ function Footer() {
                 {/* Quick Links */}
                 <FooterSection title="Quick Links">
                     <div className="grid grid-cols-2 gap-2">
-                        <FooterLink href="/login">Home</FooterLink>
-                        <FooterLink href="/register">Submit PG</FooterLink>
-                        <FooterLink href="/dashboard">Privacy Policy</FooterLink>
+                        <FooterLink href="/">Home</FooterLink>
+                        <FooterLink href="/login">Login</FooterLink>
+                        <FooterLink href="/submit-pg">Submit PG</FooterLink>
+                        <FooterLink href="/terms">Privacy Policy</FooterLink>
                         <FooterLink href="/about">About</FooterLink>
                         <FooterLink href="/faqs">FAQs</FooterLink>
-                        <FooterLink href="/contactus">Contact Us</FooterLink>
+                        <FooterLink href="/report">Report</FooterLink>
+                        <FooterLink href="/contact">Contact Us</FooterLink>
                     </div>
                 </FooterSection>
 

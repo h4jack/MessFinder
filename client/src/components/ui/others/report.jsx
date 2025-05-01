@@ -28,7 +28,7 @@ const ReportOwner = () => {
     };
 
     return (
-        <main className="min-h-[calc(100vh-64px)] bg-gray-100 flex items-center justify-center p-4">
+        <main className="min-h-[calc(100vh-72px)] md:min-h-[calc(100vh-80px)] bg-[url('/assets/rooms-cover.png')] bg-cover bg-center bg-no-repeat bg-gray-100 flex items-center justify-center p-4">
             <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-lg">
                 <div className="flex items-center mb-4">
                     <FaExclamationTriangle className="text-red-500 text-2xl mr-2" />

@@ -8,7 +8,7 @@ const About = () => {
         <>
 
             {/* Main Content */}
-            <main className="flex-grow bg-gray-100 p-6">
+            <main className="flex-grow bg-gray-100 p-6 bg-[url('/assets/rooms-cover.png')] min-h-[calc(100vh-72px)] md:min-h-[calc(100vh-80px)] bg-cover bg-center bg-no-repeat">
                 <section className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6">
                     <h2 className="text-3xl font-bold mb-4">About MessFinder</h2>
                     <p className="text-gray-700 mb-4">

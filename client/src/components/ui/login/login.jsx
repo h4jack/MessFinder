@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { InputField, Button } from "../universal/input";
 import { FaGoogle } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 // ForgetPassword Component
 function ForgetPassword() {
@@ -49,7 +50,7 @@ function ForgetPassword() {
     };
 
     return (
-        <main className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] bg-gray-100 px-4">
+        <main className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] bg-[url(/assets/rooms-cover.png)] bg-cover bg-center bg-no-repeat bg-gray-100 px-4">
             <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
                 {step === 1 && (
                     <>
@@ -154,7 +155,7 @@ function Login() {
     };
 
     return (
-        <main className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] bg-gray-100 px-4">
+        <main className="flex flex-col items-center justify-center bg-[url(/assets/rooms-cover.png)] bg-cover bg-center bg-no-repeat min-h-[calc(100vh-64px)] bg-gray-100 px-4">
             <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
                 <h2 className="text-4xl font-bold text-center text-gray-800 mb-6">Login</h2>
                 <InputField
@@ -178,11 +179,13 @@ function Login() {
                     onClick={handleLogin}
                     className="bg-blue-500 text-white hover:bg-blue-600"
                 />
-                <Button
+                <Link
+                    to="/forget-password"
                     text="Forgot Password?"
-                    onClick={() => alert("Redirect to Forgot Password")}
-                    className="text-blue-500 mt-4 hover:underline"
-                />
+                    className="text-blue-500 mt-4 hover:underline p-2"
+                >
+                    Forgot Password?
+                </Link>
                 <div className="flex items-center my-4">
                     <div className="flex-grow border-t border-gray-300"></div>
                     <span className="mx-2 text-gray-500">OR</span>

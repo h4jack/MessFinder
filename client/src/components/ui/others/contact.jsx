@@ -24,7 +24,7 @@ const Contact = () => {
     };
 
     return (
-        <main className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] px-4 sm:px-6 lg:px-8">
+        <main className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] bg-[url(/assets/rooms-cover.png)] bg-cover bg-center bg-no-repeat px-4 sm:px-6 lg:px-8">
             <div className="bg-white shadow-md rounded-lg w-80 sm:w-120 p-6">
                 <h2 className="text-2xl font-bold text-center mb-4">Contact Us</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
