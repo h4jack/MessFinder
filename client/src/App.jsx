@@ -4,12 +4,14 @@ import { Footer } from './components/ui/universal/footer'
 import {
   Outlet,
 } from "react-router-dom";
+import ScrollToTop from './components/ui/scroll-to-top';
 
 function App() {
 
   return (
     <>
       <Navigation />
+      <ScrollToTop />
       <Outlet />
       <Footer />
     </>
