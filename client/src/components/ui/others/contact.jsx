@@ -24,11 +24,11 @@ const Contact = () => {
     };
 
     return (
-        <main className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] bg-[url(/assets/rooms-cover.png)] bg-cover bg-center bg-no-repeat px-4 sm:px-6 lg:px-8">
+        <main className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] px-4 sm:px-6 lg:px-8">
             <div className="bg-white shadow-md rounded-lg w-80 sm:w-120 p-6">
-                <h2 className="text-2xl font-bold text-center mb-4">Contact Us</h2>
+                <h2 className="text-2xl font-bold text-gray-700 text-center mb-4">Contact Us</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="flex items-center border-b border-gray-300 py-2">
+                    <div className="flex items-center border-b border-gray-400 py-2">
                         <FaUser className="text-gray-500 mr-2" />
                         <input
                             type="text"
@@ -40,7 +40,7 @@ const Contact = () => {
                             required
                         />
                     </div>
-                    <div className="flex items-center border-b border-gray-300 py-2">
+                    <div className="flex items-center border-b border-gray-400 py-2">
                         <FaEnvelope className="text-gray-500 mr-2" />
                         <input
                             type="email"
@@ -52,7 +52,7 @@ const Contact = () => {
                             required
                         />
                     </div>
-                    <div className="flex items-start border-b border-gray-300 py-2">
+                    <div className="flex items-start border-b border-gray-400 py-2">
                         <FaRegCommentDots className="text-gray-500 mr-2 mt-1" />
                         <textarea
                             name="message"
@@ -68,13 +68,13 @@ const Contact = () => {
                         <button
                             type="button"
                             onClick={handleCancel}
-                            className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                            className="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 cursor-pointer"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
-                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 cursor-pointer"
                         >
                             Submit
                         </button>

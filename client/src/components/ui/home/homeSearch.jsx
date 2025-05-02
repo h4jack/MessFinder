@@ -5,7 +5,7 @@ function FilterButton({ label, isActive, onClick }) {
         <button
             className={`px-4 py-2 text-sm font-medium rounded-lg transition ${isActive
                     ? "bg-blue-600 text-white"
-                    : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                    : "bg-gray-100 text-gray-800 hover:bg-gray-300"
                 }`}
             onClick={onClick}
         >
@@ -18,7 +18,7 @@ function Dropdown({ label, options }) {
     return (
         <div className="flex flex-col">
             <label className="text-sm font-medium text-gray-700 mb-1">{label}</label>
-            <select className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <select className="border border-gray-400 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">{`Select ${label}`}</option>
                 {options.map((option, index) => (
                     <option key={index} value={option.value}>
@@ -35,8 +35,8 @@ function HomeSearch() {
     const [selectedFilter, setSelectedFilter] = useState("ALL");
 
     return (
-        <main className="flex flex-row items-center justify-center bg-[url(/assets/rooms-cover.png)] bg-cover bg-center bg-no-repeat  min-h-[calc(100vh-72px)] md:min-h-[calc(100vh-80px)] px-6 py-8">
-            <div className="bg-white shadow-xl rounded-lg p-8 w-full max-w-2xl">
+        <main className="flex flex-row items-center justify-center min-h-[calc(100vh-72px)] md:min-h-[calc(100vh-80px)] px-6 py-8">
+            <div className="bg-white/70 backdrop-blur-sm shadow-xl rounded-lg p-8 w-full max-w-2xl">
                 <h2 className="text-3xl font-bold text-gray-800 mb-4 text-center">
                     Find Your Perfect Space
                 </h2>
@@ -50,7 +50,7 @@ function HomeSearch() {
                             autoFocus={true}
                             type="text"
                             placeholder="Enter address (e.g., street, city, state, or zip)"
-                            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full border border-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

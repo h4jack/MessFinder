@@ -11,7 +11,7 @@ function InputField({ label, type, value, onChange, placeholder, showToggle, tog
                     placeholder={placeholder}
                     value={value}
                     onChange={onChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 {showToggle && (
                     <button
@@ -31,7 +31,7 @@ function InputField({ label, type, value, onChange, placeholder, showToggle, tog
 function Button({ text, onClick, className }) {
     return (
         <button
-            className={`w-full py-2 rounded-lg transition duration-200 ${className}`}
+            className={`w-full py-2 rounded-lg transition duration-200 ${className} cursor-pointer`}
             onClick={onClick}
         >
             {text}
