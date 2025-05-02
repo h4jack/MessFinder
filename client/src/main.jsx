@@ -28,7 +28,7 @@ import { ErrorPage } from './components/ui/error.jsx'
 let router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      <Route path="/" element={<App />} ErrorBoundary={ErrorPage} errorElement={<ErrorPage />}>
+      <Route path="/" element={<App />} ErrorBoundary={ErrorPage}>
         <Route path='' element={<HomeSearch />} />
         <Route path="search" element={<SearchResult />}>
           <Route path=":location" element={<SearchResult />} />
