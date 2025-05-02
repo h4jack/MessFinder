@@ -28,7 +28,7 @@ const ReportOwner = () => {
     };
 
     return (
-        <main className="min-h-[calc(100vh-72px)] md:min-h-[calc(100vh-80px)] bg-[url('/assets/rooms-cover.png')] bg-cover bg-center bg-no-repeat bg-gray-100 flex items-center justify-center p-4">
+        <main className="min-h-[calc(100vh-72px)] md:min-h-[calc(100vh-80px)] flex items-center justify-center p-4">
             <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-lg">
                 <div className="flex items-center mb-4">
                     <FaExclamationTriangle className="text-red-500 text-2xl mr-2" />
@@ -61,7 +61,7 @@ const ReportOwner = () => {
                             name="reason"
                             value={formData.reason}
                             onChange={handleChange}
-                            className="mt-1 block w-full rounded-md border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2"
+                            className="mt-1 block w-full rounded-md border border-gray-400 focus:ring-indigo-500 focus:outline-0 focus:ring-1 focus:border-indigo-500 sm:text-sm p-2"
                         >
                             <option value="">Select a reason</option>
                             <option value="fraud">Fraud</option>
@@ -81,7 +81,7 @@ const ReportOwner = () => {
                             onChange={handleChange}
                             placeholder="Provide a detailed description of the issue"
                             rows="4"
-                            className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2"
+                            className="mt-1 block w-full rounded-md border border-gray-400 shadow-sm focus:ring-indigo-500 focus:outline-0 focus:ring-1 focus:border-indigo-500 sm:text-sm p-2"
                         />
                     </div>
                     <button

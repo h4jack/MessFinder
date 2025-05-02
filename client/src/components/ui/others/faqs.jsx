@@ -62,8 +62,8 @@ const Faqs = () => {
     };
 
     return (
-        <main className="bg-[url('/assets/rooms-cover.png')] bg-cover bg-center bg-no-repeat min-h-[calc(100vh-72px)] md:min-h-[calc(100vh-80px)] flex items-center justify-center p-6">
-            <div className="bg-white shadow-md rounded-lg w-80 sm:w-120 p-6">
+        <main className="min-h-[calc(100vh-72px)] md:min-h-[calc(100vh-80px)] flex items-center justify-center p-2">
+            <div className="bg-white/50 backdrop-blur-xs shadow-md rounded-lg w-full sm:w-120 p-6">
                 <h1 className="text-3xl font-extrabold text-center mb-8 text-gray-800">
                     Frequently Asked Questions
                 </h1>
@@ -75,7 +75,7 @@ const Faqs = () => {
                         >
                             <button
                                 onClick={() => toggleFaq(index)}
-                                className="w-full flex justify-between items-center p-4 text-lg font-medium text-gray-800 bg-gray-100 hover:bg-gray-200 focus:outline-none"
+                                className="w-full flex justify-between items-center p-4 text-lg font-medium text-gray-800 bg-gray-50 hover:bg-gray-200 focus:outline-none cursor-pointer"
                             >
                                 <span>{faq.question}</span>
                                 {activeIndex === index ? (
@@ -85,7 +85,7 @@ const Faqs = () => {
                                 )}
                             </button>
                             {activeIndex === index && (
-                                <div className="p-4 text-gray-700 bg-white border-t border-gray-300">
+                                <div className="p-4 text-gray-700 bg-gray-200 border-t border-gray-300">
                                     {faq.answer}
                                 </div>
                             )}
