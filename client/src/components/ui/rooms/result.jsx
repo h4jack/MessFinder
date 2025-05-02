@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaFilter } from "react-icons/fa";
 import { FiSearch } from "react-icons/fi";
 import { GoLocation } from "react-icons/go";
+import { UNSAFE_useFogOFWarDiscovery } from "react-router-dom";
 
 const SearchBar = ({ onSearch }) => {
     const [filters, setFilters] = useState({
@@ -181,7 +182,7 @@ const SearchResult = () => {
         // Mock search results with real images and realistic data
         const mockResults = [
             {
-                thumbnail: "/src/assets/room.png",
+                thumbnail: "/assets/room1.png",
                 href: "/room/owner/id",
                 name: "Sunrise Hostel",
                 location: "Mumbai, Maharashtra",
@@ -193,7 +194,7 @@ const SearchResult = () => {
                 postTime: "2 hours ago",
             },
             {
-                thumbnail: "/src/assets/room.png",
+                thumbnail: "/assets/room2.png",
                 href: "/room/owner/id",
                 name: "Green Valley PG",
                 location: "Pune, Maharashtra",
@@ -205,7 +206,7 @@ const SearchResult = () => {
                 postTime: "1 day ago",
             },
             {
-                thumbnail: "/src/assets/room.png",
+                thumbnail: "/assets/room3.png",
                 href: "/room/owner/id",
                 name: "Blue Horizon PG",
                 location: "Bangalore, Karnataka",
@@ -217,7 +218,7 @@ const SearchResult = () => {
                 postTime: "3 days ago",
             },
             {
-                thumbnail: "/src/assets/room.png",
+                thumbnail: "/assets/room1.png",
                 href: "/room/owner/id",
                 name: "Cozy Nest Hostel",
                 location: "Delhi, Delhi",
@@ -229,7 +230,7 @@ const SearchResult = () => {
                 postTime: "5 hours ago",
             },
             {
-                thumbnail: "/src/assets/room.png",
+                thumbnail: "/assets/room2.png",
                 href: "/room/owner/id",
                 name: "Comfort Stay PG",
                 location: "Hyderabad, Telangana",
@@ -241,7 +242,7 @@ const SearchResult = () => {
                 postTime: "2 days ago",
             },
             {
-                thumbnail: "/src/assets/room.png",
+                thumbnail: "/assets/room3.png",
                 href: "/room/owner/id",
                 name: "Urban Living Hostel",
                 location: "Chennai, Tamil Nadu",
@@ -255,6 +256,10 @@ const SearchResult = () => {
         ];
         setResults(mockResults);
     };
+
+    useEffect(() => {
+        handleSearch({}); // Call with empty filters to load all results initially
+    }, []);
 
     return (
         <main className="flex flex-col min-h-[calc(100vh-64px)] bg-gray-100 px-4">

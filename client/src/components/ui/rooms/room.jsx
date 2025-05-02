@@ -136,33 +136,33 @@ const RoomDetailsCard = ({
                 )}
             </div>
 
-            {/* Rules */ }
-                        <div className="mb-4">
-                            <button
-                                onClick={() => setShowRules(!showRules)}
-                                className="w-full bg-red-100 text-red-700 px-4 py-2 rounded-md mb-2"
+            {/* Rules */}
+            <div className="mb-4">
+                <button
+                    onClick={() => setShowRules(!showRules)}
+                    className="w-full bg-red-100 text-red-700 px-4 py-2 rounded-md mb-2"
+                >
+                    Rules {showRules ? "▲" : "▼"}
+                </button>
+                {showRules && (
+                    <div className="grid grid-cols-2 gap-2 text-gray-700">
+                        {rules.map((rule, index) => (
+                            <div
+                                key={index}
+                                className="bg-gray-200 px-2 py-1 rounded-md text-center"
                             >
-                                Rules {showRules ? "▲" : "▼"}
-                            </button>
-                            {showRules && (
-                                <div className="grid grid-cols-2 gap-2 text-gray-700">
-                                    {rules.map((rule, index) => (
-                                        <div
-                                            key={index}
-                                            className="bg-gray-200 px-2 py-1 rounded-md text-center"
-                                        >
-                                            {rule}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
+                                {rule}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
 
-                        {/* Description */}
+            {/* Description */}
             <h2 className="text-lg font-semibold mb-2">Description</h2>
             <p className="text-gray-700">{description}</p>
-                        {/* Owner Details */}
-                        <div className="flex items-center justify-between bg-gray-100 p-4 rounded-lg mb-6 shadow-md">
+            {/* Owner Details */}
+            <div className="flex items-center justify-between bg-gray-100 p-4 rounded-lg mb-6 shadow-md">
                 {/* Left Section: Owner Info */}
                 <div className="flex items-center">
                     <img
@@ -244,8 +244,8 @@ const ContactForm = () => (
 // Main RoomDetails Component
 const RoomDetails = () => {
     return (
-        <div className="max-w-[1440px] mx-auto p-4">
-            <div className="flex flex-col sm:flex-row gap-6">
+        <div className="bg-gray-100 w-full p-6 flex justify-center items-start">
+            <div className="max-w-[1080px] flex flex-col sm:flex-row gap-6">
                 {/* Left Section: Room Details */}
                 <div className="flex-1 sm:flex-4 lg:flex-6">
                     {/* Image Carousel */}
