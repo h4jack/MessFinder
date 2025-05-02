@@ -63,7 +63,7 @@ const Faqs = () => {
 
     return (
         <main className="min-h-[calc(100vh-72px)] md:min-h-[calc(100vh-80px)] flex items-center justify-center p-2">
-            <div className="bg-white/50 backdrop-blur-xs shadow-md rounded-lg w-full sm:w-120 p-6">
+            <div className="bg-blue-50 shadow-md rounded-lg w-full sm:w-120 p-6">
                 <h1 className="text-3xl font-extrabold text-center mb-8 text-gray-800">
                     Frequently Asked Questions
                 </h1>
@@ -85,7 +85,7 @@ const Faqs = () => {
                                 )}
                             </button>
                             {activeIndex === index && (
-                                <div className="p-4 text-gray-700 bg-gray-200 border-t border-gray-300">
+                                <div className="p-4 text-gray-700 bg-white border-t border-gray-300">
                                     {faq.answer}
                                 </div>
                             )}
