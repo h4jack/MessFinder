@@ -9,7 +9,8 @@ import { Register } from './components/ui/login/register'
 import { SearchResult } from './components/ui/rooms/result'
 import { ReportOwner } from './components/ui/others/report'
 import { RoomDetails } from './components/ui/rooms/room'
-import { SubmitPG } from './components/ui/owner/submit-pg'
+import { SubmitPG } from './components/ui/owner/dashboard'
+
 import { Contact } from './components/ui/others/contact'
 import { Faqs } from './components/ui/others/faqs'
 import { About } from './components/ui/others/about'
@@ -23,6 +24,7 @@ import {
 } from "react-router-dom";
 
 import { ErrorPage } from './components/ui/error.jsx'
+import Dashboard, { MyPGs, Profile, Settings } from './components/ui/owner/dashboard.jsx'
 
 
 let router = createBrowserRouter(
@@ -33,17 +35,27 @@ let router = createBrowserRouter(
         <Route path="search" element={<SearchResult />}>
           <Route path=":location" element={<SearchResult />} />
         </Route>
+
         <Route path="room/:id" element={<RoomDetails />} />
-        <Route path="/submit-pg" element={<SubmitPG />} />
+
+        <Route path="owner/:id" element={<span className='text-7xl w-full text-center text-gray-100'>Owner Home</span>} />
+        <Route path="dashboard/" element={<Dashboard />}>
+          <Route path="submit-pg" element={<SubmitPG />} />
+          <Route path='settings' element={<Settings />} />
+          <Route path='pgs' element={<MyPGs />} />
+          <Route path='profile' element={<Profile />} />
+        </Route>
+
         <Route path="login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="register" element={<Register />} />
         <Route path="forget-password" element={<ForgetPassword />} />
+
         <Route path="contact" element={<Contact />} />
         <Route path="about" element={<About />} />
         <Route path="faqs" element={<Faqs />} />
         <Route path="terms" element={<TermsAndConditions />} />
         <Route path="report" element={<ReportOwner />} />
-        {/* <Route path="/owner" element={<Owner />} /> */}
+
         <Route path="*" element={<ErrorPage />} /> {/* Catch-all 404 */}
       </Route>
     </>

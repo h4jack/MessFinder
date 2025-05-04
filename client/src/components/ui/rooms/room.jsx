@@ -3,7 +3,6 @@ import { FaPhoneAlt, FaWhatsapp } from "react-icons/fa";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { FaMapMarkerAlt } from "react-icons/fa";
-import { Disclosure } from "@headlessui/react";
 
 // Example data object
 const roomData = {

@@ -277,4 +277,4 @@ const SearchResult = () => {
     );
 };
 
-export { SearchResult };
+export { SearchResult, SearchResultCard };

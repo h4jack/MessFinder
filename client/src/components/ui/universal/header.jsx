@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
+import { FaUserCircle } from "react-icons/fa"; // Importing a default profile icon
 
-function Navigation({ isLoggedin }) {
+function Navigation({ user }) {
+    console.log(user);
     return (
         <header className="bg-white/50 backdrop-blur-sm text-gray-800 shadow-md sticky top-0 z-50">
             <div className="container mx-auto flex justify-between items-center py-4 px-6">
@@ -16,8 +18,8 @@ function Navigation({ isLoggedin }) {
                 </nav>
 
                 {/* Action Buttons */}
-                <div className="flex items-center gap-4">
-                    {!isLoggedin ? (
+                <div className="flex items-center gap-4 relative">
+                    {!user.isLoggedIn ? (
                         <>
                             <Link to="/login" className="hidden sm:block">
                                 <button className="bg-blue-600 text-white px-4 py-2 md:px-6 md:py-3 rounded-md font-medium hover:bg-blue-700 transition">
@@ -31,11 +33,66 @@ function Navigation({ isLoggedin }) {
                             </Link>
                         </>
                     ) : (
-                        <Link to="/profile">
-                            <button className="bg-gray-800 text-white px-4 py-2 md:px-6 md:py-3 rounded-md font-medium hover:bg-gray-900 transition">
-                                Profile
-                            </button>
-                        </Link>
+                        <div className="relative">
+                            <div
+                                className="h-10 w-10 rounded-full bg-gray-300 shadow-md overflow-hidden cursor-pointer flex items-center justify-center"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    const dropdown = e.currentTarget.nextElementSibling;
+                                    if (dropdown.style.display === "none" || !dropdown.style.display) {
+                                        dropdown.style.display = "block";
+                                    } else {
+                                        dropdown.style.display = "none";
+                                    }
+                                }}
+                            >
+                                {user.image ? (
+                                    <img
+                                        src={user.image}
+                                        alt="Profile"
+                                        className="h-full w-full object-cover"
+                                    />
+                                ) : (
+                                    <FaUserCircle className="h-full w-full text-gray-500" />
+                                )}
+                            </div>
+                            <div
+                                className="absolute right-0 mt-2 w-48 overflow-hidden bg-white/80 backdrop-blur-sm shadow-lg rounded-md z-50"
+                                style={{ display: "none" }}
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <Link
+                                    to="/dashboard/"
+                                    className="block px-4 py-2 text-gray-600 hover:bg-gray-200 hover:text-gray-800 transition"
+                                >
+                                    Dashboard
+                                </Link>
+                                <Link
+                                    to="/dashboard/submit-pg"
+                                    className="block px-4 py-2 text-gray-600 hover:bg-gray-200 hover:text-gray-800 transition"
+                                >
+                                    Submit PG
+                                </Link>
+                                <Link
+                                    to="/dashboard/pgs"
+                                    className="block px-4 py-2 text-gray-600 hover:bg-gray-200 hover:text-gray-800 transition"
+                                >
+                                    My PGs
+                                </Link>
+                                <Link
+                                    to="/dashboard/profile"
+                                    className="block px-4 py-2 text-gray-600 hover:bg-gray-200 hover:text-gray-800 transition"
+                                >
+                                    Profile
+                                </Link>
+                                <Link
+                                    to="/dashboard/settings"
+                                    className="block px-4 py-2 text-gray-600 hover:bg-gray-200 hover:text-gray-800 transition"
+                                >
+                                    Settings
+                                </Link>
+                            </div>
+                        </div>
                     )}
                 </div>
             </div>

@@ -25,7 +25,7 @@ function Register() {
     };
 
     return (
-        <main className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] px-4">
+        <main className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] p-4">
             <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
                 <h2 className="text-4xl font-bold text-center text-gray-800 mb-6">Register</h2>
                 <InputField
@@ -60,6 +60,12 @@ function Register() {
                     showToggle
                     toggleVisibility={() => setShowConfirmPassword(!showConfirmPassword)}
                 />
+                <p className="text-sm text-gray-600 mb-4">
+                    By registering, you accept our{" "}
+                    <Link to="/terms" className="text-blue-500 hover:underline">
+                        Terms and Conditions
+                    </Link>.
+                </p>
                 <Button
                     text="Register"
                     onClick={handleRegister}
@@ -75,9 +81,11 @@ function Register() {
                     onClick={() => alert("Google Sign-Up")}
                     className="bg-red-500 text-white hover:bg-red-600 mt-4 flex items-center justify-center"
                 />
-                <Link to="/login" className="p-2 flex justify-center items-center gap-1">
-                    Already have an account?
-                    <span className="text-blue-500 hover:underline cursor-pointer"> Login</span>
+                <Link to="/login" className="p-2 flex justify-center items-center">
+                    <span>
+                        Already have an account? {" "}
+                        <span className="text-blue-500 hover:underline cursor-pointer"> Login</span>
+                    </span>
                 </Link>
             </div>
         </main>

@@ -83,7 +83,10 @@ function HomeSearch() {
         <main className="flex flex-row items-center justify-center min-h-[calc(100vh-72px)] md:min-h-[calc(100vh-80px)] px-6 py-8">
             <div className="bg-white/70 backdrop-blur-2xl shadow-xl rounded-lg p-8 w-full max-w-2xl">
                 <h2 className="text-3xl font-bold text-gray-800 mb-4 text-center">
-                    Find Your Perfect Space
+                    Find Your {" "}
+                    <span className="bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">
+                        Perfect Space
+                    </span>
                 </h2>
                 <p className="text-gray-600 mb-6 text-center">
                     Use our search options to find the best match for your needs.
