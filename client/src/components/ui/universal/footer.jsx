@@ -14,7 +14,7 @@ const FooterSection = ({ title, children }) => (
     </div>
 );
 
-function Footer() {
+const Footer = () => {
     return (
         <footer className="bg-gray-800 text-gray-300">
             <div className="container mx-auto flex flex-wrap justify-center items-start gap-8 p-8">

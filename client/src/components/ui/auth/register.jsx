@@ -1,33 +1,95 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { InputField, Button } from "../universal/input";
 import { FaGoogle } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { useFirebase } from "../../../context/firebase";
 
-function Register() {
+const Register = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
-    const handleRegister = () => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            alert("Please enter a valid email address.");
-            return;
+    const firebase = useFirebase();
+    const user = firebase.auth.currentUser;
+
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    // Redirect if user is already logged in
+    useEffect(() => {
+        if (user) {
+            navigate("/dashboard", { state: { from: location } });
+        }
+    }, [user, navigate, location]);
+
+    const validateInputs = () => {
+        if (!name.trim()) {
+            setErrorMessage("Name is required.");
+            return false;
+        }
+        if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) {
+            setErrorMessage("Invalid Email Address.");
+            return false;
+        }
+        if (!password) {
+            setErrorMessage("Password is required.");
+            return false;
+        }
+        if (password.length < 6) {
+            setErrorMessage("Password must be at least 6 characters long.");
+            return false;
         }
         if (password !== confirmPassword) {
-            alert("Passwords do not match.");
-            return;
+            setErrorMessage("Passwords do not match.");
+            return false;
         }
-        alert("Registration successful!");
+        setErrorMessage(""); // Clear error message if all validations pass
+        return true;
+    };
+
+    const handleRegister = () => {
+        if (!validateInputs()) return;
+
+        createUserWithEmailAndPassword(firebase.auth, email, password)
+            .then((userCredential) => {
+                // User registered successfully
+                const user = userCredential.user;
+                console.log("User registered: ", user);
+                setErrorMessage(""); // Clear error message on success
+                navigate("/dashboard", { state: { from: location } });
+            })
+            .catch((error) => {
+                // Handle registration errors
+                if (error.code === "auth/email-already-in-use") {
+                    setErrorMessage("User already exists. Please login.");
+                } else {
+                    setErrorMessage("Error registering user. Please try again.");
+                }
+            });
+    };
+
+    // Login with Google
+    const handleLoginWithGoogle = async () => {
+        const provider = new GoogleAuthProvider();
+        signInWithPopup(firebase.auth, provider)
+            .then(() => {
+                navigate("/dashboard", { state: { from: location } });
+            })
+            .catch(() => {
+                setErrorMessage("Google login failed. Please try again.");
+            });
     };
 
     return (
         <main className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] p-4">
             <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
                 <h2 className="text-4xl font-bold text-center text-gray-800 mb-6">Register</h2>
+                {errorMessage && <p className="text-red-500 text-center mb-4">{errorMessage}</p>}
                 <InputField
                     label="Name"
                     type="text"
@@ -78,12 +140,12 @@ function Register() {
                 </div>
                 <Button
                     text={<><FaGoogle className="mr-2" /> Sign up with Google</>}
-                    onClick={() => alert("Google Sign-Up")}
+                    onClick={handleLoginWithGoogle}
                     className="bg-red-500 text-white hover:bg-red-600 mt-4 flex items-center justify-center"
                 />
                 <Link to="/login" className="p-2 flex justify-center items-center">
                     <span>
-                        Already have an account? {" "}
+                        Already have an account?{" "}
                         <span className="text-blue-500 hover:underline cursor-pointer"> Login</span>
                     </span>
                 </Link>
@@ -92,5 +154,5 @@ function Register() {
     );
 }
 
-
+export default Register;
 export { Register };

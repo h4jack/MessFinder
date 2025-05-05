@@ -1,10 +1,9 @@
+// ForgetPassword Component
 import React, { useState } from "react";
 import { InputField, Button } from "../universal/input";
-import { FaGoogle } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-// ForgetPassword Component
-function ForgetPassword() {
+const ForgetPassword = () => {
     const [step, setStep] = useState(1);
     const [email, setEmail] = useState("");
     const [otp, setOtp] = useState("");
@@ -141,72 +140,5 @@ function ForgetPassword() {
     );
 }
 
-// Login Component
-function Login() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
-
-    const handleLogin = () => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            alert("Please enter a valid email address.");
-            return;
-        }
-        alert("Login successful!");
-    };
-
-    return (
-        <main className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] px-4">
-            <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-                <h2 className="text-4xl font-bold text-center text-gray-800 mb-6">Login</h2>
-                <InputField
-                    label="Email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email"
-                />
-                <InputField
-                    label="Password"
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter your password"
-                    showToggle
-                    toggleVisibility={() => setShowPassword(!showPassword)}
-                />
-                <Button
-                    text="Login"
-                    onClick={handleLogin}
-                    className="bg-blue-500 text-white hover:bg-blue-600"
-                />
-                <Link
-                    to="/forget-password"
-                    text="Forgot Password?"
-                    className="text-blue-500 mt-4 hover:underline p-2"
-                >
-                    Forgot Password?
-                </Link>
-                <div className="flex items-center my-4">
-                    <div className="flex-grow border-t border-gray-400"></div>
-                    <span className="mx-2 text-gray-500">OR</span>
-                    <div className="flex-grow border-t border-gray-400"></div>
-                </div>
-                <Button
-                    text={<><FaGoogle className="mr-2" /> Sign in with Google</>}
-                    onClick={() => alert("Google Sign-In")}
-                    className="bg-red-500 text-white hover:bg-red-600 mt-4 flex items-center justify-center"
-                />
-                <Link to="/register" className="p-2 flex justify-center items-center gap-1">
-                    <span>
-                        Don't have an account?{" "}
-                        <span className="text-blue-500 hover:underline cursor-pointer"> Register here</span>
-                    </span>
-                </Link>
-            </div>
-        </main>
-    );
-}
-
-export { ForgetPassword, Login };
+export default ForgetPassword;
+export { ForgetPassword };

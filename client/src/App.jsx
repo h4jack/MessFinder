@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 import ScrollToTop from './components/ui/scroll-to-top';
 
-function App() {
+const App = () => {
   const user = {
     isLoggedIn: true, // Set to false if the user is not logged in
     image: "", // Replace with the user's profile image URL or leave null/undefined if not available

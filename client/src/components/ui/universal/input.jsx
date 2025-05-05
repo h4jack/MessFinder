@@ -1,7 +1,7 @@
 import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
 
 // InputField Component
-function InputField({ label, type, value, onChange, placeholder, showToggle, toggleVisibility }) {
+const InputField = ({ label, type, value, onChange, placeholder, showToggle, toggleVisibility }) => {
     return (
         <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-2">{label}</label>
@@ -28,7 +28,7 @@ function InputField({ label, type, value, onChange, placeholder, showToggle, tog
 }
 
 // Button Component
-function Button({ text, onClick, className }) {
+const Button = ({ text, onClick, className }) => {
     return (
         <button
             className={`w-full py-2 rounded-lg transition duration-200 ${className} cursor-pointer`}
