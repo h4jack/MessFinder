@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaExclamationTriangle, FaArrowLeft } from 'react-icons/fa';
 
-function ErrorPage() {
+const ErrorPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">

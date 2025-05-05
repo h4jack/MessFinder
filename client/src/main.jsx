@@ -4,8 +4,10 @@ import './index.css'
 import App from './App.jsx'
 
 import { HomeSearch } from './components/ui/home/homeSearch'
-import { Login, ForgetPassword } from './components/ui/login/login'
-import { Register } from './components/ui/login/register'
+import { Register } from './components/ui/auth/register.jsx'
+import Login from './components/ui/auth/login.jsx'
+import { ForgetPassword } from './components/ui/auth/forget.jsx'
+import Logout from './components/ui/auth/logout.jsx'
 import { SearchResult } from './components/ui/rooms/result'
 import { ReportOwner } from './components/ui/others/report'
 import { RoomDetails } from './components/ui/rooms/room'
@@ -25,7 +27,7 @@ import {
 
 import { ErrorPage } from './components/ui/error.jsx'
 import Dashboard, { MyPGs, Profile, Settings } from './components/ui/owner/dashboard.jsx'
-
+import { FirebaseProvider } from './context/firebase.jsx'
 
 let router = createBrowserRouter(
   createRoutesFromElements(
@@ -44,6 +46,7 @@ let router = createBrowserRouter(
           <Route path='settings' element={<Settings />} />
           <Route path='pgs' element={<MyPGs />} />
           <Route path='profile' element={<Profile />} />
+          <Route path="logout" element={<Logout />} />
         </Route>
 
         <Route path="login" element={<Login />} />
@@ -66,6 +69,8 @@ let router = createBrowserRouter(
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>,
+      <FirebaseProvider>
+        <RouterProvider router={router} />
+      </FirebaseProvider>
+  </StrictMode>
 )

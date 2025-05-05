@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 
-function Faqs() {
+const Faqs = () => {
     const [activeIndex, setActiveIndex] = useState(null);
 
     const faqs = [

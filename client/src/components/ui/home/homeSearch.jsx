@@ -2,7 +2,7 @@ import { useState } from "react";
 import { statesAndDistricts } from '/src/module/js/district-pin'; // Import the JSON data
 import { Link } from "react-router-dom";
 
-function FilterButton({ label, isActive, onClick }) {
+const  FilterButton = ({ label, isActive, onClick }) => {
     return (
         <button
             className={`px-4 py-2 text-sm font-medium rounded-lg transition ${isActive
@@ -16,7 +16,7 @@ function FilterButton({ label, isActive, onClick }) {
     );
 }
 
-function Dropdown({ label, options, onChange }) {
+const Dropdown = ({ label, options, onChange }) => {
     return (
         <div className="flex flex-col">
             <label className="text-sm font-medium text-gray-700 mb-1">{label}</label>
@@ -35,7 +35,7 @@ function Dropdown({ label, options, onChange }) {
     );
 }
 
-function HomeSearch() {
+const HomeSearch = () => {
     const [query, setQuery] = useState("");
     const [isAdvancedFilter, setIsAdvancedFilter] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState("ALL");

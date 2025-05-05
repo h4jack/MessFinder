@@ -20,7 +20,7 @@ const roomData = {
 };
 
 // ImageCarousel Component
-function ImageCarousel({ images }) {
+const ImageCarousel = ({ images }) => {
     return (
         <Carousel
             showStatus={false}
@@ -41,7 +41,7 @@ function ImageCarousel({ images }) {
 
 // RoomDetailsCard Component
 
-function RoomDetailsCard({
+const RoomDetailsCard = ( {
     title,
     price,
     location,
@@ -52,7 +52,7 @@ function RoomDetailsCard({
     services,
     rules,
     description,
-}) {
+}) => {
     const [showFacilities, setShowFacilities] = React.useState(false);
     const [showServices, setShowServices] = React.useState(false);
     const [showRules, setShowRules] = React.useState(false);
@@ -188,7 +188,7 @@ function RoomDetailsCard({
 };
 
 // ContactButtons Component
-function ContactButtons() {
+const ContactButtons = () => {
     return (
         <div className="bg-white shadow-md rounded-lg p-6 mb-6">
             <h2 className="text-xl font-semibold mb-4">Contact Options</h2>
@@ -207,7 +207,7 @@ function ContactButtons() {
 }
 
 // ContactForm Component
-function ContactForm() {
+const ContactForm = () => {
     return (
         <div className="sticky top-[64px] bg-gray-100 p-6 rounded-lg">
             <h2 className="text-xl font-semibold mb-4">Contact Owner</h2>
@@ -247,7 +247,7 @@ function ContactForm() {
 }
 
 // Main RoomDetails Component
-function RoomDetails() {
+const RoomDetails = () => {
     return (
         <div className="bg-gray-100 w-full p-6 flex justify-center items-start">
             <div className="max-w-[1080px] flex flex-col sm:flex-row gap-6">

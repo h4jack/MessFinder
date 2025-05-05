@@ -1,8 +1,25 @@
 import { Link } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa"; // Importing a default profile icon
+import { useFirebase } from "../../../context/firebase"; // Assuming you have a custom hook for Firebase
+import { useEffect, useState } from "react"; // Importing useState for managing state
 
-function Navigation({ user }) {
-    console.log(user);
+const Navigation = () => {
+    const firebase = useFirebase(); 
+    const [user, setUser] = useState(null); // State to manage user information
+    useEffect(() => {
+        const unsubscribe = firebase.auth.onAuthStateChanged((user) => {
+            if (user) {
+                setUser({
+                    uid: user.uid,
+                    email: user.email,
+                    image: user.photoURL || null, // Use photoURL if available
+                });
+            } else {
+                setUser(null);
+            }
+        });
+        return () => unsubscribe(); // Cleanup subscription on unmount
+    }, [firebase.auth]);
     return (
         <header className="bg-white/50 backdrop-blur-sm text-gray-800 shadow-md sticky top-0 z-50">
             <div className="container mx-auto flex justify-between items-center py-4 px-6">
@@ -19,7 +36,7 @@ function Navigation({ user }) {
 
                 {/* Action Buttons */}
                 <div className="flex items-center gap-4 relative">
-                    {!user.isLoggedIn ? (
+                    {!user ? (
                         <>
                             <Link to="/login" className="hidden sm:block">
                                 <button className="bg-blue-600 text-white px-4 py-2 md:px-6 md:py-3 rounded-md font-medium hover:bg-blue-700 transition">
@@ -46,9 +63,9 @@ function Navigation({ user }) {
                                     }
                                 }}
                             >
-                                {user.image ? (
+                                {user.photoURL ? (
                                     <img
-                                        src={user.image}
+                                        src={user.photoURL}
                                         alt="Profile"
                                         className="h-full w-full object-cover"
                                     />
@@ -59,7 +76,11 @@ function Navigation({ user }) {
                             <div
                                 className="absolute right-0 mt-2 w-48 overflow-hidden bg-white/80 backdrop-blur-sm shadow-lg rounded-md z-50"
                                 style={{ display: "none" }}
-                                onClick={(e) => e.stopPropagation()}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    e.currentTarget.style.display = "none";
+                                    }
+                                }
                             >
                                 <Link
                                     to="/dashboard/"
@@ -90,6 +111,12 @@ function Navigation({ user }) {
                                     className="block px-4 py-2 text-gray-600 hover:bg-gray-200 hover:text-gray-800 transition"
                                 >
                                     Settings
+                                </Link>
+                                <Link
+                                    to="/dashboard/logout"
+                                    className="block px-4 py-2 text-gray-600 hover:bg-gray-200 hover:text-gray-800 transition"
+                                >
+                                    Logout
                                 </Link>
                             </div>
                         </div>

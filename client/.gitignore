@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# My imports
+.\src\context\firebase-config.js
+.gitignore
+.env
