@@ -4,7 +4,7 @@ import { FiSearch } from "react-icons/fi";
 import { GoLocation } from "react-icons/go";
 import { UNSAFE_useFogOFWarDiscovery } from "react-router-dom";
 
-const SearchBar = ({ onSearch }) => {
+function  SearchBar ({ onSearch }) {
     const [filters, setFilters] = useState({
         keyword: "",
         gender: "all",
@@ -125,7 +125,7 @@ const SearchBar = ({ onSearch }) => {
     );
 };
 
-const SearchResultCard = ({ result }) => {
+function SearchResultCard ({ result }) {
     return (
         <a href={result.href}>
             <div className="bg-white rounded-lg shadow-md flex flex-col w-72 h-max overflow-hidden transition-transform transform hover:scale-105 focus:scale-105 hover:shadow-lg focus:shadow-lg">
@@ -175,7 +175,7 @@ const SearchResultCard = ({ result }) => {
     );
 };
 
-const SearchResult = () => {
+function SearchResult() {
     const [results, setResults] = useState([]);
 
     const handleSearch = (filters) => {
@@ -277,4 +277,4 @@ const SearchResult = () => {
     );
 };
 
-export { SearchResult };
+export { SearchResult, SearchResultCard };

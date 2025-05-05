@@ -3,7 +3,7 @@ import React from 'react';
 // File: /s:/WorkSpace/MessFinder/client/src/components/ui/others/about.jsx
 
 
-const About = () => {
+function About () {
     return (
         <>
 

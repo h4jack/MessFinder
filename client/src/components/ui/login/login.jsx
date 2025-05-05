@@ -199,8 +199,10 @@ function Login() {
                     className="bg-red-500 text-white hover:bg-red-600 mt-4 flex items-center justify-center"
                 />
                 <Link to="/register" className="p-2 flex justify-center items-center gap-1">
-                    Don't have an account?{" "}
-                    <span className="text-blue-500 hover:underline cursor-pointer"> Register here</span> 
+                    <span>
+                        Don't have an account?{" "}
+                        <span className="text-blue-500 hover:underline cursor-pointer"> Register here</span>
+                    </span>
                 </Link>
             </div>
         </main>
