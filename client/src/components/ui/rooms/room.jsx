@@ -20,26 +20,28 @@ const roomData = {
 };
 
 // ImageCarousel Component
-const ImageCarousel = ({ images }) => (
-    <Carousel
-        showStatus={false}
-        showThumbs={true}
-        infiniteLoop
-        autoPlay
-        showArrows
-        className="rounded-lg overflow-hidden"
-    >
-        {images.map((image, index) => (
-            <div key={index}>
-                <img src={image} alt={`Room Image ${index + 1}`} className="aspect-video object-cover" />
-            </div>
-        ))}
-    </Carousel>
-);
+function ImageCarousel({ images }) {
+    return (
+        <Carousel
+            showStatus={false}
+            showThumbs={true}
+            infiniteLoop
+            autoPlay
+            showArrows
+            className="rounded-lg overflow-hidden"
+        >
+            {images.map((image, index) => (
+                <div key={index}>
+                    <img src={image} alt={`Room Image ${index + 1}`} className="aspect-video object-cover" />
+                </div>
+            ))}
+        </Carousel>
+    )
+};
 
 // RoomDetailsCard Component
 
-const RoomDetailsCard = ({
+function RoomDetailsCard({
     title,
     price,
     location,
@@ -50,7 +52,7 @@ const RoomDetailsCard = ({
     services,
     rules,
     description,
-}) => {
+}) {
     const [showFacilities, setShowFacilities] = React.useState(false);
     const [showServices, setShowServices] = React.useState(false);
     const [showRules, setShowRules] = React.useState(false);
@@ -186,62 +188,66 @@ const RoomDetailsCard = ({
 };
 
 // ContactButtons Component
-const ContactButtons = () => (
-    <div className="bg-white shadow-md rounded-lg p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">Contact Options</h2>
-        <div className="flex flex-col gap-4">
-            <button className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-                <FaPhoneAlt />
-                Call Owner
-            </button>
-            <button className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">
-                <FaWhatsapp />
-                WhatsApp Owner
-            </button>
+function ContactButtons() {
+    return (
+        <div className="bg-white shadow-md rounded-lg p-6 mb-6">
+            <h2 className="text-xl font-semibold mb-4">Contact Options</h2>
+            <div className="flex flex-col gap-4">
+                <button className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+                    <FaPhoneAlt />
+                    Call Owner
+                </button>
+                <button className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">
+                    <FaWhatsapp />
+                    WhatsApp Owner
+                </button>
+            </div>
         </div>
-    </div>
-);
+    );
+}
 
 // ContactForm Component
-const ContactForm = () => (
-    <div className="sticky top-[64px] bg-gray-100 p-6 rounded-lg">
-        <h2 className="text-xl font-semibold mb-4">Contact Owner</h2>
-        <form className="space-y-4">
-            <div>
-                <label className="block text-gray-700">Full Name</label>
-                <input
-                    type="text"
-                    className="w-full border border-gray-300 rounded-md p-2"
-                    placeholder="Enter your full name"
-                />
-            </div>
-            <div>
-                <label className="block text-gray-700">Mobile Number</label>
-                <input
-                    type="text"
-                    className="w-full border border-gray-300 rounded-md p-2"
-                    placeholder="Enter your mobile number"
-                />
-            </div>
-            <div>
-                <label className="block text-gray-700">Message</label>
-                <textarea
-                    className="w-full border border-gray-300 rounded-md p-2"
-                    placeholder="Enter your message"
-                ></textarea>
-            </div>
-            <button
-                type="submit"
-                className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
-            >
-                Submit
-            </button>
-        </form>
-    </div>
-);
+function ContactForm() {
+    return (
+        <div className="sticky top-[64px] bg-gray-100 p-6 rounded-lg">
+            <h2 className="text-xl font-semibold mb-4">Contact Owner</h2>
+            <form className="space-y-4">
+                <div>
+                    <label className="block text-gray-700">Full Name</label>
+                    <input
+                        type="text"
+                        className="w-full border border-gray-300 rounded-md p-2"
+                        placeholder="Enter your full name"
+                    />
+                </div>
+                <div>
+                    <label className="block text-gray-700">Mobile Number</label>
+                    <input
+                        type="text"
+                        className="w-full border border-gray-300 rounded-md p-2"
+                        placeholder="Enter your mobile number"
+                    />
+                </div>
+                <div>
+                    <label className="block text-gray-700">Message</label>
+                    <textarea
+                        className="w-full border border-gray-300 rounded-md p-2"
+                        placeholder="Enter your message"
+                    ></textarea>
+                </div>
+                <button
+                    type="submit"
+                    className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
+                >
+                    Submit
+                </button>
+            </form>
+        </div>
+    );
+}
 
 // Main RoomDetails Component
-const RoomDetails = () => {
+function RoomDetails() {
     return (
         <div className="bg-gray-100 w-full p-6 flex justify-center items-start">
             <div className="max-w-[1080px] flex flex-col sm:flex-row gap-6">

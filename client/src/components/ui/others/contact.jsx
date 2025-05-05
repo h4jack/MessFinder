@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FaUser, FaEnvelope, FaRegCommentDots } from "react-icons/fa";
 
-const Contact = () => {
+function Contact() {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
