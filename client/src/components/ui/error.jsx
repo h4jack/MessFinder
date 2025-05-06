@@ -6,7 +6,7 @@ import { FaExclamationTriangle, FaArrowLeft } from 'react-icons/fa';
 const ErrorPage = () => {
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+    <div className="min-h-[calc(100vh-72px)] bg-gray-100 flex items-center justify-center px-4">
       <div className="bg-white shadow-lg rounded-lg p-8 max-w-md text-center">
         <div className="text-red-500 text-5xl mb-4 flex justify-center">
           <FaExclamationTriangle />

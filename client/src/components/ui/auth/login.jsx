@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { InputField, Button } from "../universal/input";
 import { FaGoogle } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useFirebase } from "../../../context/firebase";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { useFirebase } from "../../../context/firebase";
 
 const Login = () => {
     // State management
@@ -21,8 +21,7 @@ const Login = () => {
     // Redirect if user is already logged in
     useEffect(() => {
         if (user) {
-            console.log("Logged in Successfully: ");
-            navigate("/dashboard", { state: { from: location } });
+            navigate("/owner/profile", { state: { from: location } });
         }
     }, [user, navigate, location]);
 
@@ -31,9 +30,8 @@ const Login = () => {
         try {
             await signInWithEmailAndPassword(firebase.auth, email, password);
             setErrorMessage("");
-            navigate("/dashboard", { state: { from: location } });
+            navigate("/owner/profile", { state: { from: location } });
         } catch (error) {
-            console.error("Login error:", error);
             setErrorMessage("Invalid email or password. Please try again.");
         }
     };
@@ -43,7 +41,7 @@ const Login = () => {
         const provider = new GoogleAuthProvider();
         signInWithPopup(firebase.auth, provider)
             .then(() => {
-                navigate("/dashboard", { state: { from: location } });
+                navigate("/owner/profile", { state: { from: location } });
             })
             .catch(() => {
                 setErrorMessage("Google login failed. Please try again.");
@@ -51,7 +49,7 @@ const Login = () => {
     };
 
     return (
-        <main className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] px-4">
+        <main className="flex flex-col items-center justify-center min-h-[calc(100vh-72px)] px-4">
             <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
                 <h2 className="text-4xl font-bold text-center text-gray-800 mb-6">Login</h2>
 
@@ -113,7 +111,7 @@ const Login = () => {
                 />
 
                 {/* Register Link */}
-                <Link to="/register" className="p-2 flex justify-center items-center gap-1">
+                <Link to="/auth/register" className="p-2 flex justify-center items-center gap-1">
                     <span>
                         Don't have an account?{" "}
                         <span className="text-blue-500 hover:underline cursor-pointer">

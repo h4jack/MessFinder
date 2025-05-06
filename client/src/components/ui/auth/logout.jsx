@@ -9,9 +9,10 @@ const Logout = () => {
 
     const handleLogout = () => {
         firebase.auth.signOut().then(() => {
-            navigate("/login", { state: { from: location } });
+            navigate("/auth/login", { state: { from: location } });
         }).catch((error) => {
             console.error("Error logging out: ", error);
+            console.log("if you are seeing this, connect the admin of this webpage with the error..");
         });
     };
     useEffect(() => {

@@ -4,7 +4,7 @@ import { useFirebase } from "../../../context/firebase"; // Assuming you have a 
 import { useEffect, useState } from "react"; // Importing useState for managing state
 
 const Navigation = () => {
-    const firebase = useFirebase(); 
+    const firebase = useFirebase();
     const [user, setUser] = useState(null); // State to manage user information
     useEffect(() => {
         const unsubscribe = firebase.auth.onAuthStateChanged((user) => {
@@ -25,7 +25,7 @@ const Navigation = () => {
             <div className="container mx-auto flex justify-between items-center py-4 px-6">
                 {/* Logo */}
                 <Link to="/" className="flex items-center">
-                    <div className="bg-[url('/assets/Logo.png')] h-10 w-32 bg-center bg-no-repeat bg-contain"></div>
+                    <div className="bg-[url('/assets/Logo.png')] h-10 w-32 bg-center bg-no-repeat bg-contain focus:outline-0"></div>
                 </Link>
 
                 {/* Navigation Items - Moved to the left */}
@@ -38,12 +38,12 @@ const Navigation = () => {
                 <div className="flex items-center gap-4 relative">
                     {!user ? (
                         <>
-                            <Link to="/login" className="hidden sm:block">
+                            <Link to="/auth/login" className="hidden sm:block">
                                 <button className="bg-blue-600 text-white px-4 py-2 md:px-6 md:py-3 rounded-md font-medium hover:bg-blue-700 transition">
                                     Login
                                 </button>
                             </Link>
-                            <Link to="/submit-pg">
+                            <Link to="/auth/register">
                                 <button className="bg-gray-800 text-white px-4 py-2 md:px-6 md:py-3 rounded-md font-medium hover:bg-gray-900 transition">
                                     Submit PG
                                 </button>
@@ -63,9 +63,9 @@ const Navigation = () => {
                                     }
                                 }}
                             >
-                                {user.photoURL ? (
+                                {user.image ? (
                                     <img
-                                        src={user.photoURL}
+                                        src={user.image}
                                         alt="Profile"
                                         className="h-full w-full object-cover"
                                     />
@@ -79,41 +79,35 @@ const Navigation = () => {
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     e.currentTarget.style.display = "none";
-                                    }
+                                }
                                 }
                             >
                                 <Link
-                                    to="/dashboard/"
-                                    className="block px-4 py-2 text-gray-600 hover:bg-gray-200 hover:text-gray-800 transition"
-                                >
-                                    Dashboard
-                                </Link>
-                                <Link
-                                    to="/dashboard/submit-pg"
+                                    to="/owner/submit-pg"
                                     className="block px-4 py-2 text-gray-600 hover:bg-gray-200 hover:text-gray-800 transition"
                                 >
                                     Submit PG
                                 </Link>
                                 <Link
-                                    to="/dashboard/pgs"
+                                    to="/owner/pgs"
                                     className="block px-4 py-2 text-gray-600 hover:bg-gray-200 hover:text-gray-800 transition"
                                 >
                                     My PGs
                                 </Link>
                                 <Link
-                                    to="/dashboard/profile"
+                                    to="/owner/profile"
                                     className="block px-4 py-2 text-gray-600 hover:bg-gray-200 hover:text-gray-800 transition"
                                 >
                                     Profile
                                 </Link>
                                 <Link
-                                    to="/dashboard/settings"
+                                    to="/owner/settings"
                                     className="block px-4 py-2 text-gray-600 hover:bg-gray-200 hover:text-gray-800 transition"
                                 >
                                     Settings
                                 </Link>
                                 <Link
-                                    to="/dashboard/logout"
+                                    to="/owner/logout"
                                     className="block px-4 py-2 text-gray-600 hover:bg-gray-200 hover:text-gray-800 transition"
                                 >
                                     Logout

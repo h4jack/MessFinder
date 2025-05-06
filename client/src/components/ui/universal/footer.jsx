@@ -32,8 +32,8 @@ const Footer = () => {
                 <FooterSection title="Quick Links">
                     <div className="grid grid-cols-2 gap-2">
                         <FooterLink href="/">Home</FooterLink>
-                        <FooterLink href="/login">Login</FooterLink>
-                        <FooterLink href="/submit-pg">Submit PG</FooterLink>
+                        <FooterLink href="/auth/login">Login</FooterLink>
+                        <FooterLink href="/owner/submit-pg">Submit PG</FooterLink>
                         <FooterLink href="/terms">Privacy Policy</FooterLink>
                         <FooterLink href="/about">About</FooterLink>
                         <FooterLink href="/faqs">FAQs</FooterLink>
