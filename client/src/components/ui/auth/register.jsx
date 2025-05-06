@@ -6,7 +6,6 @@ import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } f
 import { useFirebase } from "../../../context/firebase";
 
 const Register = () => {
-    const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -28,10 +27,6 @@ const Register = () => {
     }, [user, navigate, location]);
 
     const validateInputs = () => {
-        if (!name.trim()) {
-            setErrorMessage("Name is required.");
-            return false;
-        }
         if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) {
             setErrorMessage("Invalid Email Address.");
             return false;
