@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { FaFilter } from "react-icons/fa";
 import { FiSearch } from "react-icons/fi";
 import { GoLocation } from "react-icons/go";
-import { UNSAFE_useFogOFWarDiscovery } from "react-router-dom";
 
 const  SearchBar =  ({ onSearch }) => {
     const [filters, setFilters] = useState({
@@ -262,7 +261,7 @@ const SearchResult =() => {
     }, []);
 
     return (
-        <main className="flex flex-col min-h-[calc(100vh-64px)] bg-gray-100 px-4">
+        <main className="flex flex-col min-h-[calc(100vh-72px)] bg-gray-100 px-4">
             <SearchBar onSearch={handleSearch} />
             <div className="pt-6 pb-6 flex flex-wrap gap-4 items-center justify-center">
                 {results.length > 0 ? (

@@ -6,12 +6,11 @@ import App from './App.jsx'
 import { HomeSearch } from './components/ui/home/homeSearch'
 import { Register } from './components/ui/auth/register.jsx'
 import Login from './components/ui/auth/login.jsx'
-import { ForgetPassword } from './components/ui/auth/forget.jsx'
+import { ResettPassword } from './components/ui/auth/reset.jsx'
 import Logout from './components/ui/auth/logout.jsx'
 import { SearchResult } from './components/ui/rooms/result'
 import { ReportOwner } from './components/ui/others/report'
 import { RoomDetails } from './components/ui/rooms/room'
-import { SubmitPG } from './components/ui/owner/dashboard'
 
 import { Contact } from './components/ui/others/contact'
 import { Faqs } from './components/ui/others/faqs'
@@ -23,11 +22,21 @@ import {
   createBrowserRouter,
   RouterProvider,
   createRoutesFromElements,
+  Outlet,
 } from "react-router-dom";
 
 import { ErrorPage } from './components/ui/error.jsx'
-import Dashboard, { MyPGs, Profile, Settings } from './components/ui/owner/dashboard.jsx'
+
+// importing the profile of owner..
+import Dashboard from './components/ui/owner/owner.jsx'
+import Profile from './components/ui/owner/profile'
+import MyPGs from './components/ui/owner/mypgs'
+import Settings from './components/ui/owner/settings'
+import SubmitPG from './components/ui/owner/submit-pg'
+
+//importing the Wrapper context of Firebase.
 import { FirebaseProvider } from './context/firebase.jsx'
+import AuthPage from './components/ui/auth/auth.jsx'
 
 let router = createBrowserRouter(
   createRoutesFromElements(
@@ -40,18 +49,22 @@ let router = createBrowserRouter(
 
         <Route path="room/:id" element={<RoomDetails />} />
 
-        <Route path="owner/:id" element={<span className='text-7xl w-full text-center text-gray-100'>Owner Home</span>} />
-        <Route path="dashboard/" element={<Dashboard />}>
+        {/* <Route path="owner/:id" element={<span className='text-7xl w-full text-center text-gray-100'>Owner Home</span>} /> */}
+        <Route path="owner/" element={<Dashboard />}>
+          <Route path='profile' element={<Profile />} />
           <Route path="submit-pg" element={<SubmitPG />} />
           <Route path='settings' element={<Settings />} />
           <Route path='pgs' element={<MyPGs />} />
-          <Route path='profile' element={<Profile />} />
           <Route path="logout" element={<Logout />} />
         </Route>
 
-        <Route path="login" element={<Login />} />
-        <Route path="register" element={<Register />} />
-        <Route path="forget-password" element={<ForgetPassword />} />
+        <Route path='auth/' element={<AuthPage />}>
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+          <Route path="forget-password" element={<ResettPassword />} />
+          <Route path="reset-password" element={<ResettPassword />} />
+          <Route path="logout" element={<Logout />} />
+        </Route>
 
         <Route path="contact" element={<Contact />} />
         <Route path="about" element={<About />} />
@@ -69,8 +82,8 @@ let router = createBrowserRouter(
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-      <FirebaseProvider>
-        <RouterProvider router={router} />
-      </FirebaseProvider>
+    <FirebaseProvider>
+      <RouterProvider router={router} />
+    </FirebaseProvider>
   </StrictMode>
 )
