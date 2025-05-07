@@ -1,12 +1,12 @@
 import './index.css'
-import { Navigation } from './components/ui/universal/header'
-import { Footer } from './components/ui/universal/footer'
+import { Header } from './components/layout/header'
+import { Footer } from './components/layout/footer'
 import {
   Outlet,
 } from "react-router-dom";
-import ScrollToTop from './components/ui/scroll-to-top';
+import ScrollToTop from './scroll-to-top';
 
-const App = () => {
+const Layout = () => {
   const user = {
     isLoggedIn: true, // Set to false if the user is not logged in
     image: "", // Replace with the user's profile image URL or leave null/undefined if not available
@@ -14,7 +14,7 @@ const App = () => {
 
   return (
     <>
-      <Navigation user={user} />
+      <Header user={user} />
       <ScrollToTop />
       <Outlet />
       <Footer />
@@ -22,4 +22,4 @@ const App = () => {
   )
 }
 
-export default App
+export default Layout;

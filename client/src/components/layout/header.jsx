@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa"; // Importing a default profile icon
-import { useFirebase } from "../../../context/firebase"; // Assuming you have a custom hook for Firebase
+import { useFirebase } from "../../context/firebase"; // Assuming you have a custom hook for Firebase
 import { useEffect, useState } from "react"; // Importing useState for managing state
 
-const Navigation = () => {
+const Header = () => {
     const firebase = useFirebase();
     const [user, setUser] = useState(null); // State to manage user information
     useEffect(() => {
@@ -28,7 +28,7 @@ const Navigation = () => {
                     <div className="bg-[url('/assets/Logo.png')] h-10 w-32 bg-center bg-no-repeat bg-contain focus:outline-0"></div>
                 </Link>
 
-                {/* Navigation Items - Moved to the left */}
+                {/* Header Items - Moved to the left */}
                 <nav className="hidden md:flex items-center gap-6 ml-auto mr-6">
                     <Link to="/about" className="text-gray-600 hover:text-gray-800 transition">About</Link>
                     <Link to="/contact" className="text-gray-600 hover:text-gray-800 transition">Contact Us</Link>
@@ -121,4 +121,4 @@ const Navigation = () => {
     );
 }
 
-export { Navigation };
+export { Header };

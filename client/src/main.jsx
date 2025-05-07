@@ -1,47 +1,56 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import App from './App.jsx'
 
-import { HomeSearch } from './components/ui/home/homeSearch'
-import { Register } from './components/ui/auth/register.jsx'
-import Login from './components/ui/auth/login.jsx'
-import { ResettPassword } from './components/ui/auth/reset.jsx'
-import Logout from './components/ui/auth/logout.jsx'
-import { SearchResult } from './components/ui/rooms/result'
-import { ReportOwner } from './components/ui/others/report'
-import { RoomDetails } from './components/ui/rooms/room'
+import Layout from './Layout'
 
-import { Contact } from './components/ui/others/contact'
-import { Faqs } from './components/ui/others/faqs'
-import { About } from './components/ui/others/about'
-import { TermsAndConditions } from './components/ui/others/terms'
+import { HomeSearch } from './components/home/homeSearch'
+
+
+// Authentication Pages..
+import AuthPage from './components/auth/auth'
+import Login from './components/auth/login'
+import { Register } from './components/auth/register'
+import { ResettPassword } from './components/auth/reset'
+import Logout from './components/auth/logout'
+
+
+import { SearchResult } from './components/rooms/search'
+import { RoomDetails } from './components/rooms/room'
+
+// Import Info folder, which contain components like report, contect, etc.
+import Info from './components/info/info'
+import { ReportOwner } from './components/info/report'
+import { Contact } from './components/info/contact'
+import { Faqs } from './components/info/faqs'
+import { About } from './components/info/about'
+import { TermsAndConditions } from './components/info/terms'
 
 import {
   Route,
   createBrowserRouter,
   RouterProvider,
-  createRoutesFromElements,
-  Outlet,
+  createRoutesFromElements
 } from "react-router-dom";
 
-import { ErrorPage } from './components/ui/error.jsx'
+import { ErrorPage } from './components/error/error'
 
 // importing the profile of owner..
-import Dashboard from './components/ui/owner/owner.jsx'
-import Profile from './components/ui/owner/profile'
-import MyPGs from './components/ui/owner/mypgs'
-import Settings from './components/ui/owner/settings'
-import SubmitPG from './components/ui/owner/submit-pg'
+import Dashboard from './components/owner/owner'
+import Profile from './components/owner/profile'
+import MyPGs from './components/owner/mypgs'
+import Settings from './components/owner/settings'
+import SubmitPG from './components/owner/submit-pg'
 
 //importing the Wrapper context of Firebase.
-import { FirebaseProvider } from './context/firebase.jsx'
-import AuthPage from './components/ui/auth/auth.jsx'
+import { FirebaseProvider } from './context/firebase'
+
+
 
 let router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      <Route path="/" element={<App />} ErrorBoundary={ErrorPage}>
+      <Route path="/" element={<Layout />} ErrorBoundary={ErrorPage}>
         <Route path='' element={<HomeSearch />} />
         <Route path="search" element={<SearchResult />}>
           <Route path=":location" element={<SearchResult />} />
@@ -66,11 +75,13 @@ let router = createBrowserRouter(
           <Route path="logout" element={<Logout />} />
         </Route>
 
-        <Route path="contact" element={<Contact />} />
-        <Route path="about" element={<About />} />
-        <Route path="faqs" element={<Faqs />} />
-        <Route path="terms" element={<TermsAndConditions />} />
-        <Route path="report" element={<ReportOwner />} />
+        <Route path='info/' element={<Info />} >
+          <Route path="contact" element={<Contact />} />
+          <Route path="about" element={<About />} />
+          <Route path="faqs" element={<Faqs />} />
+          <Route path="terms" element={<TermsAndConditions />} />
+          <Route path="report" element={<ReportOwner />} />
+        </Route>
 
         <Route path="*" element={<ErrorPage />} /> {/* Catch-all 404 */}
       </Route>

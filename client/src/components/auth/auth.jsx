@@ -1,5 +1,5 @@
-import { Outlet, useLocation, useNavigate } from "react-router-dom"
-import { ErrorPage } from "../error";
+import { Outlet, useLocation } from "react-router-dom"
+import { ErrorPage } from "../error/error";
 
 const AuthPage = () => {
     const location = useLocation();

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FaExclamationTriangle } from "react-icons/fa";
-import { InputField } from "../universal/input";
+import { InputField } from "../ui/input";
 
 const ReportOwner = () => {
     const [formData, setFormData] = useState({

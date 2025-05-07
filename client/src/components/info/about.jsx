@@ -6,7 +6,6 @@ import React from 'react';
 const About = () => {
     return (
         <>
-
             {/* Main Content */}
             <main className="flex-grow p-6 min-h-[calc(100vh-72px)] md:min-h-[calc(100vh-80px)]">
                 <section className="max-w-4xl mx-auto bg-gray-200 shadow-md rounded-lg p-6">

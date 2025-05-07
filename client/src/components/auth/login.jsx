@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { InputField, Button } from "../universal/input";
+import { InputField, Button } from "../ui/input";
 import { FaGoogle } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { useFirebase } from "../../../context/firebase";
+import { useFirebase } from "../../context/firebase";
 
 const Login = () => {
     // State management

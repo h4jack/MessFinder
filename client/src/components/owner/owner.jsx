@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import { useFirebase } from "../../../context/firebase";
+import { useFirebase } from "../../context/firebase";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
-import { ErrorPage } from "../error";
+import { ErrorPage } from "../error/error";
 
 const Dashboard = () => {
 

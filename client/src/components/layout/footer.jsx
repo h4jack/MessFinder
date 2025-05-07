@@ -15,6 +15,42 @@ const FooterSection = ({ title, children }) => (
 );
 
 const Footer = () => {
+
+    const quickLinks = [
+        {
+            name: "Home",
+            href: "/"
+        },
+        {
+            name: "Login",
+            href: "/auth/login"
+        },
+        {
+            name: "Submit PG",
+            href: "/owner/submit-pg"
+        },
+        {
+            name: "Privacy Policy",
+            href: "/info/terms"
+        },
+        {
+            name: "About",
+            href: "/info/about"
+        },
+        {
+            name: "FAQs",
+            href: "/info/faqs"
+        },
+        {
+            name: "Report",
+            href: "/info/report"
+        },
+        {
+            name: "Contact Us",
+            href: "/info/contact"
+        }
+    ];
+
     return (
         <footer className="bg-gray-800 text-gray-300">
             <div className="container mx-auto flex flex-wrap justify-center items-start gap-8 p-8">
@@ -31,14 +67,9 @@ const Footer = () => {
                 {/* Quick Links */}
                 <FooterSection title="Quick Links">
                     <div className="grid grid-cols-2 gap-2">
-                        <FooterLink href="/">Home</FooterLink>
-                        <FooterLink href="/auth/login">Login</FooterLink>
-                        <FooterLink href="/owner/submit-pg">Submit PG</FooterLink>
-                        <FooterLink href="/terms">Privacy Policy</FooterLink>
-                        <FooterLink href="/about">About</FooterLink>
-                        <FooterLink href="/faqs">FAQs</FooterLink>
-                        <FooterLink href="/report">Report</FooterLink>
-                        <FooterLink href="/contact">Contact Us</FooterLink>
+                        {quickLinks.map((link, index) => (
+                            <FooterLink key={index} href={link.href}>{link.name}</FooterLink>
+                        ))}
                     </div>
                 </FooterSection>
 
