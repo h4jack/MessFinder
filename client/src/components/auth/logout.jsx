@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useFirebase } from "../../../context/firebase";
+import { useFirebase } from "../../context/firebase";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const Logout = () => {

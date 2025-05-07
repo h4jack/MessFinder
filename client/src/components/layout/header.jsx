@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa"; // Importing a default profile icon
-import { useFirebase } from "../../../context/firebase"; // Assuming you have a custom hook for Firebase
+import { useFirebase } from "../../context/firebase"; // Assuming you have a custom hook for Firebase
 import { useEffect, useState } from "react"; // Importing useState for managing state
 
-const Navigation = () => {
+const Header = () => {
     const firebase = useFirebase();
     const [user, setUser] = useState(null); // State to manage user information
     useEffect(() => {
@@ -28,7 +28,7 @@ const Navigation = () => {
                     <div className="bg-[url('/assets/Logo.png')] h-10 w-32 bg-center bg-no-repeat bg-contain focus:outline-0"></div>
                 </Link>
 
-                {/* Navigation Items - Moved to the left */}
+                {/* Header Items - Moved to the left */}
                 <nav className="hidden md:flex items-center gap-6 ml-auto mr-6">
                     <Link to="/about" className="text-gray-600 hover:text-gray-800 transition">About</Link>
                     <Link to="/contact" className="text-gray-600 hover:text-gray-800 transition">Contact Us</Link>
@@ -74,7 +74,7 @@ const Navigation = () => {
                                 )}
                             </div>
                             <div
-                                className="absolute right-0 mt-2 w-48 overflow-hidden bg-white/80 backdrop-blur-sm shadow-lg rounded-md z-50"
+                                className="absolute right-0 mt-2 w-48 overflow-hidden bg-blue-100 shadow-lg rounded-md z-50"
                                 style={{ display: "none" }}
                                 onClick={(e) => {
                                     e.stopPropagation();
@@ -84,31 +84,31 @@ const Navigation = () => {
                             >
                                 <Link
                                     to="/owner/submit-pg"
-                                    className="block px-4 py-2 text-gray-600 hover:bg-gray-200 hover:text-gray-800 transition"
+                                    className="block px-4 py-2 text-gray-600 hover:bg-blue-200 hover:text-gray-800 transition"
                                 >
                                     Submit PG
                                 </Link>
                                 <Link
                                     to="/owner/pgs"
-                                    className="block px-4 py-2 text-gray-600 hover:bg-gray-200 hover:text-gray-800 transition"
+                                    className="block px-4 py-2 text-gray-600 hover:bg-blue-200 hover:text-gray-800 transition"
                                 >
                                     My PGs
                                 </Link>
                                 <Link
                                     to="/owner/profile"
-                                    className="block px-4 py-2 text-gray-600 hover:bg-gray-200 hover:text-gray-800 transition"
+                                    className="block px-4 py-2 text-gray-600 hover:bg-blue-200 hover:text-gray-800 transition"
                                 >
                                     Profile
                                 </Link>
                                 <Link
                                     to="/owner/settings"
-                                    className="block px-4 py-2 text-gray-600 hover:bg-gray-200 hover:text-gray-800 transition"
+                                    className="block px-4 py-2 text-gray-600 hover:bg-blue-200 hover:text-gray-800 transition"
                                 >
                                     Settings
                                 </Link>
                                 <Link
                                     to="/owner/logout"
-                                    className="block px-4 py-2 text-gray-600 hover:bg-gray-200 hover:text-gray-800 transition"
+                                    className="block px-4 py-2 text-gray-600 hover:bg-blue-200 hover:text-gray-800 transition"
                                 >
                                     Logout
                                 </Link>
@@ -121,4 +121,4 @@ const Navigation = () => {
     );
 }
 
-export { Navigation };
+export { Header };
