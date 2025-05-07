@@ -74,7 +74,7 @@ const Header = () => {
                                 )}
                             </div>
                             <div
-                                className="absolute right-0 mt-2 w-48 overflow-hidden bg-white/80 backdrop-blur-sm shadow-lg rounded-md z-50"
+                                className="absolute right-0 mt-2 w-48 overflow-hidden bg-blue-100 shadow-lg rounded-md z-50"
                                 style={{ display: "none" }}
                                 onClick={(e) => {
                                     e.stopPropagation();
@@ -84,31 +84,31 @@ const Header = () => {
                             >
                                 <Link
                                     to="/owner/submit-pg"
-                                    className="block px-4 py-2 text-gray-600 hover:bg-gray-200 hover:text-gray-800 transition"
+                                    className="block px-4 py-2 text-gray-600 hover:bg-blue-200 hover:text-gray-800 transition"
                                 >
                                     Submit PG
                                 </Link>
                                 <Link
                                     to="/owner/pgs"
-                                    className="block px-4 py-2 text-gray-600 hover:bg-gray-200 hover:text-gray-800 transition"
+                                    className="block px-4 py-2 text-gray-600 hover:bg-blue-200 hover:text-gray-800 transition"
                                 >
                                     My PGs
                                 </Link>
                                 <Link
                                     to="/owner/profile"
-                                    className="block px-4 py-2 text-gray-600 hover:bg-gray-200 hover:text-gray-800 transition"
+                                    className="block px-4 py-2 text-gray-600 hover:bg-blue-200 hover:text-gray-800 transition"
                                 >
                                     Profile
                                 </Link>
                                 <Link
                                     to="/owner/settings"
-                                    className="block px-4 py-2 text-gray-600 hover:bg-gray-200 hover:text-gray-800 transition"
+                                    className="block px-4 py-2 text-gray-600 hover:bg-blue-200 hover:text-gray-800 transition"
                                 >
                                     Settings
                                 </Link>
                                 <Link
                                     to="/owner/logout"
-                                    className="block px-4 py-2 text-gray-600 hover:bg-gray-200 hover:text-gray-800 transition"
+                                    className="block px-4 py-2 text-gray-600 hover:bg-blue-200 hover:text-gray-800 transition"
                                 >
                                     Logout
                                 </Link>
