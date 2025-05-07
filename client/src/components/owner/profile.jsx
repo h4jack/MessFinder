@@ -1,9 +1,9 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { useFirebase } from "../../context/firebase";
 import { useEffect } from "react";
-import { updateProfile } from "firebase/auth";
+import { sendEmailVerification, updateEmail, updateProfile } from "firebase/auth";
 
 const Profile = () => {
     const [isEditing, setIsEditing] = React.useState(false);
@@ -14,6 +14,7 @@ const Profile = () => {
         photoURL: null,
         emailVerified: false
     });
+    const [alertMessage, setAlertMessage] = React.useState(null);
 
     const firebase = useFirebase();
 
@@ -26,9 +27,7 @@ const Profile = () => {
                     phoneNumber: user.phoneNumber,
                     photoURL: user.photoURL,
                     emailVerified: user.emailVerified
-                })
-            } else {
-
+                });
             }
         });
         return () => unsubscribe(); // Cleanup subscription on unmount
@@ -43,10 +42,46 @@ const Profile = () => {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleSave = () => {
-        // Logic to save updated profile data
-        console.log("Saving profile data:", formData);
-        setIsEditing(false);
+    const handleSave = async () => {
+        try {
+            const user = firebase.auth.currentUser;
+
+            // Check if any field has changed before updating
+            const updates = {};
+            if (formData.displayName && formData.displayName !== user.displayName) {
+                updates.displayName = formData.displayName;
+            }
+            if (formData.email && formData.email !== user.email) {
+                updates.email = formData.email;
+            }
+            if (formData.phoneNumber && formData.phoneNumber !== user.phoneNumber) {
+                updates.phoneNumber = formData.phoneNumber;
+            }
+
+            // Update profile if there are changes
+            if (Object.keys(updates).length > 0) {
+                if (updates.displayName || updates.photoURL) {
+                    await updateProfile(user, {
+                        displayName: updates.displayName,
+                        photoURL: formData.photoURL,
+                    });
+                }
+                if (updates.email) {
+                    updateEmail(firebase.auth.currentUser, updates.email)
+                        .then(() => {
+
+                        })
+                        .catch(() => {
+                            showAlert("Failed to update profile. Please try again. or login again", "error");
+                        })
+                }
+            } else {
+                showAlert("No changes to update.", "info");
+            }
+            setIsEditing(false);
+        } catch (error) {
+            showAlert("Failed to update profile. Please try again. or login again", "error");
+        }
     };
 
     const handleCancel = () => {
@@ -59,9 +94,21 @@ const Profile = () => {
     };
 
     const handleVerifyEmail = () => {
-        firebase.auth.currentUser.sendEmailVerification().then(() => {
-            alert("Verification email sent!");
-        });
+        const user = firebase.auth.currentUser;
+        sendEmailVerification(user)
+            .then(() => {
+                showAlert("Verification email sent!", "success");
+            })
+            .catch(() => {
+                showAlert("Failed to send verification email. if error persist. re-login and try again.", "error");
+            });
+    };
+
+    const showAlert = (message, type) => {
+        setAlertMessage({ message, type });
+        setTimeout(() => {
+            setAlertMessage(null);
+        }, 3000); // Hide alert after 3 seconds
     };
 
     return (
@@ -75,7 +122,7 @@ const Profile = () => {
                 {isEditing && (
                     <label
                         htmlFor="profileImageUpload"
-                        className="absolute top-2 right-2 bg-blue-500 text-white p-2 rounded-full cursor-pointer hover:bg-blue-600"
+                        className="absolute top-2 right-2 bg-blue-300 text-white p-2 rounded-full h-[40px] w-[40px] cursor-pointer hover:bg-blue-400"
                         title="Edit Profile Image"
                     >
                         ✏️
@@ -99,9 +146,20 @@ const Profile = () => {
                             }}
                         />
                     </label>
-
                 )}
             </div>
+            {alertMessage && (
+                <div
+                    className={`p-4 text-center text-white ${alertMessage.type === "success"
+                            ? "bg-green-500"
+                            : alertMessage.type === "error"
+                                ? "bg-red-500"
+                                : "bg-blue-500"
+                        }`}
+                >
+                    {alertMessage.message}
+                </div>
+            )}
             <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-2xl font-bold text-gray-800">Profile</h2>
@@ -118,7 +176,7 @@ const Profile = () => {
                         <input
                             type="text"
                             name="displayName"
-                            value={formData.displayName}
+                            value={formData.displayName || ""}
                             onChange={handleChange}
                             disabled={!isEditing}
                             className={`ml-2 border ${isEditing ? "border-gray-300" : "border-transparent"
@@ -130,7 +188,7 @@ const Profile = () => {
                         <input
                             type="email"
                             name="email"
-                            value={formData.email}
+                            value={formData.email || ""}
                             onChange={handleChange}
                             disabled={!isEditing}
                             className={`ml-2 border ${isEditing ? "border-gray-300" : "border-transparent"
@@ -152,12 +210,27 @@ const Profile = () => {
                             </button>
                         )}
                     </div>
+                    <div className="flex items-center mb-2 gap-2">
+                        <span className="text-gray-600 font-medium">Password:</span>
+                        <span className="ml-2 flex items-center">
+                            {!isEditing ? (
+                                <span>********</span>
+                            ) : (
+                                <Link
+                                    to="/auth/reset-password"
+                                    className="text-orange-600 font-medium hover:underline"
+                                >
+                                    Reset Password?
+                                </Link>
+                            )}
+                        </span>
+                    </div>
                     <div className="flex items-center mb-2">
                         <span className="text-gray-600 font-medium">Phone:</span>
                         <input
-                            type="text"
+                            type="number"
                             name="phoneNumber"
-                            value={formData.phoneNumber || "Not Set Yet"}
+                            value={formData.phoneNumber || ""}
                             onChange={handleChange}
                             disabled={!isEditing}
                             className={`ml-2 border ${isEditing ? "border-gray-300" : "border-transparent"
@@ -165,12 +238,27 @@ const Profile = () => {
                         />
                     </div>
                     <div className="flex items-center mb-2">
-                        <Link
-                            to="/auth/reset-password"
-                            className="text-orange-600 font-medium hover:underline"
-                        >
-                            Reset Password?
-                        </Link>
+                        <span className="text-gray-600 text-nowrap font-medium">DOB:</span>
+                        <input
+                            type="date"
+                            name="dob"
+                            value={formData.dob || ""}
+                            onChange={handleChange}
+                            disabled={!isEditing}
+                            className={`ml-2 border ${isEditing ? "border-gray-300" : "border-transparent"
+                                } rounded px-2 py-1 text-gray-800 w-full`}
+                        />
+                    </div>
+                    <div className="flex flex-col items-start mb-2">
+                        <span className="text-gray-600 font-medium">Description:</span>
+                        <textarea
+                            name="description"
+                            value={formData.description || ""}
+                            onChange={handleChange}
+                            disabled={!isEditing}
+                            className={`ml-2 border ${isEditing ? "border-gray-300" : "border-transparent"
+                                } rounded px-2 py-1 text-gray-800 w-full`}
+                        />
                     </div>
                 </div>
                 {isEditing && (
