@@ -1,4 +1,4 @@
-import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 // InputField Component
 const InputField = ({ label, type, value, onChange, placeholder, showToggle, toggleVisibility }) => {
@@ -27,19 +27,5 @@ const InputField = ({ label, type, value, onChange, placeholder, showToggle, tog
     );
 }
 
-// Button Component
-const Button = ({ text, onClick, className }) => {
-    return (
-        <button
-            className={`w-full py-2 rounded-lg transition duration-200 ${className} cursor-pointer`}
-            onClick={onClick}
-        >
-            {text}
-        </button>
-    );
-}
-
-export {
-    InputField,
-    Button
-}
+export default InputField;
+export { InputField };

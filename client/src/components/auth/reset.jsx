@@ -1,6 +1,7 @@
 // ForgetPassword Component
 import React, { useState } from "react";
-import { InputField, Button } from "../ui/input";
+import { InputField } from "../ui/input";
+import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
 import { useFirebase } from "../../context/firebase";
 import { sendPasswordResetEmail } from "firebase/auth";
