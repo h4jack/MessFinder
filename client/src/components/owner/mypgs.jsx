@@ -6,7 +6,7 @@ const RoomCard = ({ roomData }) => {
     return (
         <div
             key={pg.id}
-            className="rounded-lg shadow-md relative overflow-hidden bg-white"
+            className="w-56 rounded-lg shadow-md border border-gray-300 relative overflow-hidden bg-white"
         >
             <img
                 src={pg.thumbnail}
@@ -79,14 +79,87 @@ const MyPGs = () => {
             },
             updatedAt: "2023-09-25",
         },
+        {
+            id: 2,
+            thumbnail: "/assets/room3.png",
+            title: "Moonlight PG",
+            location: "Uptown, City",
+            price: "$400/month",
+            details: {
+                "For": "Girls",
+                "Suitable For": "Students",
+                "Shared": "No",
+            },
+            updatedAt: "2023-09-25",
+        },
+        {
+            id: 2,
+            thumbnail: "/assets/room3.png",
+            title: "Moonlight PG",
+            location: "Uptown, City",
+            price: "$400/month",
+            details: {
+                "For": "Girls",
+                "Suitable For": "Students",
+                "Shared": "No",
+            },
+            updatedAt: "2023-09-25",
+        },
+        {
+            id: 2,
+            thumbnail: "/assets/room3.png",
+            title: "Moonlight PG",
+            location: "Uptown, City",
+            price: "$400/month",
+            details: {
+                "For": "Girls",
+                "Suitable For": "Students",
+                "Shared": "No",
+            },
+            updatedAt: "2023-09-25",
+        },
     ];
+
+    const [selectedTab, setSelectedTab] = React.useState("All");
 
     return (
         <div className="container mx-auto p-4">
             <h1 className="text-2xl font-bold mb-4">My PGs</h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {pgData.map((pg) => (
-                    <RoomCard roomData={pg} />
+            <div className="flex space-x-4 mb-4">
+                <button
+                    className={`px-4 py-2 rounded-md ${
+                        selectedTab === "All"
+                            ? "bg-teal-500 text-white"
+                            : "bg-gray-200 text-gray-700"
+                    }`}
+                    onClick={() => setSelectedTab("All")}
+                >
+                    All
+                </button>
+                <button
+                    className={`px-4 py-2 rounded-md ${
+                        selectedTab === "Drafts"
+                            ? "bg-indigo-500 text-white"
+                            : "bg-gray-200 text-gray-700"
+                    }`}
+                    onClick={() => setSelectedTab("Drafts")}
+                >
+                    Drafts
+                </button>
+                <button
+                    className={`px-4 py-2 rounded-md ${
+                        selectedTab === "Posts"
+                            ? "bg-green-500 text-white"
+                            : "bg-gray-200 text-gray-700"
+                    }`}
+                    onClick={() => setSelectedTab("Posts")}
+                >
+                    Posts
+                </button>
+            </div>
+            <div className="flex flex-wrap gap-3">
+                {pgData.map((pg, index) => (
+                    <RoomCard key={index} roomData={pg} />
                 ))}
             </div>
         </div>
