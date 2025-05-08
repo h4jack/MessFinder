@@ -20,13 +20,6 @@ const Register = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Redirect if user is already logged in
-    useEffect(() => {
-        if (user) {
-            navigate("/owner/profile", { state: { from: location } });
-        }
-    }, [user, navigate, location]);
-
     const validateInputs = () => {
         if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) {
             setErrorMessage("Invalid Email Address.");
