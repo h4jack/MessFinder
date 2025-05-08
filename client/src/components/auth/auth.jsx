@@ -12,8 +12,8 @@ const AuthPage = () => {
     useEffect(() => {
         const unsubscribe = firebase.auth.onAuthStateChanged((user) => {
             if (user) {
-                if ((location.pathname !== "/auth/reset-password/"
-                    || location.pathname !== "/auth/reset-password")) {
+                if (!(location.pathname === "/auth/reset-password/"
+                    || location.pathname === "/auth/reset-password")) {
                     navigate("/owner/profile", { state: { from: location } })
                 }
             }
