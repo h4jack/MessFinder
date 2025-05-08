@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { InputField, Button } from "../ui/input";
+import { InputField } from "../ui/input";
+import { Button } from "../ui/button";
 import { FaGoogle } from "react-icons/fa";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
@@ -18,13 +19,6 @@ const Register = () => {
 
     const navigate = useNavigate();
     const location = useLocation();
-
-    // Redirect if user is already logged in
-    useEffect(() => {
-        if (user) {
-            navigate("/owner/profile", { state: { from: location } });
-        }
-    }, [user, navigate, location]);
 
     const validateInputs = () => {
         if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) {

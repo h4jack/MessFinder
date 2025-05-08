@@ -20,6 +20,7 @@ const Header = () => {
         });
         return () => unsubscribe(); // Cleanup subscription on unmount
     }, [firebase.auth]);
+
     return (
         <header className="bg-white/50 backdrop-blur-sm text-gray-800 shadow-md sticky top-0 z-50">
             <div className="container mx-auto flex justify-between items-center py-4 px-6">
@@ -43,7 +44,7 @@ const Header = () => {
                                     Login
                                 </button>
                             </Link>
-                            <Link to="/auth/register">
+                            <Link to="/owner/submit-pg">
                                 <button className="bg-gray-800 text-white px-4 py-2 md:px-6 md:py-3 rounded-md font-medium hover:bg-gray-900 transition">
                                     Submit PG
                                 </button>

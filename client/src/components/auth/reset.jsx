@@ -1,17 +1,28 @@
 // ForgetPassword Component
-import React, { useState } from "react";
-import { InputField, Button } from "../ui/input";
+import React, { useEffect, useState } from "react";
+import { InputField } from "../ui/input";
+import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
 import { useFirebase } from "../../context/firebase";
 import { sendPasswordResetEmail } from "firebase/auth";
 
 const ResettPassword = () => {
+
     const [email, setEmail] = useState("");
     const [alertMessage, setAlertMessage] = useState("");
     const [alertType, setAlertType] = useState(""); // "success" or "error"
     const [linkSent, setLinkSent] = useState(false);
 
     const firebase = useFirebase();
+
+    useEffect(() => {
+        const unsubscribe = firebase.auth.onAuthStateChanged((user) => {
+            if (user) {
+                setEmail(user.email);
+            }
+        });
+        return () => unsubscribe(); // Cleanup subscription on unmount
+    }, [firebase.auth]);
 
     const handleSendResetLink = async () => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

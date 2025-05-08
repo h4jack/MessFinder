@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { InputField, Button } from "../ui/input";
+import React, { useState } from "react";
+import { InputField } from "../ui/input";
+import { Button } from "../ui/button";
 import { FaGoogle } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
@@ -13,17 +14,9 @@ const Login = () => {
     const [errorMessage, setErrorMessage] = useState("");
 
     const firebase = useFirebase();
-    const user = firebase.auth.currentUser;
 
     const navigate = useNavigate();
     const location = useLocation();
-
-    // Redirect if user is already logged in
-    useEffect(() => {
-        if (user) {
-            navigate("/owner/profile", { state: { from: location } });
-        }
-    }, [user, navigate, location]);
 
     // Login with email and password
     const handleLogin = async () => {

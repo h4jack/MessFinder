@@ -1,19 +1,31 @@
-import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 // InputField Component
-const InputField = ({ label, type, value, onChange, placeholder, showToggle, toggleVisibility }) => {
+const InputField = ({ label, type, value, onChange, placeholder, showToggle, toggleVisibility, errorMessage }) => {
     return (
-        <div className="mb-4">
+        <div className="mb-4 w-full">
             <label className="block text-gray-700 font-medium mb-2">{label}</label>
-            <div className="relative">
-                <input
-                    type={type}
-                    placeholder={placeholder}
-                    value={value}
-                    onChange={onChange}
-                    className="w-full px-4 py-2 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                {showToggle && (
+            {errorMessage && 
+                <span className="text-red-500 text-sm mt-1">{errorMessage}</span>
+            }
+            <div className={`relative ${errorMessage ? "border-red-500" : ""}`}>
+                {type === "textarea" ? (
+                    <textarea
+                        placeholder={placeholder}
+                        value={value}
+                        onChange={onChange}
+                        className={`w-full px-4 py-2 border ${errorMessage ? "border-red-500" : "border-gray-400"} rounded-lg focus:outline-none focus:ring-2 ${errorMessage ? "focus:ring-red-500" : "focus:ring-blue-500"}`}
+                    />
+                ) : (
+                    <input
+                        type={type}
+                        placeholder={placeholder}
+                        value={value}
+                        onChange={onChange}
+                        className={`w-full px-4 py-2 border ${errorMessage ? "border-red-500" : "border-gray-400"} rounded-lg focus:outline-none focus:ring-2 ${errorMessage ? "focus:ring-red-500" : "focus:ring-blue-500"}`}
+                    />
+                )}
+                {showToggle && type !== "textarea" && (
                     <button
                         type="button"
                         className="absolute inset-y-0 right-3 flex items-center text-gray-500"
@@ -27,19 +39,5 @@ const InputField = ({ label, type, value, onChange, placeholder, showToggle, tog
     );
 }
 
-// Button Component
-const Button = ({ text, onClick, className }) => {
-    return (
-        <button
-            className={`w-full py-2 rounded-lg transition duration-200 ${className} cursor-pointer`}
-            onClick={onClick}
-        >
-            {text}
-        </button>
-    );
-}
-
-export {
-    InputField,
-    Button
-}
+export default InputField;
+export { InputField };
