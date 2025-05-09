@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import { InputField } from "../ui/input";
 import { Button } from "../ui/button";
 import { FaGoogle } from "react-icons/fa";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation, data } from "react-router-dom";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useFirebase } from "../../context/firebase";
+import ownerRTB from "../../context/firebase-rtb";
 
 const Register = () => {
     const [email, setEmail] = useState("");
@@ -15,7 +16,6 @@ const Register = () => {
     const [errorMessage, setErrorMessage] = useState("");
 
     const firebase = useFirebase();
-    const user = firebase.auth.currentUser;
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -45,17 +45,36 @@ const Register = () => {
         if (!validateInputs()) return;
 
         createUserWithEmailAndPassword(firebase.auth, email, password)
-            .then(() => {
-                // User registered successfully
-                setErrorMessage(""); // Clear error message on success
-                navigate("/owner/profile", { state: { from: location } });
+            .then((res) => {
+                if (res.user) {
+                    // User registered successfully
+                    const userData = {
+                        id: res.user.uid,
+                        displayName: res.user.displayName || "",
+                        username: "",
+                        email: res.user.email,
+                        phoneNumber: "",
+                        photoURL: res.user.photoURL || "",
+                        dob: "",
+                        about: "",
+                    };
+                    setErrorMessage(""); // Clear error message on success
+                    ownerRTB(firebase).saveData(userData.id, { ...userData }).then(() => {
+                        navigate("/owner/profile", { state: { from: location } });
+                    }).catch((error) => {
+                        console.error(error);
+                        setErrorMessage("Error, while creating user details on server.");
+                    })
+                } else {
+                    setErrorMessage("Error, with user, contact admin..");
+                }
             })
             .catch((error) => {
                 // Handle registration errors
                 if (error.code === "auth/email-already-in-use") {
                     setErrorMessage("User already exists. Please login.");
                 } else {
-                    setErrorMessage("Error registering user. Please try again.");
+                    setErrorMessage("Error registering res.user. Please try again.");
                 }
             });
     };
@@ -64,8 +83,29 @@ const Register = () => {
     const handleLoginWithGoogle = async () => {
         const provider = new GoogleAuthProvider();
         signInWithPopup(firebase.auth, provider)
-            .then(() => {
-                navigate("/owner/profile", { state: { from: location } });
+            .then((res) => {
+                if (res.user) {
+                    // User registered successfully
+                    const userData = {
+                        id: res.user.uid,
+                        displayName: res.user.displayName || "",
+                        username: "",
+                        email: res.user.email,
+                        phoneNumber: "",
+                        photoURL: res.user.photoURL || "",
+                        dob: "",
+                        about: "",
+                    };
+                    setErrorMessage(""); // Clear error message on success
+                    ownerRTB(firebase).saveData(userData.id, { ...userData }).then(() => {
+                        navigate("/owner/profile", { state: { from: location } });
+                    }).catch((error) => {
+                        console.error(error);
+                        setErrorMessage("Error, while creating user details on server.");
+                    })
+                } else {
+                    setErrorMessage("Error, with user, contact admin..");
+                }
             })
             .catch(() => {
                 setErrorMessage("Google login failed. Please try again.");

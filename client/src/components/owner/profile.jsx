@@ -9,10 +9,13 @@ const Profile = () => {
     const [isEditing, setIsEditing] = React.useState(false);
     const [formData, setFormData] = React.useState({
         displayName: "",
+        username: "",
         email: "",
+        emailVerified: false,
         phoneNumber: "",
         photoURL: null,
-        emailVerified: false
+        dob: "",
+        about: "",
     });
     const [alertMessage, setAlertMessage] = React.useState(null);
 
@@ -151,10 +154,10 @@ const Profile = () => {
             {alertMessage && (
                 <div
                     className={`p-4 text-center text-white ${alertMessage.type === "success"
-                            ? "bg-green-500"
-                            : alertMessage.type === "error"
-                                ? "bg-red-500"
-                                : "bg-blue-500"
+                        ? "bg-green-500"
+                        : alertMessage.type === "error"
+                            ? "bg-red-500"
+                            : "bg-blue-500"
                         }`}
                 >
                     {alertMessage.message}
@@ -250,10 +253,10 @@ const Profile = () => {
                         />
                     </div>
                     <div className="flex flex-col items-start mb-2">
-                        <span className="text-gray-600 font-medium">Description:</span>
+                        <span className="text-gray-600 font-medium">About:</span>
                         <textarea
-                            name="description"
-                            value={formData.description || ""}
+                            name="about"
+                            value={formData.about || ""}
                             onChange={handleChange}
                             disabled={!isEditing}
                             className={`ml-2 border ${isEditing ? "border-gray-300" : "border-transparent"
