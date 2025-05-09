@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import Logo from '../ui/logo';
 
 const FooterLink = ({ href, children }) => (
     <Link to={href} className="hover:underline text-gray-300 text-sm">
@@ -56,9 +57,7 @@ const Footer = () => {
             <div className="container mx-auto flex flex-wrap justify-center items-start gap-8 p-8">
                 {/* Logo and Description */}
                 <FooterSection>
-                    <Link to="/">
-                        <div className="bg-[url('/assets/Logo.png')] h-10 w-32 bg-center bg-no-repeat bg-contain"></div>
-                    </Link>
+                    <Logo />
                     <p className="text-left text-sm">
                         Find the perfect mess or room with ease! Our platform connects you to the best accommodations in your area. Simplify your search with detailed listings and user reviews.
                     </p>

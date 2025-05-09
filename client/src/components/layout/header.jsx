@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa"; // Importing a default profile icon
 import { useFirebase } from "../../context/firebase"; // Assuming you have a custom hook for Firebase
 import { useEffect, useState } from "react"; // Importing useState for managing state
+import { Logo } from "../ui/logo"
 
 const Header = () => {
     const firebase = useFirebase();
@@ -25,9 +26,7 @@ const Header = () => {
         <header className="bg-white/50 backdrop-blur-sm text-gray-800 shadow-md sticky top-0 z-50">
             <div className="container mx-auto flex justify-between items-center py-4 px-6">
                 {/* Logo */}
-                <Link to="/" className="flex items-center">
-                    <div className="bg-[url('/assets/Logo.png')] h-10 w-32 bg-center bg-no-repeat bg-contain focus:outline-0"></div>
-                </Link>
+                <Logo />
 
                 {/* Header Items - Moved to the left */}
                 <nav className="hidden md:flex items-center gap-6 ml-auto mr-6">
