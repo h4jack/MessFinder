@@ -2,9 +2,42 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MessFinder</title>
+    <meta name="description" content="MessFinder is a platform designed to help students and working professionals find affordable rooms for rent. Connect with property owners and discover verified listings." />
+    <meta name="keywords" content="MessFinder, affordable rooms, student accommodation, working professionals, property rental, verified listings" />
+    <meta name="author" content="MessFinder Team" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="canonical" href="https://www.messfinder.com/" />
+    <title>MessFinder - Find Affordable Rooms for Rent</title>
+    
+    <!-- Open Graph Meta Tags for Social Media -->
+    <meta property="og:title" content="MessFinder - Find Affordable Rooms for Rent" />
+    <meta property="og:description" content="MessFinder helps students and working professionals find affordable rooms in their desired locations. Connect with property owners directly!" />
+    <meta property="og:image" content="/assets/rooms-cover.png" />
+    <meta property="og:url" content="https://www.messfinder.com/" />
+    <meta property="og:type" content="website" />
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="MessFinder - Find Affordable Rooms for Rent" />
+    <meta name="twitter:description" content="MessFinder helps students and working professionals find affordable rooms in their desired locations. Connect with property owners directly!" />
+    <meta name="twitter:image" content="/assets/rooms-cover.png" />
+
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "MessFinder",
+        "url": "https://www.messfinder.com/",
+        "description": "A platform for students and working professionals to find affordable rooms for rent.",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://www.messfinder.com/search?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
   </head>
   <body class="relative bg-white bg-[url('/assets/rooms-cover.png')] bg-cover bg-center bg-no-repeat">
     <div id="root" class="relative z-10"></div>

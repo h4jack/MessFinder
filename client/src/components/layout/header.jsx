@@ -31,8 +31,8 @@ const Header = () => {
 
                 {/* Header Items - Moved to the left */}
                 <nav className="hidden md:flex items-center gap-6 ml-auto mr-6">
-                    <Link to="/about" className="text-gray-600 hover:text-gray-800 transition">About</Link>
-                    <Link to="/contact" className="text-gray-600 hover:text-gray-800 transition">Contact Us</Link>
+                    <Link to="/info/about" className="text-gray-600 hover:text-gray-800 transition">About</Link>
+                    <Link to="/info/contact" className="text-gray-600 hover:text-gray-800 transition">Contact Us</Link>
                 </nav>
 
                 {/* Action Buttons */}
