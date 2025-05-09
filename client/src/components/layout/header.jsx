@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import { FaUserCircle } from "react-icons/fa"; // Importing a default profile icon
 import { useFirebase } from "../../context/firebase"; // Assuming you have a custom hook for Firebase
 import { useEffect, useState } from "react"; // Importing useState for managing state
+import { Logo } from "../ui/logo"
 
 const Header = () => {
     const firebase = useFirebase();
@@ -25,9 +25,7 @@ const Header = () => {
         <header className="bg-white/50 backdrop-blur-sm text-gray-800 shadow-md sticky top-0 z-50">
             <div className="container mx-auto flex justify-between items-center py-4 px-6">
                 {/* Logo */}
-                <Link to="/" className="flex items-center">
-                    <div className="bg-[url('/assets/Logo.png')] h-10 w-32 bg-center bg-no-repeat bg-contain focus:outline-0"></div>
-                </Link>
+                <Logo />
 
                 {/* Header Items - Moved to the left */}
                 <nav className="hidden md:flex items-center gap-6 ml-auto mr-6">
@@ -53,7 +51,7 @@ const Header = () => {
                     ) : (
                         <div className="relative">
                             <div
-                                className="h-10 w-10 rounded-full bg-gray-300 shadow-md overflow-hidden cursor-pointer flex items-center justify-center"
+                                className="h-10 w-10 rounded-full bg-gray-500 shadow-md overflow-hidden cursor-pointer flex items-center justify-center"
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     const dropdown = e.currentTarget.nextElementSibling;
@@ -64,15 +62,12 @@ const Header = () => {
                                     }
                                 }}
                             >
-                                {user.image ? (
-                                    <img
-                                        src={user.image}
-                                        alt="Profile"
-                                        className="h-full w-full object-cover"
-                                    />
-                                ) : (
-                                    <FaUserCircle className="h-full w-full text-gray-500" />
-                                )}
+                                <img
+                                    src={user.image || "/assets/avatar-default.svg"}
+                                    alt="Profile"
+                                    className="h-full w-full object-cover"
+                                />
+
                             </div>
                             <div
                                 className="absolute right-0 mt-2 w-48 overflow-hidden bg-blue-100 shadow-lg rounded-md z-50"

@@ -1,17 +1,32 @@
-import React from 'react';
 import { InputField } from "../../ui/input";
 import { Dropdown } from "../../ui/option";
 
-const MessDetails = ({ messType, setMessType }) => {
+const MessDetails = ({
+    messType,
+    setMessType,
+    totalRooms,
+    setTotalRooms,
+    totalBeds,
+    setTotalBeds,
+    totalCRooms,
+    setTotalCRooms,
+    totalBathrooms,
+    setTotalBathrooms,
+    canteenAvailability,
+    setCanteenAvailability,
+    totalFloors,
+    setTotalFloors,
+}) => {
     return (
         <div>
             <Dropdown
                 label="Mess Type"
+                value={messType}
+                onChange={(e) => setMessType(e.target.value)}
                 options={[
                     { value: "pg_hostel", label: "PG/Hostel" },
                     { value: "home", label: "Home" },
                 ]}
-                onChange={(e) => setMessType(e.target.value)}
                 required
             />
             {messType === "pg_hostel" && (
@@ -20,28 +35,38 @@ const MessDetails = ({ messType, setMessType }) => {
                         label="Total Rooms"
                         type="number"
                         placeholder="Enter total rooms"
+                        value={totalRooms}
+                        onChange={(e) => setTotalRooms(Number(e.target.value))}
                         required
                     />
                     <InputField
                         label="Total Beds"
                         type="number"
                         placeholder="Enter total beds"
+                        value={totalBeds}
+                        onChange={(e) => setTotalBeds(Number(e.target.value))}
                         required
                     />
                     <InputField
                         label="Total Common Rooms"
                         type="number"
                         placeholder="Enter total common rooms"
+                        value={totalCRooms}
+                        onChange={(e) => setTotalCRooms(Number(e.target.value))}
                         required
                     />
                     <InputField
                         label="Total Bathrooms"
                         type="number"
                         placeholder="Enter total bathrooms"
+                        value={totalBathrooms}
+                        onChange={(e) => setTotalBathrooms(Number(e.target.value))}
                         required
                     />
                     <Dropdown
                         label="Canteen Availability"
+                        value={canteenAvailability}
+                        onChange={(e) => setCanteenAvailability(e.target.value)}
                         options={[
                             { value: "self", label: "Self" },
                             { value: "near", label: "Near" },
@@ -54,34 +79,12 @@ const MessDetails = ({ messType, setMessType }) => {
                         label="Number of Floors"
                         type="number"
                         placeholder="Enter number of floors"
+                        value={totalFloors}
+                        onChange={(e) => setTotalFloors(Number(e.target.value))}
                         required
                     />
                 </div>
             )}
-            <InputField
-                label="Facilities"
-                placeholder="List facilities (one per line)"
-                type="textarea"
-                rows="3"
-            />
-            <InputField
-                label="Services"
-                placeholder="List services (one per line)"
-                type="textarea"
-                rows="3"
-            />
-            <InputField
-                label="Rules"
-                placeholder="List rules (one per line)"
-                type="textarea"
-                rows="3"
-            />
-            <InputField
-                label="Description"
-                placeholder="Enter description"
-                type="textarea"
-                rows="4"
-            />
         </div>
     );
 };

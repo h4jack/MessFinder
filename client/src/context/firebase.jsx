@@ -1,17 +1,17 @@
 // firebase-config.js
-import React, { createContext, useContext } from "react";
+import { createContext, useContext } from "react";
 import { initializeApp } from "firebase/app";
-import { createUserWithEmailAndPassword, getAuth, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 import { getStorage } from "firebase/storage";
+import { getDatabase } from "firebase/database";
 
 import { firebaseConfig } from "./firebase-config"; // Import the firebaseConfig from the separate file
 
 // Initialize Firebase
 const firebaseApp = initializeApp(firebaseConfig);
 const firebaseAuth = getAuth(firebaseApp);
-const firebaseStore = getFirestore(firebaseApp);
 const firebaseStorage = getStorage(firebaseApp);
+const firebaseDB = getDatabase(firebaseApp)
 
 // Create a Firebase context
 const FirebaseContext = createContext();
@@ -19,12 +19,12 @@ const FirebaseContext = createContext();
 export const FirebaseProvider = ({ children }) => {
     const auth = firebaseAuth;
     const storage = firebaseStorage;
-    const store = firebaseStore;
+    const db = firebaseDB;
     return (
         <FirebaseContext.Provider value={{
             auth,
-            store,
-            storage
+            storage,
+            db
         }}>
             {children}
         </FirebaseContext.Provider>

@@ -44,6 +44,7 @@ import SubmitPG from './components/owner/submit-pg'
 
 //importing the Wrapper context of Firebase.
 import { FirebaseProvider } from './context/firebase'
+import IncomingMessages from './components/owner/messages'
 
 
 
@@ -64,6 +65,7 @@ let router = createBrowserRouter(
           <Route path="submit-pg" element={<SubmitPG />} />
           <Route path='settings' element={<Settings />} />
           <Route path='pgs' element={<MyPGs />} />
+          <Route path='messages' element={<IncomingMessages />} />
           <Route path="logout" element={<Logout />} />
         </Route>
 

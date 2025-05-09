@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { InputField } from "../ui/input";
 import { Button } from "../ui/button";
 import { FaGoogle } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useFirebase } from "../../context/firebase";
+import ownerRTB from "../../context/firebase-rtb";
 
 const Login = () => {
     // State management
@@ -33,10 +34,36 @@ const Login = () => {
     const handleLoginWithGoogle = async () => {
         const provider = new GoogleAuthProvider();
         signInWithPopup(firebase.auth, provider)
-            .then(() => {
-                navigate("/owner/profile", { state: { from: location } });
-            })
-            .catch(() => {
+            .then((res) => {
+                if (res.user) {
+                    ownerRTB(firebase).getData(res.user.uid)
+                        .then((exists) => {
+                            if (exists) {
+                                navigate("/owner/profile", { state: { from: location } });
+                            } else {
+                                const userData = {
+                                    id: res.user.uid,
+                                    displayName: res.user.displayName || "",
+                                    username: "",
+                                    email: res.user.email,
+                                    phoneNumber: "",
+                                    photoURL: res.user.photoURL || "",
+                                    dob: "",
+                                    about: "",
+                                };
+                                setErrorMessage(""); // Clear error message on success
+                                ownerRTB(firebase).saveData(userData.id, { ...userData }).then(() => {
+                                    navigate("/owner/profile", { state: { from: location } });
+                                }).catch((error) => {
+                                    console.error(error);
+                                    setErrorMessage("Error, while creating user details on server.");
+                                })
+                            }
+                        }).catch(() => {
+                            setErrorMessage("Error, while fetching user details from server.");
+                        })
+                }
+            }).catch(() => {
                 setErrorMessage("Google login failed. Please try again.");
             });
     };
