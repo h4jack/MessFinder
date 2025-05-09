@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { FaUserCircle } from "react-icons/fa"; // Importing a default profile icon
 import { useFirebase } from "../../context/firebase"; // Assuming you have a custom hook for Firebase
 import { useEffect, useState } from "react"; // Importing useState for managing state
 import { Logo } from "../ui/logo"
@@ -52,7 +51,7 @@ const Header = () => {
                     ) : (
                         <div className="relative">
                             <div
-                                className="h-10 w-10 rounded-full bg-gray-300 shadow-md overflow-hidden cursor-pointer flex items-center justify-center"
+                                className="h-10 w-10 rounded-full bg-gray-500 shadow-md overflow-hidden cursor-pointer flex items-center justify-center"
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     const dropdown = e.currentTarget.nextElementSibling;
@@ -63,15 +62,12 @@ const Header = () => {
                                     }
                                 }}
                             >
-                                {user.image ? (
-                                    <img
-                                        src={user.image}
-                                        alt="Profile"
-                                        className="h-full w-full object-cover"
-                                    />
-                                ) : (
-                                    <FaUserCircle className="h-full w-full text-gray-500" />
-                                )}
+                                <img
+                                    src={user.image || "/assets/avatar-default.svg"}
+                                    alt="Profile"
+                                    className="h-full w-full object-cover"
+                                />
+
                             </div>
                             <div
                                 className="absolute right-0 mt-2 w-48 overflow-hidden bg-blue-100 shadow-lg rounded-md z-50"
