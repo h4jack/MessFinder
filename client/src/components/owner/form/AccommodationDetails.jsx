@@ -2,7 +2,16 @@ import React from 'react';
 import { InputField } from "../../ui/input";
 import { Dropdown } from "../../ui/option";
 
-const AccommodationDetails = ({ shared, setShared }) => {
+const AccommodationDetails = ({ 
+    accommodationFor,
+    suitableFor,
+    price,
+    shared,
+    setAccommodationFor,
+    setSuitableFor,
+    setPrice,
+    setShared
+}) => {
     return (
         <div>
             <div className="flex flex-col gap-2 sm:flex-row">
@@ -13,6 +22,8 @@ const AccommodationDetails = ({ shared, setShared }) => {
                         { value: "boys", label: "Boys" },
                         { value: "girls", label: "Girls" },
                     ]}
+                    value={accommodationFor}
+                    onChange={(e) => setAccommodationFor(e.target.value)}
                     required
                 />
                 <Dropdown
@@ -21,6 +32,8 @@ const AccommodationDetails = ({ shared, setShared }) => {
                         { value: "students", label: "Students" },
                         { value: "working", label: "Working Professionals" },
                     ]}
+                    value={suitableFor}
+                    onChange={(e) => setSuitableFor(e.target.value)}
                     required
                 />
             </div>
@@ -28,6 +41,8 @@ const AccommodationDetails = ({ shared, setShared }) => {
                 label="Price (₹/month)"
                 type="number"
                 placeholder="Enter price"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
                 required
             />
             <div>
@@ -36,24 +51,37 @@ const AccommodationDetails = ({ shared, setShared }) => {
                     <input
                         type="radio"
                         name="shared"
-                        value="yes"
-                        onChange={() => setShared(true)}
-                        required
-                    />
-                    <span>Yes</span>
-                    <input
-                        type="radio"
-                        name="shared"
-                        value="no"
-                        onChange={() => setShared(false)}
+                        value="0"
+                        checked={shared === 0}
+                        onChange={() => setShared(0)}
                         required
                     />
                     <span>No</span>
+                    <input
+                        type="radio"
+                        name="shared"
+                        value="1"
+                        checked={shared === 1}
+                        onChange={() => setShared(1)}
+                        required
+                    />
+                    <span>1 Person</span>
+                    <input
+                        type="radio"
+                        name="shared"
+                        value="2"
+                        checked={shared === 2}
+                        onChange={() => setShared(2)}
+                        required
+                    />
+                    <span>2 People</span>
                 </div>
-                {shared && (
+                {shared > 0 && (
                     <InputField
                         type="number"
                         placeholder="Number of people per room"
+                        value={shared}
+                        onChange={(e) => setShared(Number(e.target.value))}
                         required
                     />
                 )}

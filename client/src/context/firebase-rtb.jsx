@@ -1,4 +1,4 @@
-import { ref, get, set, remove, update, serverTimestamp } from "firebase/database";
+import { ref, push, get, remove, update, serverTimestamp, set } from "firebase/database";
 
 const ownerRTB = (firebase) => {
 
@@ -94,6 +94,11 @@ const roomsRTB = (firebase) => {
 
     const saveRoom = async (roomData, roomId = null) => {
         try {
+            const currentUser = firebase.auth.currentUser;
+            if (!currentUser) throw new Error("User not authenticated.");
+
+            const ownerId = currentUser.uid;
+
             const timestampData = {
                 updatedAt: serverTimestamp(),
                 ...(roomId ? {} : { createdAt: serverTimestamp() }),
@@ -101,19 +106,18 @@ const roomsRTB = (firebase) => {
 
             const newData = {
                 ...roomData,
+                ownerId, // ✅ include the creator ID
                 ...timestampData,
             };
 
             let roomRef;
 
             if (roomId) {
-                // Update existing room
                 roomRef = ref(firebase.db, `/mess-finder/rooms/${roomId}`);
                 await update(roomRef, newData);
                 return { status: true, message: "Room updated.", roomId };
             } else {
-                // Create new room with auto-generated ID
-                roomRef = push(baseRef); // this creates a new unique ID
+                roomRef = push(baseRef); // generate auto ID
                 await set(roomRef, newData);
                 return { status: true, message: "Room created.", roomId: roomRef.key };
             }
@@ -152,7 +156,7 @@ const roomsRTB = (firebase) => {
     };
 
     return {
-        saveRoom,     // create or update
+        saveRoom,
         deleteRoom,
         getRoom,
         getAllRooms,
