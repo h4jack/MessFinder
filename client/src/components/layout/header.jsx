@@ -6,6 +6,7 @@ import { Logo } from "../ui/logo"
 const Header = () => {
     const firebase = useFirebase();
     const [user, setUser] = useState(null); // State to manage user information
+
     useEffect(() => {
         const unsubscribe = firebase.auth.onAuthStateChanged((user) => {
             if (user) {
