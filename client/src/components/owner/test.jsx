@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { ownerStorage } from "./../../context/firebase-storage"; // Adjust the import path as necessary
+import { ownerStorage } from "../../context/firebase-storage"; // Adjust the import path as necessary
 
-const ProfileImageUploader = ({ ownerId }) => {
+const Test = ({ ownerId }) => {
     const [file, setFile] = useState(null);
     const [error, setError] = useState("");
     const [downloadURL, setDownloadURL] = useState("");
@@ -50,4 +50,4 @@ const ProfileImageUploader = ({ ownerId }) => {
     );
 };
 
-export default ProfileImageUploader;
+export default Test;
