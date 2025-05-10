@@ -13,14 +13,20 @@ const ImageUpload = ({ images, setImages }) => {
             ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)
         );
 
-        if (validImages.length) {
-            const newImages = validImages.map(file => ({
-                file,
-                preview: URL.createObjectURL(file),
-            }));
-            setImages([...safeImages, ...newImages]);
+        const maxAllowed = 7 - safeImages.length;
+        if (maxAllowed <= 0) {
+            alert("You can upload a maximum of 7 images.");
+            return;
         }
+
+        const limitedImages = validImages.slice(0, maxAllowed).map(file => ({
+            file,
+            preview: URL.createObjectURL(file),
+        }));
+
+        setImages([...safeImages, ...limitedImages]);
     };
+
 
     const handleImageRemove = (index) => {
         const newImages = [...safeImages];
@@ -39,7 +45,7 @@ const ImageUpload = ({ images, setImages }) => {
 
     return (
         <div>
-            <label className="block font-medium mb-1">Upload Images</label>
+            <label className="block font-medium mb-1">Upload Images (Upto 7)</label>
 
             <div className="border-dashed border-2 border-gray-300 p-4 rounded-md bg-gray-50">
                 <input
