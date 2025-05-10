@@ -1,5 +1,11 @@
-import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
-import { useFirebase } from "./firebase"; // Adjust the import path as necessary
+import {
+    ref,
+    uploadBytesResumable,
+    getDownloadURL,
+    deleteObject,
+    listAll
+} from "firebase/storage";
+import { useFirebase } from "./firebase"; // Adjust if needed
 
 const ownerStorage = () => {
     const firebase = useFirebase();
@@ -9,7 +15,7 @@ const ownerStorage = () => {
             throw new Error("No file provided for upload.");
         }
 
-        const storageRef = ref(firebase.storage, `mess-finder/${ownerId}/profile.png`);
+        const storageRef = ref(firebase.storage, `mess-finder/owners/${ownerId}/profile.png`);
 
         // Create a reference to the file to be uploaded
         const uploadTask = uploadBytesResumable(storageRef, file);
@@ -43,7 +49,7 @@ const ownerStorage = () => {
     };
 
     const deleteProfileImage = async (ownerId) => {
-        const storageRef = ref(firebase.storage, `mess-finder/${ownerId}/profile.png`); // Adjust extension if needed
+        const storageRef = ref(firebase.storage, `mess-finder/owners/${ownerId}/profile.png`); // Adjust extension if needed
 
         return new Promise((resolve, reject) => {
             deleteObject(storageRef)
@@ -62,4 +68,74 @@ const ownerStorage = () => {
     };
 };
 
-export { ownerStorage };
+const roomStorage = () => {
+    const firebase = useFirebase();
+
+    /**
+     * Upload multiple room images under a specific roomId.
+     * @param {string} roomId - Unique identifier for the room.
+     * @param {File[]} files - Array of image files (max 7).
+     * @param {(index: number, progress: number) => void} onProgress - Optional progress callback per file.
+     * @returns {Promise<string[]>} - Array of download URLs.
+     */
+    const uploadRoomImages = async (roomId, files, onProgress) => {
+        if (!files || files.length === 0) throw new Error("No files provided.");
+        if (files.length > 7) throw new Error("Maximum 7 images allowed.");
+
+        const uploadPromises = files.map((file, index) => {
+            const filePath = `mess-finder/rooms/${roomId}/image_${index}.jpg`;
+            const storageRef = ref(firebase.storage, filePath);
+            const uploadTask = uploadBytesResumable(storageRef, file.file);
+
+            return new Promise((resolve, reject) => {
+                uploadTask.on(
+                    "state_changed",
+                    (snapshot) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        if (onProgress) onProgress(index, progress);
+                    },
+                    (error) => reject(new Error(`Upload failed: ${error.message}`)),
+                    async () => {
+                        try {
+                            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                            resolve(downloadURL);
+                        } catch (error) {
+                            reject(new Error(`Failed to get URL: ${error.message}`));
+                        }
+                    }
+                );
+            });
+        });
+
+        return Promise.all(uploadPromises);
+    };
+
+    /**
+     * Delete all images for a given roomId.
+     * @param {string} roomId
+     * @returns {Promise<void>}
+     */
+    const deleteRoomImages = async (roomId) => {
+        const roomFolderRef = ref(firebase.storage, `mess-finder/rooms/${roomId}`);
+
+        try {
+            const allItems = await listAll(roomFolderRef);
+            const deletePromises = allItems.items.map(itemRef => deleteObject(itemRef));
+            await Promise.all(deletePromises);
+        } catch (error) {
+            throw new Error(`Failed to delete images: ${error.message}`);
+        }
+    };
+
+    return {
+        uploadRoomImages,
+        deleteRoomImages,
+    };
+};
+
+export {
+    ownerStorage,
+    roomStorage,
+};
+
+

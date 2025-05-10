@@ -10,6 +10,7 @@ import ImageUpload from './form/ImageUpload';
 import AccommodationDetails from './form/AccommodationDetails';
 import MessDetails from './form/MessDetails';
 import FormButtons from './form/FormButtons';
+import { roomStorage } from "../../context/firebase-storage";
 
 const DescriptiveDetails = ({ ...props }) => {
     return (
@@ -67,7 +68,7 @@ const SubmitPG = () => {
             totalBeds: 1,
             totalCRooms: 0,
             totalBathrooms: 1,
-            CanteenAvailability: "Door Delivery",
+            CanteenAvailability: "Near",
             totalFloors: 1,
         },
         facilities: "",
@@ -83,6 +84,7 @@ const SubmitPG = () => {
     const [selectedState, setSelectedState] = useState('');
     const [selectedDistrict, setSelectedDistrict] = useState('');
     const [pincodeError, setPincodeError] = useState("");
+    const [roomId, setRoomId] = useState("");
 
     const stateOptions = Object.keys(statesAndDistricts).map(state => ({
         value: state,
@@ -219,34 +221,25 @@ const SubmitPG = () => {
         setFormData((prev) => ({ ...prev, images: newImages }));
     };
 
-    // const handleSubmit = async (e) => {
-    //     e.preventDefault();
+    const { uploadRoomImages } = roomStorage();
 
-    //     try {
-    //         const imageUrls = await uploadImages(formData.images);
-    //         const dataToSubmit = { ...formData, images: imageUrls };
-
-    //         // Submit dataToSubmit to your backend or Firestore
-    //         console.log('Form data:', dataToSubmit);
-    //     } catch (error) {
-    //         console.error('Form submission error:', error);
-    //     }
-    // };
-
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const submitFormData = async () => {
         try {
             const { saveRoom } = roomsRTB(firebase);
 
-            const result = await saveRoom(formData);
+            const result = await saveRoom(formData, roomId);
 
-            console.log("Room saved:", result);
+            setRoomId(result.roomId);
+
+            const downloadUrls = await uploadRoomImages(result.roomId, formData.images, (index, progress) => {
+                console.log(`File ${index + 1} upload progress: ${progress.toFixed(2)}%`);
+            });
+
+            console.log("Uploaded URLs:", downloadUrls);
+
+            await saveRoom({ ...formData, images: downloadUrls.map((url) => ({ preview: url })) }, result.roomId);
 
             alert("Room saved successfully!");
-
-            // Optional: redirect to room detail or dashboard
-            // navigate(`/rooms/${result.roomId}`);
 
         } catch (error) {
             console.error("Failed to save room:", error);
@@ -254,12 +247,22 @@ const SubmitPG = () => {
         }
     };
 
-    console.log(formData.images);
+    const handleSubmit = () => {
+        setFormData((prev) => ({ ...prev, status: "public" }))
+        submitFormData();
+    };
+
+    const handleDraft = () => {
+        setFormData((prev) => ({ ...prev, status: "draft" }))
+        submitFormData();
+    }
+
+    console.log(formData.status)
 
     return (
         <div className="w-full mx-auto p-4 bg-white shadow-md rounded-md">
             <h2 className="text-2xl font-bold mb-4">Submit a New PG</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-4">
                 <InputField
                     label="Name"
                     placeholder="Enter PG/Room Name"
@@ -349,8 +352,8 @@ const SubmitPG = () => {
 
                 < DescriptiveDetails onChange={handleChange} />
                 <ImageUpload images={formData.images} setImages={handleImageChange} />
-                <FormButtons />
-            </form>
+                <FormButtons onDraft={handleDraft} onSubmit={handleSubmit} />
+            </div>
         </div>
     );
 };
