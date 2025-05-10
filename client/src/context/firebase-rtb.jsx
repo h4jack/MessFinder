@@ -30,6 +30,24 @@ const ownerRTB = (firebase) => {
         }
     };
 
+    const uploadPhoto = async (id, photoURL) => {
+        try {
+            if (!id || !photoURL) {
+                throw new Error("Missing user ID or photo URL.");
+            }
+
+            const dbRef = ref(firebase.db, `/mess-finder/users/owner/${id}`);
+            const updateData = {
+                photoURL: photoURL,
+                updatedAt: serverTimestamp(),
+            };
+
+            await update(dbRef, updateData);
+            return { status: true, message: "Profile photo updated." };
+        } catch (error) {
+            throw error;
+        }
+    };
 
 
     const deleteData = async (id) => {
@@ -85,7 +103,7 @@ const ownerRTB = (firebase) => {
         }
     };
 
-    return { saveData, deleteData, getData, userExists };
+    return { saveData, uploadPhoto, deleteData, getData, userExists };
 };
 
 

@@ -5,18 +5,28 @@ import { useEffect, useState } from "react";
 
 import { useFirebase } from "../../context/firebase";
 import { ownerRTB } from "../../context/firebase-rtb";
+import { ownerStorage } from "./../../context/firebase-storage";
 import { sendEmailVerification, updateEmail, updateProfile } from "firebase/auth";
 import Loader from "../ui/loader"
 
 const Profile = () => {
     const [uid, setUID] = useState("")
-    const [formData, setFormData] = useState(null);
+    const [formData, setFormData] = useState({});
     const [emailVerified, setEmailVerified] = useState(false)
     const [isEditing, setIsEditing] = useState(false);
     const [alertMessage, setAlertMessage] = useState(null);
-    const [uName, setUame] = useState("")
-
+    const [uName, setUname] = useState("")
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const [file, setFile] = useState(null);
+    const { uploadProfileImage, deleteProfileImage } = ownerStorage();
     const firebase = useFirebase();
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (uploadProgress) {
+            showAlert("Uploading Profile Image. in progress: " + (Math.round(uploadProgress * 100) / 100).toFixed(2) + "%");
+        }
+    }, [uploadProgress])
 
     useEffect(() => {
         const unsubscribe = firebase.auth.onAuthStateChanged((user) => {
@@ -26,15 +36,16 @@ const Profile = () => {
             }
         });
         return () => unsubscribe(); // Cleanup subscription on unmount
-    }, [firebase.auth]);
+    }, [firebase.auth, firebase.auth.currentUser]);
 
     useEffect(() => {
         const { getData } = ownerRTB(firebase)
         const loadUserData = async () => {
             try {
                 const user = await getData(uid);
-                setUame(user.username);
+                setUname(user.username);
                 setFormData(user);
+                setLoading(false);
             } catch (error) {
                 console.error("Failed to load user data:", error);
             }
@@ -42,6 +53,40 @@ const Profile = () => {
 
         loadUserData();
     }, [uid, isEditing]);
+
+    const handleImageFileChange = (e) => {
+        const selectedFile = e.target.files[0];
+        if (selectedFile) {
+            setFile(selectedFile);
+            setUploadProgress(0); // Reset progress
+            showAlert("Image Selected, Click Save to save the details..", "success")
+        }
+    };
+
+    const handleImageUpload = async () => {
+        const { uploadPhoto } = ownerRTB(firebase);
+        try {
+            showAlert("Uploading: " + (Math.round(uploadProgress * 100) / 100).toFixed(2) + "%");
+            const url = await uploadProfileImage(uid, file, setUploadProgress);
+            showAlert("Uploading Complete..")
+            await uploadPhoto(uid, url)
+            setFile(null);
+            window.location.reload();
+        } catch (err) {
+            console.log(err);
+            showAlert(err.message, "error");
+        }
+    };
+
+    const handleImageDelete = async () => {
+        try {
+            const message = await deleteProfileImage(uid);
+            setFormData((prev) => ({ ...prev, photoURL: "" }));
+            showAlert(message, "success");
+        } catch (err) {
+            showAlert(err.message, "error");
+        }
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -55,6 +100,10 @@ const Profile = () => {
     const handleSave = async () => {
         const { saveData, userExists } = ownerRTB(firebase);
         const user = firebase.auth.currentUser;
+
+        if (file) {
+            await handleImageUpload();
+        }
 
         try {
             if (formData.username && formData.username != uName) {
@@ -71,9 +120,6 @@ const Profile = () => {
                 if (formData.displayName && formData.displayName !== user.displayName) {
                     authUpdates.displayName = formData.displayName;
                 }
-                if (formData.photoURL && formData.photoURL !== user.photoURL) {
-                    authUpdates.photoURL = formData.photoURL;
-                }
                 if (Object.keys(authUpdates).length > 0) {
                     await updateProfile(user, authUpdates);
                 }
@@ -81,7 +127,6 @@ const Profile = () => {
                     await updateEmail(user, formData.email);
                 }
             }
-
             await saveData(uid, formData);
             setIsEditing(false);
         } catch (error) {
@@ -90,13 +135,7 @@ const Profile = () => {
         }
     };
 
-
     const handleCancel = () => {
-        setFormData({
-            displayName: formData.displayName || "",
-            email: formData.email || "",
-            phoneNumber: formData.phoneNumber || "",
-        });
         setIsEditing(false);
     };
 
@@ -118,7 +157,7 @@ const Profile = () => {
         }, 5000); // Hide alert after 3 seconds
     };
 
-    if (!formData) {
+    if (loading) {
         return (
             <Loader text="Loading profile data.." />
         );
@@ -129,37 +168,34 @@ const Profile = () => {
         <div className="w-full mx-auto shadow-md rounded-lg overflow-hidden">
             <div className="flex items-center justify-center bg-gray-100 p-4 relative">
                 <img
-                    className="w-24 h-24 rounded-full border-2 border-blue-500"
+                    className="w-24 h-24 rounded-full border-2 border-blue-500 object-cover"
                     src={formData.photoURL || "/assets/avatar-default.svg"}
                     alt={formData.displayName || "Profile picture"}
                 />
                 {isEditing && (
-                    <label
-                        htmlFor="profileImageUpload"
-                        className="absolute top-2 right-2 bg-blue-300 text-white p-2 rounded-full h-[40px] w-[40px] cursor-pointer hover:bg-blue-400"
-                        title="Edit Profile Image"
-                    >
-                        ✏️
-                        <input
-                            type="file"
-                            id="profileImageUpload"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={(e) => {
-                                const file = e.target.files[0];
-                                if (file) {
-                                    const reader = new FileReader();
-                                    reader.onload = () => {
-                                        setFormData((prev) => ({
-                                            ...prev,
-                                            photoURL: reader.result,
-                                        }));
-                                    };
-                                    reader.readAsDataURL(file);
-                                }
-                            }}
-                        />
-                    </label>
+                    <div className="absolute top-2 right-2 flex gap-2">
+                        <div
+                            className="bg-blue-300 text-white p-2 rounded-full h-[40px] w-[40px] cursor-pointer hover:bg-blue-400"
+                            title="Delete Profile Image"
+                            onClick={handleImageDelete}
+                        >
+                            ❌
+                        </div>
+                        <label
+                            htmlFor="profileImageUpload"
+                            className="bg-blue-300 text-white p-2 rounded-full h-[40px] w-[40px] cursor-pointer hover:bg-blue-400"
+                            title="Edit Profile Image"
+                        >
+                            ✏️
+                            <input
+                                type="file"
+                                id="profileImageUpload"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={handleImageFileChange}
+                            />
+                        </label>
+                    </div>
                 )}
             </div>
             {alertMessage && (
