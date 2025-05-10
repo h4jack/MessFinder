@@ -5,7 +5,7 @@ import { FaGoogle } from "react-icons/fa";
 import { Link, useNavigate, useLocation, data } from "react-router-dom";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useFirebase } from "../../context/firebase";
-import ownerRTB from "../../context/firebase-rtb";
+import { ownerRTB } from "../../context/firebase-rtb";
 
 const Register = () => {
     const [email, setEmail] = useState("");

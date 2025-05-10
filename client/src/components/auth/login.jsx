@@ -5,7 +5,7 @@ import { FaGoogle } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useFirebase } from "../../context/firebase";
-import ownerRTB from "../../context/firebase-rtb";
+import { ownerRTB } from "../../context/firebase-rtb";
 
 const Login = () => {
     // State management

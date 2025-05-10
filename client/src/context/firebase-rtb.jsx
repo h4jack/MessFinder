@@ -163,8 +163,6 @@ const roomsRTB = (firebase) => {
     };
 };
 
-export default { roomsRTB, ownerRTB };
-
 export {
     roomsRTB,
     ownerRTB

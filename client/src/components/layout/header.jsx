@@ -51,7 +51,7 @@ const Header = () => {
                     ) : (
                         <div className="relative">
                             <div
-                                className="h-10 w-10 rounded-full bg-gray-500 shadow-md overflow-hidden cursor-pointer flex items-center justify-center"
+                                className="h-10 w-10 rounded-full border border-blue-100 bg-blue-100 shadow-md overflow-hidden cursor-pointer flex items-center justify-center"
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     const dropdown = e.currentTarget.nextElementSibling;

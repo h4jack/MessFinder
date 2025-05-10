@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import { useFirebase } from "../../context/firebase";
-import ownerRTB from "../../context/firebase-rtb";
+import { ownerRTB } from "../../context/firebase-rtb";
 import { sendEmailVerification, updateEmail, updateProfile } from "firebase/auth";
 
 const Profile = () => {
@@ -126,7 +126,7 @@ const Profile = () => {
 
                     {/* Center avatar */}
                     <img
-                        src="/assets/avatar-default.svg"
+                        src="/logo.svg"
                         alt="Loading avatar"
                         className="w-full h-full rounded-full object-cover"
                     />
