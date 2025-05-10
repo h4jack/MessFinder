@@ -1,4 +1,4 @@
-const Loader = (text = "Loading") => {
+const Loader = ({text = "Loading"}) => {
     return (
         <div className="flex flex-col items-center justify-center mx-auto">
             <div className="relative w-24 h-24 mb-4">

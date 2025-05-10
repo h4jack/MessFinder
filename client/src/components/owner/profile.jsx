@@ -2,11 +2,11 @@ import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Loader } from "../ui/loader"
 
 import { useFirebase } from "../../context/firebase";
 import { ownerRTB } from "../../context/firebase-rtb";
 import { sendEmailVerification, updateEmail, updateProfile } from "firebase/auth";
+import Loader from "../ui/loader"
 
 const Profile = () => {
     const [uid, setUID] = useState("")
@@ -119,7 +119,9 @@ const Profile = () => {
     };
 
     if (!formData) {
-        <Loader />
+        return (
+            <Loader text="Loading profile data.." />
+        );
     }
 
 
