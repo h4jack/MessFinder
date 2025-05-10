@@ -2,6 +2,7 @@ import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { Loader } from "../ui/loader"
 
 import { useFirebase } from "../../context/firebase";
 import { ownerRTB } from "../../context/firebase-rtb";
@@ -118,22 +119,7 @@ const Profile = () => {
     };
 
     if (!formData) {
-        return (
-            <div className="flex flex-col items-center justify-center mx-auto">
-                <div className="relative w-24 h-24 mb-4">
-                    {/* Spinner border */}
-                    <div className="absolute inset-0 rounded-full border-4 border-gray-300 border-t-blue-500 animate-spin" />
-
-                    {/* Center avatar */}
-                    <img
-                        src="/logo.svg"
-                        alt="Loading avatar"
-                        className="w-full h-full rounded-full object-cover"
-                    />
-                </div>
-                <p className="text-gray-600 text-lg font-medium">Loading profile data...</p>
-            </div>
-        );
+        <Loader />
     }
 
 
