@@ -74,7 +74,7 @@ const SubmitPG = () => {
         services: "",
         rules: "",
         description: "",
-        images: ["", "", "", "", ""],
+        images: [],
         status: "draft",
     });
 
@@ -215,8 +215,23 @@ const SubmitPG = () => {
         }));
     };
 
+    const handleImageChange = (newImages) => {
+        setFormData((prev) => ({ ...prev, images: newImages }));
+    };
 
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
 
+    //     try {
+    //         const imageUrls = await uploadImages(formData.images);
+    //         const dataToSubmit = { ...formData, images: imageUrls };
+
+    //         // Submit dataToSubmit to your backend or Firestore
+    //         console.log('Form data:', dataToSubmit);
+    //     } catch (error) {
+    //         console.error('Form submission error:', error);
+    //     }
+    // };
 
 
     const handleSubmit = async (e) => {
@@ -238,6 +253,8 @@ const SubmitPG = () => {
             alert("Error saving room. Please try again.");
         }
     };
+
+    console.log(formData.images);
 
     return (
         <div className="w-full mx-auto p-4 bg-white shadow-md rounded-md">
@@ -331,10 +348,7 @@ const SubmitPG = () => {
                 />
 
                 < DescriptiveDetails onChange={handleChange} />
-                <ImageUpload
-                    images={formData.images}
-                    setImages={(value) => setFormData(prev => ({ ...prev, images: value }))}
-                />
+                <ImageUpload images={formData.images} setImages={handleImageChange} />
                 <FormButtons />
             </form>
         </div>
