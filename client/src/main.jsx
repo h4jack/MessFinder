@@ -65,6 +65,7 @@ let router = createBrowserRouter(
         <Route path="owner/" element={<Dashboard />}>
           <Route path='profile' element={<Profile />} />
           <Route path="submit-pg" element={<SubmitPG />} />
+          <Route path="submit-pg/:roomId" element={<SubmitPG />} />
           <Route path='settings' element={<Settings />} />
           <Route path='pgs' element={<MyPGs />} />
           <Route path='messages' element={<IncomingMessages />} />

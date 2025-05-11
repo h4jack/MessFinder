@@ -44,7 +44,11 @@ const Profile = () => {
             if (!uid) return; // <- Add this check
             try {
                 const user = await getData(uid);
-                setUname(user.username);
+                try {
+                    setUname(user.username);
+                } catch (error) {
+                    setUname("");
+                }
                 setFormData((prev) => ({ ...prev, ...user }));
                 setLoading(false);
             } catch (error) {

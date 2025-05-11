@@ -83,6 +83,12 @@ const roomStorage = () => {
         if (files.length > 7) throw new Error("Maximum 7 images allowed.");
 
         const uploadPromises = files.map((file, index) => {
+            if (!file.file) {
+                // No actual file to upload, use preview URL
+                if (onProgress) onProgress(index, 100); // Simulate full progress
+                return Promise.resolve(file.preview);
+            }
+
             const filePath = `mess-finder/rooms/${roomId}/image_${index}.jpg`;
             const storageRef = ref(firebase.storage, filePath);
             const uploadTask = uploadBytesResumable(storageRef, file.file);
@@ -109,6 +115,7 @@ const roomStorage = () => {
 
         return Promise.all(uploadPromises);
     };
+
 
     /**
      * Delete all images for a given roomId.

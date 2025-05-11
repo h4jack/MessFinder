@@ -1,7 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from 'react-router-dom';
+
 import { InputField } from "../ui/input";
 import { Dropdown } from "../ui/option";
 
+
+import { Alert } from "../ui/alert"
 import { statesAndDistricts } from '/src/module/js/district-pin';
 import { useFirebase } from "../../context/firebase"
 import { roomsRTB } from "./../../context/firebase-rtb"
@@ -11,6 +15,9 @@ import AccommodationDetails from './form/AccommodationDetails';
 import MessDetails from './form/MessDetails';
 import FormButtons from './form/FormButtons';
 import { roomStorage } from "../../context/firebase-storage";
+import { onAuthStateChanged } from "firebase/auth";
+import { refFromURL } from "firebase/database";
+import Loader from "../ui/loader";
 
 const DescriptiveDetails = ({ ...props }) => {
     return (
@@ -79,12 +86,70 @@ const SubmitPG = () => {
         status: "draft",
     });
 
+    const params = useParams();
+
     const firebase = useFirebase();
+
 
     const [selectedState, setSelectedState] = useState('');
     const [selectedDistrict, setSelectedDistrict] = useState('');
     const [pincodeError, setPincodeError] = useState("");
-    const [roomId, setRoomId] = useState("");
+    const [roomId, setRoomId] = useState(params.roomId || "");
+    const [authReady, setAuthReady] = useState(false);
+    const [uploading, setUploading] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [updateDone, setUpdateDone] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
+
+    useEffect(() => {
+        const unregisterAuthObserver = onAuthStateChanged(firebase.auth, user => {
+            if (user) {
+                setAuthReady(true);
+            } else {
+                console.log("User not logged in");
+            }
+        });
+
+        return () => unregisterAuthObserver(); // cleanup
+    }, [firebase.auth]);
+
+    useEffect(() => {
+        if (!authReady || !roomId) {
+            setLoading(false);
+            return;
+        }
+        setLoading(true);
+        if (uploading) {
+            return;
+        }
+        console.log("fetching data");
+        const fetchRoomDetails = async () => {
+            try {
+                const user = firebase.auth.currentUser;
+                if (!user) return;
+
+                const { getRoom } = roomsRTB(firebase);
+                await getRoom(roomId)
+                    .then((roomDetails) => {
+                        console.log(roomDetails);
+                        if (roomDetails.ownerId == user.uid) {
+                            setFormData(roomDetails);
+                        } else {
+                            console.log("Unauthorized access");
+                        }
+                    }).catch(() => {
+                        console.log("Room doesn't exists..");
+                    })
+            } catch (error) {
+                console.log("Error fetching room:", error);
+                errorMessage("Error fetching room:");
+
+            }
+            setLoading(false);
+        };
+
+        fetchRoomDetails();
+    }, [authReady, roomId, firebase]);
 
     const stateOptions = Object.keys(statesAndDistricts).map(state => ({
         value: state,
@@ -122,12 +187,21 @@ const SubmitPG = () => {
     };
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value, type } = e.target;
+        let processedValue = value;
+
+        if (type === "textarea") {
+            // Replace real newlines with the string "\n"
+            processedValue = value.replace(/\n/g, "\\n");
+            console.log(processedValue);
+        }
+
         setFormData(prev => ({
             ...prev,
-            [name]: value
+            [name]: processedValue
         }));
     };
+
 
     // Handlers to update accommodation related fields
     const setAccommodationFor = (value) => {
@@ -224,27 +298,38 @@ const SubmitPG = () => {
     const { uploadRoomImages } = roomStorage();
 
     const submitFormData = async () => {
+        setLoading(true);
         try {
+            setUploading(true);
             const { saveRoom } = roomsRTB(firebase);
 
-            const result = await saveRoom(formData, roomId);
-
-            setRoomId(result.roomId);
-
-            const downloadUrls = await uploadRoomImages(result.roomId, formData.images, (index, progress) => {
-                console.log(`File ${index + 1} upload progress: ${progress.toFixed(2)}%`);
-            });
+            let downloadUrls;
+            if (roomId) {
+                downloadUrls = await uploadRoomImages(roomId, formData.images, (index, progress) => {
+                    console.log(`File ${index + 1} upload progress: ${progress.toFixed(2)}%`);
+                });
+            } else {
+                const result = await saveRoom(formData, result.roomId);
+                downloadUrls = await uploadRoomImages(result.roomId, formData.images, (index, progress) => {
+                    console.log(`File ${index + 1} upload progress: ${progress.toFixed(2)}%`);
+                });
+                setRoomId(result.roomId);
+            }
+            console.log(formData);
+            formData.images = downloadUrls.map((url) => ({ preview: url }));
+            setFormData({ ...formData, images: downloadUrls.map((url) => ({ preview: url })) })
+            await saveRoom(formData, roomId);
 
             console.log("Uploaded URLs:", downloadUrls);
+            console.log(formData);
 
-            await saveRoom({ ...formData, images: downloadUrls.map((url) => ({ preview: url })) }, result.roomId);
-
-            alert("Room saved successfully!");
-
+            setUpdateDone(true);
+            setUploading(false);
         } catch (error) {
             console.error("Failed to save room:", error);
-            alert("Error saving room. Please try again.");
+            errorMessage("Error saving room. Please try again.");
         }
+        setLoading(false);
     };
 
     const handleSubmit = () => {
@@ -257,7 +342,16 @@ const SubmitPG = () => {
         submitFormData();
     }
 
-    console.log(formData.status)
+    if (loading) {
+        return <Loader text="Loading, Please wait." />
+    }
+
+    if (updateDone) {
+        return <Alert type="success" header="Uploading Room Successfully." message="You can see your room list, on mypgs.." />;
+    }
+    if (errorMessage) {
+        return <Alert type="error" header="Error Occured, Read below." message="You can't edit, someone else's data. please be real, and don't involve in bad movement.." />;
+    }
 
     return (
         <div className="w-full mx-auto p-4 bg-white shadow-md rounded-md">
@@ -350,7 +444,7 @@ const SubmitPG = () => {
                     setTotalFloors={setTotalFloors}
                 />
 
-                < DescriptiveDetails onChange={handleChange} />
+                <DescriptiveDetails onChange={handleChange} />
                 <ImageUpload images={formData.images} setImages={handleImageChange} />
                 <FormButtons onDraft={handleDraft} onSubmit={handleSubmit} />
             </div>
