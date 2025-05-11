@@ -1,7 +1,7 @@
 const IncomingMessages = () => {
     return (
-        <h1>
-            Messages
+        <h1 className="p-8">
+            This features is not available now. wait for update.
         </h1>
     )
 }

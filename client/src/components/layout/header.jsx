@@ -80,16 +80,22 @@ const Header = () => {
                                 }
                             >
                                 <Link
-                                    to="/owner/submit-pg"
+                                    to="/owner/messages"
                                     className="block px-4 py-2 text-gray-600 hover:bg-blue-200 hover:text-gray-800 transition"
                                 >
-                                    Submit PG
+                                    Messages
                                 </Link>
                                 <Link
                                     to="/owner/pgs"
                                     className="block px-4 py-2 text-gray-600 hover:bg-blue-200 hover:text-gray-800 transition"
                                 >
                                     My PGs
+                                </Link>
+                                <Link
+                                    to="/owner/submit-pg"
+                                    className="block px-4 py-2 text-gray-600 hover:bg-blue-200 hover:text-gray-800 transition"
+                                >
+                                    Submit PG
                                 </Link>
                                 <Link
                                     to="/owner/profile"

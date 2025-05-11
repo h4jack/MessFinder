@@ -6,6 +6,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useFirebase } from "../../context/firebase";
 import { ownerRTB } from "../../context/firebase-rtb";
+import Loader from "../ui/loader";
 
 const Login = () => {
     // State management
@@ -13,6 +14,7 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const firebase = useFirebase();
 
@@ -21,6 +23,7 @@ const Login = () => {
 
     // Login with email and password
     const handleLogin = async () => {
+        setLoading(true);
         try {
             await signInWithEmailAndPassword(firebase.auth, email, password);
             setErrorMessage("");
@@ -28,6 +31,7 @@ const Login = () => {
         } catch (error) {
             setErrorMessage("Invalid email or password. Please try again.");
         }
+        setLoading(false);
     };
 
     // Login with Google
@@ -67,78 +71,84 @@ const Login = () => {
                 setErrorMessage("Google login failed. Please try again.");
             });
     };
-
     return (
         <main className="flex flex-col items-center justify-center min-h-[calc(100vh-72px)] px-4">
             <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-                <h2 className="text-4xl font-bold text-center text-gray-800 mb-6">Login</h2>
+                {loading ? (
+                    <Loader text="trying to Logging you in. please wait.." />
 
-                {errorMessage && <p className="text-red-500 text-center mb-4">{errorMessage}</p>}
+                ) : (
+                    <>
+                        <h2 className="text-4xl font-bold text-center text-gray-800 mb-6">Login</h2>
 
-                {/* Email Input */}
-                <InputField
-                    label="Email"
-                    type="email"
-                    name="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email"
-                />
+                        {errorMessage && <p className="text-red-500 text-center mb-4">{errorMessage}</p>}
 
-                {/* Password Input */}
-                <InputField
-                    label="Password"
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter your password"
-                    showToggle
-                    toggleVisibility={() => setShowPassword((prev) => !prev)}
-                />
+                        {/* Email Input */}
+                        <InputField
+                            label="Email"
+                            type="email"
+                            name="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="Enter your email"
+                        />
 
-                {/* Login Button */}
-                <Button
-                    text="Login"
-                    onClick={handleLogin}
-                    className="bg-blue-500 text-white hover:bg-blue-600"
-                />
+                        {/* Password Input */}
+                        <InputField
+                            label="Password"
+                            type={showPassword ? "text" : "password"}
+                            name="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Enter your password"
+                            showToggle
+                            toggleVisibility={() => setShowPassword((prev) => !prev)}
+                        />
 
-                {/* Forgot Password Link */}
-                <Link
-                    to="/auth/forget-password"
-                    className="text-blue-500 mt-4 hover:underline block text-center"
-                >
-                    Forgot Password?
-                </Link>
+                        {/* Login Button */}
+                        <Button
+                            text="Login"
+                            onClick={handleLogin}
+                            className="bg-blue-500 text-white hover:bg-blue-600"
+                        />
 
-                {/* Divider */}
-                <div className="flex items-center my-4">
-                    <div className="flex-grow border-t border-gray-400"></div>
-                    <span className="mx-2 text-gray-500">OR</span>
-                    <div className="flex-grow border-t border-gray-400"></div>
-                </div>
+                        {/* Forgot Password Link */}
+                        <Link
+                            to="/auth/forget-password"
+                            className="text-blue-500 mt-4 hover:underline block text-center"
+                        >
+                            Forgot Password?
+                        </Link>
 
-                {/* Google Login Button */}
-                <Button
-                    text={
-                        <>
-                            <FaGoogle className="mr-2" /> Sign in with Google
-                        </>
-                    }
-                    onClick={handleLoginWithGoogle}
-                    className="bg-red-500 text-white hover:bg-red-600 mt-4 flex items-center justify-center"
-                />
+                        {/* Divider */}
+                        <div className="flex items-center my-4">
+                            <div className="flex-grow border-t border-gray-400"></div>
+                            <span className="mx-2 text-gray-500">OR</span>
+                            <div className="flex-grow border-t border-gray-400"></div>
+                        </div>
 
-                {/* Register Link */}
-                <Link to="/auth/register" className="p-2 flex justify-center items-center gap-1">
-                    <span>
-                        Don't have an account?{" "}
-                        <span className="text-blue-500 hover:underline cursor-pointer">
-                            Register here
-                        </span>
-                    </span>
-                </Link>
+                        {/* Google Login Button */}
+                        <Button
+                            text={
+                                <>
+                                    <FaGoogle className="mr-2" /> Sign in with Google
+                                </>
+                            }
+                            onClick={handleLoginWithGoogle}
+                            className="bg-red-500 text-white hover:bg-red-600 mt-4 flex items-center justify-center"
+                        />
+
+                        {/* Register Link */}
+                        <Link to="/auth/register" className="p-2 flex justify-center items-center gap-1">
+                            <span>
+                                Don't have an account?{" "}
+                                <span className="text-blue-500 hover:underline cursor-pointer">
+                                    Register here
+                                </span>
+                            </span>
+                        </Link>
+                    </>
+                )}
             </div>
         </main>
     );

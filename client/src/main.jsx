@@ -41,7 +41,7 @@ import Profile from './components/owner/profile'
 import MyPGs from './components/owner/mypgs'
 import Settings from './components/owner/settings'
 import SubmitPG from './components/owner/submit-pg'
-import ProfileImageUploader from './components/owner/storage'
+import Test from './components/owner/test'
 
 //importing the Wrapper context of Firebase.
 import { FirebaseProvider } from './context/firebase'
@@ -59,12 +59,13 @@ let router = createBrowserRouter(
         </Route>
 
         <Route path="room/:id" element={<RoomDetails />} />
-        <Route path="test" element={<ProfileImageUploader />} />
+        <Route path="test" element={<Test />} />
 
         {/* <Route path="owner/:id" element={<span className='text-7xl w-full text-center text-gray-100'>Owner Home</span>} /> */}
         <Route path="owner/" element={<Dashboard />}>
           <Route path='profile' element={<Profile />} />
           <Route path="submit-pg" element={<SubmitPG />} />
+          <Route path="submit-pg/:roomId" element={<SubmitPG />} />
           <Route path='settings' element={<Settings />} />
           <Route path='pgs' element={<MyPGs />} />
           <Route path='messages' element={<IncomingMessages />} />

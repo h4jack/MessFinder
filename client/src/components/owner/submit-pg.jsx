@@ -1,7 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation, useParams } from 'react-router-dom';
+
 import { InputField } from "../ui/input";
 import { Dropdown } from "../ui/option";
 
+
+import { Alert } from "../ui/alert"
 import { statesAndDistricts } from '/src/module/js/district-pin';
 import { useFirebase } from "../../context/firebase"
 import { roomsRTB } from "./../../context/firebase-rtb"
@@ -10,6 +14,9 @@ import ImageUpload from './form/ImageUpload';
 import AccommodationDetails from './form/AccommodationDetails';
 import MessDetails from './form/MessDetails';
 import FormButtons from './form/FormButtons';
+import { roomStorage } from "../../context/firebase-storage";
+import { onAuthStateChanged } from "firebase/auth";
+import Loader from "../ui/loader";
 
 const DescriptiveDetails = ({ ...props }) => {
     return (
@@ -20,6 +27,7 @@ const DescriptiveDetails = ({ ...props }) => {
                 placeholder="List facilities (one per line)"
                 type="textarea"
                 rows="4"
+                value={props.facilities?.replace(/\\n/g, "\n")}
                 {...props}
             />
             <InputField
@@ -28,6 +36,7 @@ const DescriptiveDetails = ({ ...props }) => {
                 placeholder="List services (one per line)"
                 type="textarea"
                 rows="4"
+                value={props.services?.replace(/\\n/g, "\n")}
                 {...props}
             />
             <InputField
@@ -36,6 +45,7 @@ const DescriptiveDetails = ({ ...props }) => {
                 placeholder="List rules (one per line)"
                 type="textarea"
                 rows="4"
+                value={props.rules?.replace(/\\n/g, "\n")}
                 {...props}
             />
             <InputField
@@ -44,6 +54,7 @@ const DescriptiveDetails = ({ ...props }) => {
                 placeholder="Enter description"
                 type="textarea"
                 rows="6"
+                value={props.description?.replace(/\\n/g, "\n")}
                 {...props}
             />
         </>
@@ -67,22 +78,125 @@ const SubmitPG = () => {
             totalBeds: 1,
             totalCRooms: 0,
             totalBathrooms: 1,
-            CanteenAvailability: "Door Delivery",
+            CanteenAvailability: "Near",
             totalFloors: 1,
         },
         facilities: "",
         services: "",
         rules: "",
         description: "",
-        images: ["", "", "", "", ""],
+        images: [],
         status: "draft",
     });
 
+    const params = useParams();
+
     const firebase = useFirebase();
+    const location = useLocation();
 
     const [selectedState, setSelectedState] = useState('');
     const [selectedDistrict, setSelectedDistrict] = useState('');
     const [pincodeError, setPincodeError] = useState("");
+    const [roomId, setRoomId] = useState("");
+    const [authReady, setAuthReady] = useState(false);
+    const [uploading, setUploading] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [updateDone, setUpdateDone] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
+
+    useEffect(() => {
+        const id = params?.roomId || "";
+        setRoomId(id);
+        if (!id) {
+            setFormData({
+                name: '',
+                location: '',
+                state: '',
+                district: '',
+                pincode: '',
+                accommodationFor: 'Boys',
+                suitableFor: "Students",
+                price: 0,
+                shared: 1,
+                messInfo: {
+                    messType: "Home",
+                    totalRooms: 1,
+                    totalBeds: 1,
+                    totalCRooms: 0,
+                    totalBathrooms: 1,
+                    CanteenAvailability: "Near",
+                    totalFloors: 1,
+                },
+                facilities: "",
+                services: "",
+                rules: "",
+                description: "",
+                images: [],
+                status: "draft",
+            })
+        }
+        setErrorMessage(false)
+        setUpdateDone(false)
+    }, [params?.roomId, location.pathname]);
+
+    useEffect(() => {
+        const unregisterAuthObserver = onAuthStateChanged(firebase.auth, user => {
+            if (user) {
+                setAuthReady(true);
+            } else {
+                console.log("User not logged in");
+            }
+        });
+
+        return () => unregisterAuthObserver(); // cleanup
+    }, [firebase.auth]);
+
+    useEffect(() => {
+        if (!authReady || !roomId) {
+            setLoading(false);
+            return;
+        }
+        setLoading(true);
+        if (uploading) {
+            return;
+        }
+
+        const fetchRoomDetails = async () => {
+            try {
+                const user = firebase.auth.currentUser;
+                if (!user) return;
+
+                const { getRoom } = roomsRTB(firebase);
+                await getRoom(roomId)
+                    .then((roomDetails) => {
+                        if (roomDetails.ownerId == user.uid) {
+                            setFormData(roomDetails);
+                        } else {
+                            setErrorMessage("You can't edit, someone else's data. please be real, and don't involve in bad movement..")
+                        }
+                    }).catch(() => {
+                        setErrorMessage("Invalid Room Id, plesae check your room id..")
+                    })
+            } catch (error) {
+                console.log("Error fetching room:", error);
+                setErrorMessage("Error fetching room.. Please report this to admin.");
+
+            }
+            setLoading(false);
+        };
+
+        fetchRoomDetails();
+    }, [authReady, roomId, firebase]);
+
+    useEffect(() => {
+        if (formData.state) {
+            setSelectedState(formData.state);
+        }
+        if (formData.district) {
+            setSelectedDistrict(formData.district);
+        }
+    }, [formData.state, formData.district]);
+
 
     const stateOptions = Object.keys(statesAndDistricts).map(state => ({
         value: state,
@@ -120,12 +234,21 @@ const SubmitPG = () => {
     };
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value, type } = e.target;
+        let processedValue = value;
+
+        if (type === "textarea") {
+            // Replace real newlines with the string "\n"
+            processedValue = value.replace(/\n/g, "\\n");
+            console.log(processedValue);
+        }
+
         setFormData(prev => ({
             ...prev,
-            [name]: value
+            [name]: processedValue
         }));
     };
+
 
     // Handlers to update accommodation related fields
     const setAccommodationFor = (value) => {
@@ -215,34 +338,71 @@ const SubmitPG = () => {
         }));
     };
 
+    const handleImageChange = (newImages) => {
+        setFormData((prev) => ({ ...prev, images: newImages }));
+    };
 
+    const { uploadRoomImages } = roomStorage();
 
-
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const submitFormData = async () => {
+        setLoading(true);
         try {
+            setUploading(true);
             const { saveRoom } = roomsRTB(firebase);
 
-            const result = await saveRoom(formData);
+            let downloadUrls;
+            if (!roomId) {
+                const result = await saveRoom(formData, roomId);
+                setRoomId(result.roomId);
+            }
+            downloadUrls = await uploadRoomImages(roomId, formData.images, (index, progress) => {
+                console.log(`File ${index + 1} upload progress: ${progress.toFixed(2)}%`);
+            });
 
-            console.log("Room saved:", result);
+            console.log(formData);
+            formData.images = downloadUrls.map((url) => ({ preview: url }));
+            setFormData({ ...formData, images: downloadUrls.map((url) => ({ preview: url })) })
+            await saveRoom(formData, roomId);
 
-            alert("Room saved successfully!");
+            console.log("Uploaded URLs:", downloadUrls);
+            console.log(formData);
 
-            // Optional: redirect to room detail or dashboard
-            // navigate(`/rooms/${result.roomId}`);
-
+            setUpdateDone(true);
+            setUploading(false);
         } catch (error) {
             console.error("Failed to save room:", error);
-            alert("Error saving room. Please try again.");
+            setErrorMessage("Error saving room. Please try again.");
         }
+        setLoading(false);
     };
+
+    const handleSubmit = () => {
+        formData.status = "draft";
+        setFormData((prev) => ({ ...prev, status: "public" }))
+        submitFormData();
+    };
+
+    const handleDraft = () => {
+        formData.status = "draft";
+        setFormData((prev) => ({ ...prev, status: "draft" }))
+        submitFormData();
+    }
+
+    if (loading) {
+        return <Loader text="Loading, Please wait." />
+    }
+
+    if (updateDone) {
+        return <Alert type="success" header="Uploading Room Successfully." message="You can see your room list, on mypgs.." />;
+    }
+    if (errorMessage) {
+        return <Alert type="error" header="Error Occured, Read below." message={errorMessage} />;
+    }
 
     return (
         <div className="w-full mx-auto p-4 bg-white shadow-md rounded-md">
-            <h2 className="text-2xl font-bold mb-4">Submit a New PG</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <h2 className="text-2xl font-bold mb-4">{roomId ? `Edit Your Room` : "Submit a New PG"}</h2>
+            <div className="space-y-4">
                 <InputField
                     label="Name"
                     placeholder="Enter PG/Room Name"
@@ -330,13 +490,10 @@ const SubmitPG = () => {
                     setTotalFloors={setTotalFloors}
                 />
 
-                < DescriptiveDetails onChange={handleChange} />
-                <ImageUpload
-                    images={formData.images}
-                    setImages={(value) => setFormData(prev => ({ ...prev, images: value }))}
-                />
-                <FormButtons />
-            </form>
+                <DescriptiveDetails onChange={handleChange} facilities={formData.facilities} services={formData.services} rules={formData.rules} description={formData.description} />
+                <ImageUpload images={formData.images} setImages={handleImageChange} />
+                <FormButtons onDraft={handleDraft} onSubmit={handleSubmit} />
+            </div>
         </div>
     );
 };

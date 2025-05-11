@@ -20,7 +20,7 @@ const Profile = () => {
     const [file, setFile] = useState(null);
     const { uploadProfileImage, deleteProfileImage } = ownerStorage();
     const firebase = useFirebase();
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true); // not false
 
     useEffect(() => {
         if (uploadProgress) {
@@ -36,57 +36,28 @@ const Profile = () => {
             }
         });
         return () => unsubscribe(); // Cleanup subscription on unmount
-    }, [firebase.auth, firebase.auth.currentUser]);
+    }, [firebase.auth]);
 
     useEffect(() => {
-        const { getData } = ownerRTB(firebase)
+        const { getData } = ownerRTB(firebase);
         const loadUserData = async () => {
+            if (!uid) return; // <- Add this check
             try {
                 const user = await getData(uid);
-                setUname(user.username);
-                setFormData(user);
+                try {
+                    setUname(user.username);
+                } catch (error) {
+                    setUname("");
+                }
+                setFormData((prev) => ({ ...prev, ...user }));
                 setLoading(false);
             } catch (error) {
                 console.error("Failed to load user data:", error);
             }
         };
-
         loadUserData();
     }, [uid, isEditing]);
 
-    const handleImageFileChange = (e) => {
-        const selectedFile = e.target.files[0];
-        if (selectedFile) {
-            setFile(selectedFile);
-            setUploadProgress(0); // Reset progress
-            showAlert("Image Selected, Click Save to save the details..", "success")
-        }
-    };
-
-    const handleImageUpload = async () => {
-        const { uploadPhoto } = ownerRTB(firebase);
-        try {
-            showAlert("Uploading: " + (Math.round(uploadProgress * 100) / 100).toFixed(2) + "%");
-            const url = await uploadProfileImage(uid, file, setUploadProgress);
-            showAlert("Uploading Complete..")
-            await uploadPhoto(uid, url)
-            setFile(null);
-            window.location.reload();
-        } catch (err) {
-            console.log(err);
-            showAlert(err.message, "error");
-        }
-    };
-
-    const handleImageDelete = async () => {
-        try {
-            const message = await deleteProfileImage(uid);
-            setFormData((prev) => ({ ...prev, photoURL: "" }));
-            showAlert(message, "success");
-        } catch (err) {
-            showAlert(err.message, "error");
-        }
-    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -97,6 +68,87 @@ const Profile = () => {
         setIsEditing(!isEditing);
     };
 
+    const handleImageFileChange = (e) => {
+        const selectedFile = e.target.files[0];
+        if (selectedFile) {
+            setFile(selectedFile);
+            setUploadProgress(0); // Reset progress
+            showAlert("Image Selected, Click Save to save the details..", "success")
+        }
+    };
+
+    const updateAuthInfo = async (formData, user) => {
+        try {
+            const authUpdates = {};
+
+            if (formData.displayName && formData.displayName !== user.displayName) {
+                authUpdates.displayName = formData.displayName;
+            }
+
+            if (Object.keys(authUpdates).length > 0) {
+                await updateProfile(user, authUpdates);
+            }
+
+            if (formData.email && formData.email !== user.email) {
+                await updateEmail(user, formData.email);
+            }
+        } catch (error) {
+            console.error("Auth update error:", error);
+            throw new Error("Failed to update auth info.");
+        }
+    };
+
+    const handleImageUpload = async () => {
+        const { uploadPhoto } = ownerRTB(firebase);
+        if (!file) {
+            showAlert("No image selected for upload.", "error");
+            return;
+        }
+        try {
+
+            showAlert("Uploading: " + (Math.round(uploadProgress * 100) / 100).toFixed(2) + "%");
+            const url = await uploadProfileImage(uid, file, setUploadProgress);
+            showAlert("Uploading complete.");
+
+            // Save to Auth
+            const user = firebase.auth.currentUser;
+            await updateProfile(user, { photoURL: url });
+
+            // Save to Realtime Database
+            await uploadPhoto(uid, url);
+
+            console.log(formData);
+            // Update UI immediately
+            // ✅ Patch formData here so saveData uses updated info
+            formData.photoURL = url;
+            setFormData((prev) => ({ ...prev, photoURL: url }));
+            console.log(formData);
+
+            // Clear file and reload
+            setFile(null);
+        } catch (err) {
+            console.error("Image upload failed:", err);
+            showAlert(err.message, "error");
+        }
+    };
+
+    const handleImageDelete = async () => {
+        try {
+            // Delete from storage and RTDB
+            const message = await deleteProfileImage(uid);
+
+            // Clear from Auth
+            const user = firebase.auth.currentUser;
+            await updateProfile(user, { photoURL: "" });
+
+            // Clear locally
+            setFormData((prev) => ({ ...prev, photoURL: "" }));
+            showAlert(message, "success");
+        } catch (err) {
+            console.error("Image delete failed:", err);
+            showAlert(err.message, "error");
+        }
+    };
     const handleSave = async () => {
         const { saveData, userExists } = ownerRTB(firebase);
         const user = firebase.auth.currentUser;
@@ -106,7 +158,7 @@ const Profile = () => {
         }
 
         try {
-            if (formData.username && formData.username != uName) {
+            if (formData.username && formData.username !== uName) {
                 const { valid, available, reason } = await userExists(formData.username);
                 if (!valid || !available) {
                     showAlert(reason || "Invalid or unavailable username.", "error");
@@ -114,26 +166,19 @@ const Profile = () => {
                 }
             }
 
-            // Continue with auth update and saving data
             if (user) {
-                const authUpdates = {};
-                if (formData.displayName && formData.displayName !== user.displayName) {
-                    authUpdates.displayName = formData.displayName;
-                }
-                if (Object.keys(authUpdates).length > 0) {
-                    await updateProfile(user, authUpdates);
-                }
-                if (formData.email && formData.email !== user.email) {
-                    await updateEmail(user, formData.email);
-                }
+                await updateAuthInfo(formData, user);
             }
+
             await saveData(uid, formData);
             setIsEditing(false);
+            window.location.reload();
         } catch (error) {
             console.error("Failed to save user data:", error);
             showAlert("Failed to update profile. If email change fails, try logging in again.", "error");
         }
     };
+
 
     const handleCancel = () => {
         setIsEditing(false);
