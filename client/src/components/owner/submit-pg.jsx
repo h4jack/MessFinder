@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
 import { InputField } from "../ui/input";
 import { Dropdown } from "../ui/option";
@@ -16,7 +16,6 @@ import MessDetails from './form/MessDetails';
 import FormButtons from './form/FormButtons';
 import { roomStorage } from "../../context/firebase-storage";
 import { onAuthStateChanged } from "firebase/auth";
-import { refFromURL } from "firebase/database";
 import Loader from "../ui/loader";
 
 const DescriptiveDetails = ({ ...props }) => {
@@ -28,6 +27,7 @@ const DescriptiveDetails = ({ ...props }) => {
                 placeholder="List facilities (one per line)"
                 type="textarea"
                 rows="4"
+                value={props.facilities?.replace(/\\n/g, "\n")}
                 {...props}
             />
             <InputField
@@ -36,6 +36,7 @@ const DescriptiveDetails = ({ ...props }) => {
                 placeholder="List services (one per line)"
                 type="textarea"
                 rows="4"
+                value={props.services?.replace(/\\n/g, "\n")}
                 {...props}
             />
             <InputField
@@ -44,6 +45,7 @@ const DescriptiveDetails = ({ ...props }) => {
                 placeholder="List rules (one per line)"
                 type="textarea"
                 rows="4"
+                value={props.rules?.replace(/\\n/g, "\n")}
                 {...props}
             />
             <InputField
@@ -52,6 +54,7 @@ const DescriptiveDetails = ({ ...props }) => {
                 placeholder="Enter description"
                 type="textarea"
                 rows="6"
+                value={props.description?.replace(/\\n/g, "\n")}
                 {...props}
             />
         </>
@@ -89,17 +92,52 @@ const SubmitPG = () => {
     const params = useParams();
 
     const firebase = useFirebase();
-
+    const location = useLocation();
 
     const [selectedState, setSelectedState] = useState('');
     const [selectedDistrict, setSelectedDistrict] = useState('');
     const [pincodeError, setPincodeError] = useState("");
-    const [roomId, setRoomId] = useState(params.roomId || "");
+    const [roomId, setRoomId] = useState("");
     const [authReady, setAuthReady] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [loading, setLoading] = useState(true);
     const [updateDone, setUpdateDone] = useState(false);
     const [errorMessage, setErrorMessage] = useState(false);
+
+    useEffect(() => {
+        const id = params?.roomId || "";
+        setRoomId(id);
+        if (!id) {
+            setFormData({
+                name: '',
+                location: '',
+                state: '',
+                district: '',
+                pincode: '',
+                accommodationFor: 'Boys',
+                suitableFor: "Students",
+                price: 0,
+                shared: 1,
+                messInfo: {
+                    messType: "Home",
+                    totalRooms: 1,
+                    totalBeds: 1,
+                    totalCRooms: 0,
+                    totalBathrooms: 1,
+                    CanteenAvailability: "Near",
+                    totalFloors: 1,
+                },
+                facilities: "",
+                services: "",
+                rules: "",
+                description: "",
+                images: [],
+                status: "draft",
+            })
+        }
+        setErrorMessage(false)
+        setUpdateDone(false)
+    }, [params?.roomId, location.pathname]);
 
     useEffect(() => {
         const unregisterAuthObserver = onAuthStateChanged(firebase.auth, user => {
@@ -122,7 +160,7 @@ const SubmitPG = () => {
         if (uploading) {
             return;
         }
-        console.log("fetching data");
+
         const fetchRoomDetails = async () => {
             try {
                 const user = firebase.auth.currentUser;
@@ -131,18 +169,17 @@ const SubmitPG = () => {
                 const { getRoom } = roomsRTB(firebase);
                 await getRoom(roomId)
                     .then((roomDetails) => {
-                        console.log(roomDetails);
                         if (roomDetails.ownerId == user.uid) {
                             setFormData(roomDetails);
                         } else {
-                            console.log("Unauthorized access");
+                            setErrorMessage("You can't edit, someone else's data. please be real, and don't involve in bad movement..")
                         }
                     }).catch(() => {
-                        console.log("Room doesn't exists..");
+                        setErrorMessage("Invalid Room Id, plesae check your room id..")
                     })
             } catch (error) {
                 console.log("Error fetching room:", error);
-                errorMessage("Error fetching room:");
+                setErrorMessage("Error fetching room.. Please report this to admin.");
 
             }
             setLoading(false);
@@ -150,6 +187,16 @@ const SubmitPG = () => {
 
         fetchRoomDetails();
     }, [authReady, roomId, firebase]);
+
+    useEffect(() => {
+        if (formData.state) {
+            setSelectedState(formData.state);
+        }
+        if (formData.district) {
+            setSelectedDistrict(formData.district);
+        }
+    }, [formData.state, formData.district]);
+
 
     const stateOptions = Object.keys(statesAndDistricts).map(state => ({
         value: state,
@@ -304,17 +351,14 @@ const SubmitPG = () => {
             const { saveRoom } = roomsRTB(firebase);
 
             let downloadUrls;
-            if (roomId) {
-                downloadUrls = await uploadRoomImages(roomId, formData.images, (index, progress) => {
-                    console.log(`File ${index + 1} upload progress: ${progress.toFixed(2)}%`);
-                });
-            } else {
-                const result = await saveRoom(formData, result.roomId);
-                downloadUrls = await uploadRoomImages(result.roomId, formData.images, (index, progress) => {
-                    console.log(`File ${index + 1} upload progress: ${progress.toFixed(2)}%`);
-                });
+            if (!roomId) {
+                const result = await saveRoom(formData, roomId);
                 setRoomId(result.roomId);
             }
+            downloadUrls = await uploadRoomImages(roomId, formData.images, (index, progress) => {
+                console.log(`File ${index + 1} upload progress: ${progress.toFixed(2)}%`);
+            });
+
             console.log(formData);
             formData.images = downloadUrls.map((url) => ({ preview: url }));
             setFormData({ ...formData, images: downloadUrls.map((url) => ({ preview: url })) })
@@ -327,17 +371,19 @@ const SubmitPG = () => {
             setUploading(false);
         } catch (error) {
             console.error("Failed to save room:", error);
-            errorMessage("Error saving room. Please try again.");
+            setErrorMessage("Error saving room. Please try again.");
         }
         setLoading(false);
     };
 
     const handleSubmit = () => {
+        formData.status = "draft";
         setFormData((prev) => ({ ...prev, status: "public" }))
         submitFormData();
     };
 
     const handleDraft = () => {
+        formData.status = "draft";
         setFormData((prev) => ({ ...prev, status: "draft" }))
         submitFormData();
     }
@@ -350,12 +396,12 @@ const SubmitPG = () => {
         return <Alert type="success" header="Uploading Room Successfully." message="You can see your room list, on mypgs.." />;
     }
     if (errorMessage) {
-        return <Alert type="error" header="Error Occured, Read below." message="You can't edit, someone else's data. please be real, and don't involve in bad movement.." />;
+        return <Alert type="error" header="Error Occured, Read below." message={errorMessage} />;
     }
 
     return (
         <div className="w-full mx-auto p-4 bg-white shadow-md rounded-md">
-            <h2 className="text-2xl font-bold mb-4">Submit a New PG</h2>
+            <h2 className="text-2xl font-bold mb-4">{roomId ? `Edit Your Room` : "Submit a New PG"}</h2>
             <div className="space-y-4">
                 <InputField
                     label="Name"
@@ -444,7 +490,7 @@ const SubmitPG = () => {
                     setTotalFloors={setTotalFloors}
                 />
 
-                <DescriptiveDetails onChange={handleChange} />
+                <DescriptiveDetails onChange={handleChange} facilities={formData.facilities} services={formData.services} rules={formData.rules} description={formData.description} />
                 <ImageUpload images={formData.images} setImages={handleImageChange} />
                 <FormButtons onDraft={handleDraft} onSubmit={handleSubmit} />
             </div>
