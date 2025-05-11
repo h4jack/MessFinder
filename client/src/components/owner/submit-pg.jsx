@@ -144,7 +144,7 @@ const SubmitPG = () => {
             if (user) {
                 setAuthReady(true);
             } else {
-                console.log("User not logged in");
+                setErrorMessageerr("User not logged in");
             }
         });
 
@@ -240,7 +240,6 @@ const SubmitPG = () => {
         if (type === "textarea") {
             // Replace real newlines with the string "\n"
             processedValue = value.replace(/\n/g, "\\n");
-            console.log(processedValue);
         }
 
         setFormData(prev => ({
@@ -344,48 +343,106 @@ const SubmitPG = () => {
 
     const { uploadRoomImages } = roomStorage();
 
+    const verifyInputs = (formData) => {
+        // Check top-level string fields
+        const requiredFields = [
+            'name', 'location', 'state', 'district', 'pincode',
+            'accommodationFor', 'suitableFor', 'facilities',
+            'services', 'rules', 'description', 'status'
+        ];
+
+        for (let field of requiredFields) {
+            if (!formData[field] || formData[field].toString().trim() === '') {
+                return false;
+            }
+        }
+
+        // Check price and shared (must be non-zero positive numbers)
+        if (formData.price <= 0 || formData.shared <= 0) {
+            return false;
+        }
+
+        // Validate messInfo object
+        const messInfoFields = [
+            'messType', 'totalRooms', 'totalBeds',
+            'totalCRooms', 'totalBathrooms', 'CanteenAvailability', 'totalFloors'
+        ];
+
+        for (let field of messInfoFields) {
+            const value = formData.messInfo?.[field];
+            if (value === undefined || value === null || value === '' || (typeof value === 'number' && value < 0)) {
+                return false;
+            }
+        }
+
+        // Validate images array (must have at least one image)
+        if (!Array.isArray(formData.images) || formData.images.length === 0) {
+            return false;
+        }
+
+        return true;
+    };
+
     const submitFormData = async () => {
         setLoading(true);
-        try {
-            setUploading(true);
-            const { saveRoom } = roomsRTB(firebase);
+        if (verifyInputs(formData)) {
+            try {
+                setUploading(true);
+                const { saveRoom } = roomsRTB(firebase);
 
-            let downloadUrls;
-            if (!roomId) {
-                const result = await saveRoom(formData, roomId);
-                setRoomId(result.roomId);
+                let downloadUrls;
+                let currentRoomId = roomId;
+
+                // If no roomId exists, create a new room and get its ID
+                if (!currentRoomId) {
+                    const result = await saveRoom(formData, null);
+                    currentRoomId = result.roomId;
+                    setRoomId(currentRoomId); // update state for UI or future calls
+                }
+
+                // Now currentRoomId is always valid
+                downloadUrls = await uploadRoomImages(currentRoomId, formData.images, (index, progress) => {
+                    console.log(`File ${index + 1} upload progress: ${progress.toFixed(2)} %`);
+                });
+
+                const updatedImages = downloadUrls.map((url) => ({ preview: url }));
+                const updatedFormData = { ...formData, images: updatedImages };
+
+                setFormData(updatedFormData);
+
+                // Save updated formData with image URLs
+                await saveRoom(updatedFormData, currentRoomId);
+
+                console.log("Uploaded URLs:", downloadUrls);
+                console.log(updatedFormData);
+
+                setUpdateDone(true);
+                setUploading(false);
+            } catch (error) {
+                console.error("Failed to save room:", error);
+                setErrorMessage("Error saving room. Please try again.");
             }
-            downloadUrls = await uploadRoomImages(roomId, formData.images, (index, progress) => {
-                console.log(`File ${index + 1} upload progress: ${progress.toFixed(2)}%`);
-            });
-
-            console.log(formData);
-            formData.images = downloadUrls.map((url) => ({ preview: url }));
-            setFormData({ ...formData, images: downloadUrls.map((url) => ({ preview: url })) })
-            await saveRoom(formData, roomId);
-
-            console.log("Uploaded URLs:", downloadUrls);
-            console.log(formData);
-
-            setUpdateDone(true);
-            setUploading(false);
-        } catch (error) {
-            console.error("Failed to save room:", error);
-            setErrorMessage("Error saving room. Please try again.");
+        } else {
+            setErrorMessage("Please fill, all fields, all fields are required..")
+            setTimeout(() => {
+                setErrorMessage("")
+            }, 3000);
         }
         setLoading(false);
     };
 
     const handleSubmit = () => {
-        formData.status = "draft";
+        formData.status = "public";
         setFormData((prev) => ({ ...prev, status: "public" }))
         submitFormData();
+        console.log("Public");
     };
 
     const handleDraft = () => {
         formData.status = "draft";
         setFormData((prev) => ({ ...prev, status: "draft" }))
         submitFormData();
+        console.log("Draft")
     }
 
     if (loading) {

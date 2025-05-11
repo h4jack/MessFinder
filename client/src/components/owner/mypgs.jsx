@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaEdit, FaEye } from "react-icons/fa";
+import { roomsRTB } from "../../context/firebase-rtb";
+import { useFirebase } from "../../context/firebase";
 
 const RoomCard = ({ roomData }) => {
     const pg = roomData;
@@ -52,73 +54,40 @@ const RoomCard = ({ roomData }) => {
 }
 
 const MyPGs = () => {
-    const pgData = [
-        {
-            id: 1,
-            thumbnail: "/assets/room1.png",
-            title: "Sunrise PG",
-            location: "Downtown, City",
-            price: "$300/month",
-            details: {
-                "For": "Boys",
-                "Suitable For": "Students, Working Professionals",
-                "Shared": "Yes",
-            },
-            updatedAt: "2023-10-01",
-        },
-        {
-            id: 2,
-            thumbnail: "/assets/room3.png",
-            title: "Moonlight PG",
-            location: "Uptown, City",
-            price: "$400/month",
-            details: {
-                "For": "Girls",
-                "Suitable For": "Students",
-                "Shared": "No",
-            },
-            updatedAt: "2023-09-25",
-        },
-        {
-            id: 2,
-            thumbnail: "/assets/room3.png",
-            title: "Moonlight PG",
-            location: "Uptown, City",
-            price: "$400/month",
-            details: {
-                "For": "Girls",
-                "Suitable For": "Students",
-                "Shared": "No",
-            },
-            updatedAt: "2023-09-25",
-        },
-        {
-            id: 2,
-            thumbnail: "/assets/room3.png",
-            title: "Moonlight PG",
-            location: "Uptown, City",
-            price: "$400/month",
-            details: {
-                "For": "Girls",
-                "Suitable For": "Students",
-                "Shared": "No",
-            },
-            updatedAt: "2023-09-25",
-        },
-        {
-            id: 2,
-            thumbnail: "/assets/room3.png",
-            title: "Moonlight PG",
-            location: "Uptown, City",
-            price: "$400/month",
-            details: {
-                "For": "Girls",
-                "Suitable For": "Students",
-                "Shared": "No",
-            },
-            updatedAt: "2023-09-25",
-        },
-    ];
+    const firebase = useFirebase();
+    const { getRoom } = roomsRTB(firebase);
+
+    const [pgData, setPGData] = useState([]);
+
+    useEffect(() => {
+        getRoom("")
+            .then((res) => {
+                const transformed = Object.entries(res).map(([roomId, data], index) => ({
+                    roomId: index + 1,
+                    thumbnail: data.images?.[0]?.preview || "/assets/default.png",
+                    name: data.name,
+                    location: `${data.location}, ${data.district}`,
+                    price: `₹${data.price}/month`,
+                    messInfo: {
+                        accommodationFor: capitalize(data.accommodationFor),
+                        suitableFor: capitalize(data.suitableFor),
+                        shared: data.shared,
+                    },
+                    updatedAt: formatRelativeTime(data.updatedAt),
+                }));
+
+                setPGData(transformed);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }, []);
+
+    function capitalize(str) {
+        if (!str) return "";
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
 
     const [selectedTab, setSelectedTab] = React.useState("All");
 
@@ -127,40 +96,37 @@ const MyPGs = () => {
             <h1 className="text-2xl font-bold mb-4">My PGs</h1>
             <div className="flex space-x-4 mb-4">
                 <button
-                    className={`px-4 py-2 rounded-md ${
-                        selectedTab === "All"
-                            ? "bg-teal-500 text-white"
-                            : "bg-gray-200 text-gray-700"
-                    }`}
+                    className={`px-4 py-2 rounded-md ${selectedTab === "All"
+                        ? "bg-teal-500 text-white"
+                        : "bg-gray-200 text-gray-700"
+                        }`}
                     onClick={() => setSelectedTab("All")}
                 >
                     All
                 </button>
                 <button
-                    className={`px-4 py-2 rounded-md ${
-                        selectedTab === "Drafts"
-                            ? "bg-indigo-500 text-white"
-                            : "bg-gray-200 text-gray-700"
-                    }`}
+                    className={`px-4 py-2 rounded-md ${selectedTab === "Drafts"
+                        ? "bg-indigo-500 text-white"
+                        : "bg-gray-200 text-gray-700"
+                        }`}
                     onClick={() => setSelectedTab("Drafts")}
                 >
                     Drafts
                 </button>
                 <button
-                    className={`px-4 py-2 rounded-md ${
-                        selectedTab === "Posts"
-                            ? "bg-green-500 text-white"
-                            : "bg-gray-200 text-gray-700"
-                    }`}
+                    className={`px-4 py-2 rounded-md ${selectedTab === "Posts"
+                        ? "bg-green-500 text-white"
+                        : "bg-gray-200 text-gray-700"
+                        }`}
                     onClick={() => setSelectedTab("Posts")}
                 >
                     Posts
                 </button>
             </div>
             <div className="flex flex-wrap gap-3 justify-center">
-                {pgData.map((pg, index) => (
+                {/* {pgData.map((pg, index) => (
                     <RoomCard key={index} roomData={pg} />
-                ))}
+                ))} */}
             </div>
         </div>
     );
