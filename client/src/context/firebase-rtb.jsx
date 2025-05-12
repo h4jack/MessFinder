@@ -1,4 +1,5 @@
 import { ref, push, get, remove, update, serverTimestamp, set } from "firebase/database";
+import { validateUsername } from "../module/js/string";
 
 const ownerRTB = (firebase) => {
 
@@ -77,9 +78,9 @@ const ownerRTB = (firebase) => {
 
     const userExists = async (username) => {
         // 1. Validate format: starts with a-z, can include numbers and underscores
-        const valid = /^[a-z][a-z0-9_]*$/.test(username);
-        if (!valid) {
-            return { valid: false, available: false, reason: "Invalid username format." };
+        const valid = validateUsername(username);
+        if (!valid.status) {
+            return { valid: false, available: false, reason: valid.message };
         }
 
         try {
