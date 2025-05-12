@@ -8,7 +8,7 @@ import { Dropdown } from "../ui/option";
 import { Alert } from "../ui/alert"
 import { statesAndDistricts } from '/src/module/js/district-pin';
 import { useFirebase } from "../../context/firebase"
-import { roomsRTB } from "./../../context/firebase-rtb"
+import { ownerRTB, roomsRTB } from "./../../context/firebase-rtb"
 
 import ImageUpload from './form/ImageUpload';
 import AccommodationDetails from './form/AccommodationDetails';
@@ -17,6 +17,7 @@ import FormButtons from './form/FormButtons';
 import { roomStorage } from "../../context/firebase-storage";
 import { onAuthStateChanged } from "firebase/auth";
 import Loader from "../ui/loader";
+import { isAgeAboveLimit, validateIndianPhoneNumber, validateUsername } from "../../module/js/string";
 
 const DescriptiveDetails = ({ ...props }) => {
     return (
@@ -141,10 +142,32 @@ const SubmitPG = () => {
 
     useEffect(() => {
         const unregisterAuthObserver = onAuthStateChanged(firebase.auth, user => {
+            const { getData } = ownerRTB(firebase);
             if (user) {
-                setAuthReady(true);
+                getData(user.uid)
+                    .then((res) => {
+                        if (validateIndianPhoneNumber(res.phoneNumber)) {
+                            if (user.emailVerified) {
+                                if (validateUsername(res.username)) {
+                                    if (isAgeAboveLimit(res.dob)) {
+                                        setAuthReady(true);
+                                    } else {
+                                        setErrorMessage("Your Age is not above 18, please user aged less than 18 are not allowed to submit rooms.");
+                                    }
+                                } else {
+                                    setErrorMessage("Invalid username, or username not set, please set your username first.");
+                                }
+                            } else {
+                                setErrorMessage("Email is not varified of user, please verify your email address.");
+                            }
+                        } else {
+                            setErrorMessage("Phone Number not set, or not a valid phone number, please enter a valid indian phone number..");
+                        }
+                    }).catch(() => {
+                        setErrorMessage("Error while fetching owner details from server.");
+                    })
             } else {
-                setErrorMessageerr("User not logged in");
+                setErrorMessage("User not logged in, please login first, please inform admin, if anything going wrong.");
             }
         });
 
@@ -353,13 +376,13 @@ const SubmitPG = () => {
 
         for (let field of requiredFields) {
             if (!formData[field] || formData[field].toString().trim() === '') {
-                return false;
+                return { status: false, message: "Not all input fields are filled, please fill all input fields.." };
             }
         }
 
         // Check price and shared (must be non-zero positive numbers)
         if (formData.price <= 0 || formData.shared <= 0) {
-            return false;
+            return { status: false, message: "Price and shared must be non-zero positive numbers.." };
         }
 
         // Validate messInfo object
@@ -371,21 +394,22 @@ const SubmitPG = () => {
         for (let field of messInfoFields) {
             const value = formData.messInfo?.[field];
             if (value === undefined || value === null || value === '' || (typeof value === 'number' && value < 0)) {
-                return false;
+                return { status: false, message: "Not all fields of messInfo are provided.. for pg.." };
             }
         }
 
         // Validate images array (must have at least one image)
         if (!Array.isArray(formData.images) || formData.images.length === 0) {
-            return false;
+            return { status: false, message: "Please upload at least 1, image of your room posting.." };
         }
 
-        return true;
+        return { status: true, message: "All inputs are valid" };
     };
 
     const submitFormData = async () => {
         setLoading(true);
-        if (verifyInputs(formData)) {
+        const validateInputs = verifyInputs(formData);
+        if (validateInputs.status) {
             try {
                 setUploading(true);
                 const { saveRoom } = roomsRTB(firebase);
@@ -423,7 +447,7 @@ const SubmitPG = () => {
                 setErrorMessage("Error saving room. Please try again.");
             }
         } else {
-            setErrorMessage("Please fill, all fields, all fields are required..")
+            setErrorMessage(validateInputs.message)
             setTimeout(() => {
                 setErrorMessage("")
             }, 3000);
