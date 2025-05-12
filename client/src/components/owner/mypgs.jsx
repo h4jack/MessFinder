@@ -4,6 +4,8 @@ import { roomsRTB } from "../../context/firebase-rtb";
 import { useFirebase } from "../../context/firebase";
 import { capitalize } from "../../module/js/string";
 import { formatRelativeTime } from "../../module/js/getTime";
+import { Alert } from "../ui/alert"
+import { Loader } from "../ui/loader"
 
 const RoomCard = ({ roomData }) => {
     const pg = roomData;
@@ -67,12 +69,26 @@ const MyPGs = () => {
     const { getRoom } = roomsRTB(firebase);
 
     const [pgData, setPGData] = useState([]);
-    const [selectedTab, setSelectedTab] = useState("All");
+    const [selectedTab, setSelectedTab] = useState("all");
+    const [loading, setLoading] = useState(true);
+    const [errorMessage, setErrorMessage] = useState(false)
 
     useEffect(() => {
+        setLoading(true);
         getRoom("")
             .then((res) => {
-                const transformed = Object.entries(res).map(([roomId, data]) => ({
+                // Convert the response to an array of [roomId, data]
+                let entries = Object.entries(res);
+
+                // Apply filtering based on selectedTab
+                if (selectedTab.toLowerCase() === "draft") {
+                    entries = entries.filter(([_, data]) => data.status?.toLowerCase() === "draft");
+                } else if (selectedTab.toLowerCase() === "public") {
+                    entries = entries.filter(([_, data]) => data.status?.toLowerCase() === "public");
+                }
+
+                // Map the filtered entries to the required format
+                const transformed = entries.map(([roomId, data]) => ({
                     roomId: roomId,
                     thumbnail: data.images?.[0]?.preview || "/assets/default.png",
                     name: data.name,
@@ -87,47 +103,56 @@ const MyPGs = () => {
                 }));
 
                 setPGData(transformed);
+                setErrorMessage(false)
+                setLoading(false);
             })
             .catch((error) => {
-                console.error(error);
+                setLoading(false);
+                setErrorMessage("Error while getting, your room details..")
             });
-    }, []);
+    }, [selectedTab]);
 
+    if (errorMessage) {
+        return <Alert message={errorMessage} />;
+    }
 
+    if (loading) {
+        return <Loader text="Loading your data.. please" />;
+    }
 
     return (
         <div className="container mx-auto p-4">
             <h1 className="text-2xl font-bold mb-4">My PGs</h1>
             <div className="flex space-x-4 mb-4">
                 <button
-                    className={`px-4 py-2 rounded-md ${selectedTab === "All"
+                    className={`px-4 py-2 rounded-md ${selectedTab === "all"
                         ? "bg-teal-500 text-white"
                         : "bg-gray-200 text-gray-700"
                         }`}
-                    onClick={() => setSelectedTab("All")}
+                    onClick={() => setSelectedTab("all")}
                 >
                     All
                 </button>
                 <button
-                    className={`px-4 py-2 rounded-md ${selectedTab === "Drafts"
+                    className={`px-4 py-2 rounded-md ${selectedTab === "draft"
                         ? "bg-indigo-500 text-white"
                         : "bg-gray-200 text-gray-700"
                         }`}
-                    onClick={() => setSelectedTab("Drafts")}
+                    onClick={() => setSelectedTab("draft")}
                 >
                     Drafts
                 </button>
                 <button
-                    className={`px-4 py-2 rounded-md ${selectedTab === "Posts"
+                    className={`px-4 py-2 rounded-md ${selectedTab === "public"
                         ? "bg-green-500 text-white"
                         : "bg-gray-200 text-gray-700"
                         }`}
-                    onClick={() => setSelectedTab("Posts")}
+                    onClick={() => setSelectedTab("public")}
                 >
                     Posts
                 </button>
             </div>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
                 {pgData.map((pg, index) => (
                     <RoomCard key={index} roomData={pg} />
                 ))}
