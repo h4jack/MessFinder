@@ -68,10 +68,10 @@ const MessDetails = ({
                         value={canteenAvailability}
                         onChange={(e) => setCanteenAvailability(e.target.value)}
                         options={[
-                            { value: "self", label: "Self" },
-                            { value: "near", label: "Near" },
-                            { value: "far", label: "Far" },
-                            { value: "dd", label: "Door Delivery" },
+                            { value: "Self", label: "Self" },
+                            { value: "Near", label: "Near" },
+                            { value: "Far", label: "Far" },
+                            { value: "Door Delivery", label: "Door Delivery" },
                         ]}
                         required
                     />

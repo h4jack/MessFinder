@@ -79,7 +79,7 @@ const SubmitPG = () => {
             totalBeds: 1,
             totalCRooms: 0,
             totalBathrooms: 1,
-            CanteenAvailability: "Near",
+            canteenAvailability: "Near",
             totalFloors: 1,
         },
         facilities: "",
@@ -126,7 +126,7 @@ const SubmitPG = () => {
                     totalBeds: 1,
                     totalCRooms: 0,
                     totalBathrooms: 1,
-                    CanteenAvailability: "Near",
+                    canteenAvailability: "Near",
                     totalFloors: 1,
                 },
                 facilities: "",
@@ -366,7 +366,7 @@ const SubmitPG = () => {
         setFormData((prev) => ({ ...prev, images: newImages }));
     };
 
-    const { uploadRoomImages } = roomStorage();
+
 
     const verifyInputs = (formData) => {
         // Check top-level string fields
@@ -390,7 +390,7 @@ const SubmitPG = () => {
         // Validate messInfo object
         const messInfoFields = [
             'messType', 'totalRooms', 'totalBeds',
-            'totalCRooms', 'totalBathrooms', 'CanteenAvailability', 'totalFloors'
+            'totalCRooms', 'totalBathrooms', 'canteenAvailability', 'totalFloors'
         ];
 
         for (let field of messInfoFields) {
@@ -407,6 +407,8 @@ const SubmitPG = () => {
 
         return { status: true, message: "All inputs are valid" };
     };
+
+    const { uploadRoomImages } = roomStorage();
 
     const submitFormData = async () => {
         setLoading(true);
@@ -428,7 +430,7 @@ const SubmitPG = () => {
 
                 // Now currentRoomId is always valid
                 downloadUrls = await uploadRoomImages(currentRoomId, formData.images, (index, progress) => {
-                    console.log(`File ${index + 1} upload progress: ${progress.toFixed(2)} %`);
+                    // console.log(`File ${index + 1} upload progress: ${progress.toFixed(2)} %`);
                 });
 
                 const updatedImages = downloadUrls.map((url) => ({ preview: url }));
@@ -438,9 +440,6 @@ const SubmitPG = () => {
 
                 // Save updated formData with image URLs
                 await saveRoom(updatedFormData, currentRoomId);
-
-                console.log("Uploaded URLs:", downloadUrls);
-                console.log(updatedFormData);
 
                 setUpdateDone("You can see your room list, on mypgs..");
                 setUploading(false);
@@ -461,23 +460,28 @@ const SubmitPG = () => {
         formData.status = "public";
         setFormData((prev) => ({ ...prev, status: "public" }))
         submitFormData();
-        console.log("Public");
     };
 
     const handleDraft = () => {
         formData.status = "draft";
         setFormData((prev) => ({ ...prev, status: "draft" }))
         submitFormData();
-        console.log("Draft")
     }
+
+
+    const { deleteRoomImages } = roomStorage();
 
     const handleDelete = () => {
         const { deleteRoom } = roomsRTB(firebase);
-
         deleteRoom(roomId, uid)
             .then((res) => {
                 if (res.status) {
-                    setUpdateDone("Deleted room successfully..")
+                    deleteRoomImages(roomId)
+                        .then(() => {
+                            setUpdateDone("Deleted room successfully, enjoy..")
+                        }).catch(() => {
+                            setErrorMessage("Error: while deleting room images from storage, please contact admin..")
+                        })
                 } else {
                     setUpdateDone(res.message)
                 }
