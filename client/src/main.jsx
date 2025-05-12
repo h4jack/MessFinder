@@ -58,7 +58,7 @@ let router = createBrowserRouter(
           <Route path=":location" element={<SearchResult />} />
         </Route>
 
-        <Route path="room/:id" element={<RoomDetails />} />
+        <Route path="room/:roomId" element={<RoomDetails />} />
         <Route path="test" element={<Test />} />
 
         {/* <Route path="owner/:id" element={<span className='text-7xl w-full text-center text-gray-100'>Owner Home</span>} /> */}

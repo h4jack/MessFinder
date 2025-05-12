@@ -1,4 +1,5 @@
 import { ref, push, get, remove, update, serverTimestamp, set } from "firebase/database";
+import { validateUsername } from "../module/js/string";
 
 const ownerRTB = (firebase) => {
 
@@ -77,9 +78,9 @@ const ownerRTB = (firebase) => {
 
     const userExists = async (username) => {
         // 1. Validate format: starts with a-z, can include numbers and underscores
-        const valid = /^[a-z][a-z0-9_]*$/.test(username);
-        if (!valid) {
-            return { valid: false, available: false, reason: "Invalid username format." };
+        const valid = validateUsername(username);
+        if (!valid.status) {
+            return { valid: false, available: false, reason: valid.message };
         }
 
         try {
@@ -144,15 +145,28 @@ const roomsRTB = (firebase) => {
         }
     };
 
-    const deleteRoom = async (roomId) => {
+    const deleteRoom = async (roomId, ownerId) => {
         try {
             const roomRef = ref(firebase.db, `/mess-finder/rooms/${roomId}`);
+            const snapshot = await get(roomRef);
+
+            if (!snapshot.exists()) {
+                return { status: false, message: "Room not found." };
+            }
+
+            const roomData = snapshot.val();
+
+            if (roomData.ownerId !== ownerId) {
+                return { status: false, message: "Unauthorized: Only the owner can delete the room." };
+            }
+
             await remove(roomRef);
             return { status: true, message: "Room deleted." };
         } catch (error) {
             throw error;
         }
     };
+
 
     const getRoom = async (roomId) => {
         try {

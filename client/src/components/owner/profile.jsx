@@ -93,8 +93,7 @@ const Profile = () => {
                 await updateEmail(user, formData.email);
             }
         } catch (error) {
-            console.error("Auth update error:", error);
-            throw new Error("Failed to update auth info.");
+            throw new Error("User might already exists.");
         }
     };
 
@@ -174,8 +173,7 @@ const Profile = () => {
             setIsEditing(false);
             window.location.reload();
         } catch (error) {
-            console.error("Failed to save user data:", error);
-            showAlert("Failed to update profile. If email change fails, try logging in again.", "error");
+            showAlert("Failed to update profile. If email change fails, try logging in again, OR " + error, "error");
         }
     };
 
@@ -188,7 +186,7 @@ const Profile = () => {
         const user = firebase.auth.currentUser;
         sendEmailVerification(user)
             .then(() => {
-                showAlert("Verification email sent!", "success");
+                showAlert("Verification email sent!, please refresh after verifying, to see the effect.", "success");
             })
             .catch(() => {
                 showAlert("Failed to send verification email. if error persist. re-login and try again.", "error");

@@ -8,7 +8,7 @@ import { Dropdown } from "../ui/option";
 import { Alert } from "../ui/alert"
 import { statesAndDistricts } from '/src/module/js/district-pin';
 import { useFirebase } from "../../context/firebase"
-import { roomsRTB } from "./../../context/firebase-rtb"
+import { ownerRTB, roomsRTB } from "./../../context/firebase-rtb"
 
 import ImageUpload from './form/ImageUpload';
 import AccommodationDetails from './form/AccommodationDetails';
@@ -17,6 +17,7 @@ import FormButtons from './form/FormButtons';
 import { roomStorage } from "../../context/firebase-storage";
 import { onAuthStateChanged } from "firebase/auth";
 import Loader from "../ui/loader";
+import { isAgeAboveLimit, validateIndianPhoneNumber, validateUsername } from "../../module/js/string";
 
 const DescriptiveDetails = ({ ...props }) => {
     return (
@@ -97,6 +98,7 @@ const SubmitPG = () => {
     const [selectedState, setSelectedState] = useState('');
     const [selectedDistrict, setSelectedDistrict] = useState('');
     const [pincodeError, setPincodeError] = useState("");
+    const [uid, setUID] = useState("");
     const [roomId, setRoomId] = useState("");
     const [authReady, setAuthReady] = useState(false);
     const [uploading, setUploading] = useState(false);
@@ -141,10 +143,33 @@ const SubmitPG = () => {
 
     useEffect(() => {
         const unregisterAuthObserver = onAuthStateChanged(firebase.auth, user => {
+            const { getData } = ownerRTB(firebase);
             if (user) {
-                setAuthReady(true);
+                setUID(user.uid);
+                getData(user.uid)
+                    .then((res) => {
+                        if (validateIndianPhoneNumber(res.phoneNumber)) {
+                            if (user.emailVerified) {
+                                if (validateUsername(res.username)) {
+                                    if (isAgeAboveLimit(res.dob)) {
+                                        setAuthReady(true);
+                                    } else {
+                                        setErrorMessage("Your Age is not above 18, please user aged less than 18 are not allowed to submit rooms.");
+                                    }
+                                } else {
+                                    setErrorMessage("Invalid username, or username not set, please set your username first.");
+                                }
+                            } else {
+                                setErrorMessage("Email is not varified of user, please verify your email address.");
+                            }
+                        } else {
+                            setErrorMessage("Phone Number not set, or not a valid phone number, please enter a valid indian phone number..");
+                        }
+                    }).catch(() => {
+                        setErrorMessage("Error while fetching owner details from server.");
+                    })
             } else {
-                console.log("User not logged in");
+                setErrorMessage("User not logged in, please login first, please inform admin, if anything going wrong.");
             }
         });
 
@@ -240,7 +265,6 @@ const SubmitPG = () => {
         if (type === "textarea") {
             // Replace real newlines with the string "\n"
             processedValue = value.replace(/\n/g, "\\n");
-            console.log(processedValue);
         }
 
         setFormData(prev => ({
@@ -344,48 +368,123 @@ const SubmitPG = () => {
 
     const { uploadRoomImages } = roomStorage();
 
+    const verifyInputs = (formData) => {
+        // Check top-level string fields
+        const requiredFields = [
+            'name', 'location', 'state', 'district', 'pincode',
+            'accommodationFor', 'suitableFor', 'facilities',
+            'services', 'rules', 'description', 'status'
+        ];
+
+        for (let field of requiredFields) {
+            if (!formData[field] || formData[field].toString().trim() === '') {
+                return { status: false, message: "Not all input fields are filled, please fill all input fields.." };
+            }
+        }
+
+        // Check price and shared (must be non-zero positive numbers)
+        if (formData.price <= 0 || formData.shared <= 0) {
+            return { status: false, message: "Price and shared must be non-zero positive numbers.." };
+        }
+
+        // Validate messInfo object
+        const messInfoFields = [
+            'messType', 'totalRooms', 'totalBeds',
+            'totalCRooms', 'totalBathrooms', 'CanteenAvailability', 'totalFloors'
+        ];
+
+        for (let field of messInfoFields) {
+            const value = formData.messInfo?.[field];
+            if (value === undefined || value === null || value === '' || (typeof value === 'number' && value < 0)) {
+                return { status: false, message: "Not all fields of messInfo are provided.. for pg.." };
+            }
+        }
+
+        // Validate images array (must have at least one image)
+        if (!Array.isArray(formData.images) || formData.images.length === 0) {
+            return { status: false, message: "Please upload at least 1, image of your room posting.." };
+        }
+
+        return { status: true, message: "All inputs are valid" };
+    };
+
     const submitFormData = async () => {
         setLoading(true);
-        try {
-            setUploading(true);
-            const { saveRoom } = roomsRTB(firebase);
+        const validateInputs = verifyInputs(formData);
+        if (validateInputs.status) {
+            try {
+                setUploading(true);
+                const { saveRoom } = roomsRTB(firebase);
 
-            let downloadUrls;
-            if (!roomId) {
-                const result = await saveRoom(formData, roomId);
-                setRoomId(result.roomId);
+                let downloadUrls;
+                let currentRoomId = roomId;
+
+                // If no roomId exists, create a new room and get its ID
+                if (!currentRoomId) {
+                    const result = await saveRoom(formData, null);
+                    currentRoomId = result.roomId;
+                    setRoomId(currentRoomId); // update state for UI or future calls
+                }
+
+                // Now currentRoomId is always valid
+                downloadUrls = await uploadRoomImages(currentRoomId, formData.images, (index, progress) => {
+                    console.log(`File ${index + 1} upload progress: ${progress.toFixed(2)} %`);
+                });
+
+                const updatedImages = downloadUrls.map((url) => ({ preview: url }));
+                const updatedFormData = { ...formData, images: updatedImages };
+
+                setFormData(updatedFormData);
+
+                // Save updated formData with image URLs
+                await saveRoom(updatedFormData, currentRoomId);
+
+                console.log("Uploaded URLs:", downloadUrls);
+                console.log(updatedFormData);
+
+                setUpdateDone("You can see your room list, on mypgs..");
+                setUploading(false);
+            } catch (error) {
+                console.error("Failed to save room:", error);
+                setErrorMessage("Error saving room. Please try again.");
             }
-            downloadUrls = await uploadRoomImages(roomId, formData.images, (index, progress) => {
-                console.log(`File ${index + 1} upload progress: ${progress.toFixed(2)}%`);
-            });
-
-            console.log(formData);
-            formData.images = downloadUrls.map((url) => ({ preview: url }));
-            setFormData({ ...formData, images: downloadUrls.map((url) => ({ preview: url })) })
-            await saveRoom(formData, roomId);
-
-            console.log("Uploaded URLs:", downloadUrls);
-            console.log(formData);
-
-            setUpdateDone(true);
-            setUploading(false);
-        } catch (error) {
-            console.error("Failed to save room:", error);
-            setErrorMessage("Error saving room. Please try again.");
+        } else {
+            setErrorMessage(validateInputs.message)
+            setTimeout(() => {
+                setErrorMessage("")
+            }, 3000);
         }
         setLoading(false);
     };
 
     const handleSubmit = () => {
-        formData.status = "draft";
+        formData.status = "public";
         setFormData((prev) => ({ ...prev, status: "public" }))
         submitFormData();
+        console.log("Public");
     };
 
     const handleDraft = () => {
         formData.status = "draft";
         setFormData((prev) => ({ ...prev, status: "draft" }))
         submitFormData();
+        console.log("Draft")
+    }
+
+    const handleDelete = () => {
+        const { deleteRoom } = roomsRTB(firebase);
+
+        deleteRoom(roomId, uid)
+            .then((res) => {
+                if (res.status) {
+                    setUpdateDone("Deleted room successfully..")
+                } else {
+                    setUpdateDone(res.message)
+                }
+            }).catch((error) => {
+                console.log(error);
+                setErrorMessage("Error: while deleting your room, please retry.")
+            });
     }
 
     if (loading) {
@@ -393,7 +492,7 @@ const SubmitPG = () => {
     }
 
     if (updateDone) {
-        return <Alert type="success" header="Uploading Room Successfully." message="You can see your room list, on mypgs.." />;
+        return <Alert type="success" header="Updating Room Successfully." message={updateDone} />;
     }
     if (errorMessage) {
         return <Alert type="error" header="Error Occured, Read below." message={errorMessage} />;
@@ -492,7 +591,7 @@ const SubmitPG = () => {
 
                 <DescriptiveDetails onChange={handleChange} facilities={formData.facilities} services={formData.services} rules={formData.rules} description={formData.description} />
                 <ImageUpload images={formData.images} setImages={handleImageChange} />
-                <FormButtons onDraft={handleDraft} onSubmit={handleSubmit} />
+                <FormButtons onDelete={roomId ? handleDelete : false} onDraft={handleDraft} onSubmit={handleSubmit} />
             </div>
         </div>
     );
