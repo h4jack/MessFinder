@@ -1,34 +1,42 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaEdit, FaEye } from "react-icons/fa";
 import { roomsRTB } from "../../context/firebase-rtb";
 import { useFirebase } from "../../context/firebase";
+import { capitalize } from "../../module/js/string";
+import { formatRelativeTime } from "../../module/js/getTime";
 
 const RoomCard = ({ roomData }) => {
     const pg = roomData;
     return (
         <div
-            key={pg.id}
+            key={pg.roomId}
             className="w-56 rounded-lg shadow-md border border-gray-300 relative overflow-hidden bg-white"
         >
             <img
                 src={pg.thumbnail}
-                alt={pg.title}
-                className="w-full h-36 object-cover mb-1"
+                alt={pg.name}
+                className="w-full h-36 object-cover mb-1 shadow-sm"
             />
             <div className="p-2">
-                <h2 className="text-lg font-semibold">{pg.title}</h2>
+                <h2 className="text-lg font-semibold">{pg.name}</h2>
                 <p className="text-sm text-gray-600">{pg.location}</p>
                 <p className="text-sm font-bold text-gray-800">
                     {pg.price}
                 </p>
                 <table className="text-sm text-gray-600 mt-2 w-full">
                     <tbody>
-                        {Object.entries(pg.details).map(([key, value]) => (
-                            <tr key={key}>
-                                <td className="pr-2 font-medium">{key}:</td>
-                                <td>{value}</td>
-                            </tr>
-                        ))}
+                        <tr>
+                            <td className="pr-2 font-medium">Accomodation for:</td>
+                            <td>{pg.messInfo.accommodationFor}</td>
+                        </tr>
+                        <tr>
+                            <td className="pr-2 font-medium">Suitable for:</td>
+                            <td>{pg.messInfo.suitableFor}</td>
+                        </tr>
+                        <tr>
+                            <td className="pr-2 font-medium">Shared:</td>
+                            <td>{pg.messInfo.shared ? `with ${1} mate` : "No"}</td>
+                        </tr>
                     </tbody>
                 </table>
                 <p className="text-xs text-gray-500 mt-2">
@@ -36,13 +44,13 @@ const RoomCard = ({ roomData }) => {
                 </p>
                 <div className="absolute top-2 right-2 flex space-x-2">
                     <a
-                        href={`/owner/edit-room/${pg.id}`}
+                        href={`/owner/submit-pg/${pg.roomId}`}
                         className="text-blue-500 hover:text-blue-700 p-2 bg-gray-100 rounded-md"
                     >
                         <FaEdit />
                     </a>
                     <a
-                        href={`/room/${pg.id}`}
+                        href={`/room/${pg.roomId}`}
                         className="text-green-500 hover:text-green-700 p-2 bg-gray-100 rounded-md"
                     >
                         <FaEye />
@@ -54,16 +62,18 @@ const RoomCard = ({ roomData }) => {
 }
 
 const MyPGs = () => {
+    capitalize
     const firebase = useFirebase();
     const { getRoom } = roomsRTB(firebase);
 
     const [pgData, setPGData] = useState([]);
+    const [selectedTab, setSelectedTab] = useState("All");
 
     useEffect(() => {
         getRoom("")
             .then((res) => {
-                const transformed = Object.entries(res).map(([roomId, data], index) => ({
-                    roomId: index + 1,
+                const transformed = Object.entries(res).map(([roomId, data]) => ({
+                    roomId: roomId,
                     thumbnail: data.images?.[0]?.preview || "/assets/default.png",
                     name: data.name,
                     location: `${data.location}, ${data.district}`,
@@ -83,13 +93,7 @@ const MyPGs = () => {
             });
     }, []);
 
-    function capitalize(str) {
-        if (!str) return "";
-        return str.charAt(0).toUpperCase() + str.slice(1);
-    }
 
-
-    const [selectedTab, setSelectedTab] = React.useState("All");
 
     return (
         <div className="container mx-auto p-4">
@@ -123,10 +127,10 @@ const MyPGs = () => {
                     Posts
                 </button>
             </div>
-            <div className="flex flex-wrap gap-3 justify-center">
-                {/* {pgData.map((pg, index) => (
+            <div className="flex flex-wrap gap-3">
+                {pgData.map((pg, index) => (
                     <RoomCard key={index} roomData={pg} />
-                ))} */}
+                ))}
             </div>
         </div>
     );
