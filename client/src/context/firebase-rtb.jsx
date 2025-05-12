@@ -145,15 +145,28 @@ const roomsRTB = (firebase) => {
         }
     };
 
-    const deleteRoom = async (roomId) => {
+    const deleteRoom = async (roomId, ownerId) => {
         try {
             const roomRef = ref(firebase.db, `/mess-finder/rooms/${roomId}`);
+            const snapshot = await get(roomRef);
+
+            if (!snapshot.exists()) {
+                return { status: false, message: "Room not found." };
+            }
+
+            const roomData = snapshot.val();
+
+            if (roomData.ownerId !== ownerId) {
+                return { status: false, message: "Unauthorized: Only the owner can delete the room." };
+            }
+
             await remove(roomRef);
             return { status: true, message: "Room deleted." };
         } catch (error) {
             throw error;
         }
     };
+
 
     const getRoom = async (roomId) => {
         try {

@@ -153,9 +153,13 @@ const MyPGs = () => {
                 </button>
             </div>
             <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
-                {pgData.map((pg, index) => (
-                    <RoomCard key={index} roomData={pg} />
-                ))}
+                {pgData.length > 0 ? (
+                    pgData.map((pg, index) => (
+                        <RoomCard key={index} roomData={pg} />
+                    ))
+                ) : (
+                    <p className="text-center text-3xl w-full text-gray-500">No rooms available.</p>
+                )}
             </div>
         </div>
     );

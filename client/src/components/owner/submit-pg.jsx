@@ -98,6 +98,7 @@ const SubmitPG = () => {
     const [selectedState, setSelectedState] = useState('');
     const [selectedDistrict, setSelectedDistrict] = useState('');
     const [pincodeError, setPincodeError] = useState("");
+    const [uid, setUID] = useState("");
     const [roomId, setRoomId] = useState("");
     const [authReady, setAuthReady] = useState(false);
     const [uploading, setUploading] = useState(false);
@@ -144,6 +145,7 @@ const SubmitPG = () => {
         const unregisterAuthObserver = onAuthStateChanged(firebase.auth, user => {
             const { getData } = ownerRTB(firebase);
             if (user) {
+                setUID(user.uid);
                 getData(user.uid)
                     .then((res) => {
                         if (validateIndianPhoneNumber(res.phoneNumber)) {
@@ -440,7 +442,7 @@ const SubmitPG = () => {
                 console.log("Uploaded URLs:", downloadUrls);
                 console.log(updatedFormData);
 
-                setUpdateDone(true);
+                setUpdateDone("You can see your room list, on mypgs..");
                 setUploading(false);
             } catch (error) {
                 console.error("Failed to save room:", error);
@@ -469,12 +471,28 @@ const SubmitPG = () => {
         console.log("Draft")
     }
 
+    const handleDelete = () => {
+        const { deleteRoom } = roomsRTB(firebase);
+
+        deleteRoom(roomId, uid)
+            .then((res) => {
+                if (res.status) {
+                    setUpdateDone("Deleted room successfully..")
+                } else {
+                    setUpdateDone(res.message)
+                }
+            }).catch((error) => {
+                console.log(error);
+                setErrorMessage("Error: while deleting your room, please retry.")
+            });
+    }
+
     if (loading) {
         return <Loader text="Loading, Please wait." />
     }
 
     if (updateDone) {
-        return <Alert type="success" header="Uploading Room Successfully." message="You can see your room list, on mypgs.." />;
+        return <Alert type="success" header="Updating Room Successfully." message={updateDone} />;
     }
     if (errorMessage) {
         return <Alert type="error" header="Error Occured, Read below." message={errorMessage} />;
@@ -573,7 +591,7 @@ const SubmitPG = () => {
 
                 <DescriptiveDetails onChange={handleChange} facilities={formData.facilities} services={formData.services} rules={formData.rules} description={formData.description} />
                 <ImageUpload images={formData.images} setImages={handleImageChange} />
-                <FormButtons onDraft={handleDraft} onSubmit={handleSubmit} />
+                <FormButtons onDelete={roomId ? handleDelete : false} onDraft={handleDraft} onSubmit={handleSubmit} />
             </div>
         </div>
     );

@@ -1,8 +1,16 @@
 import { Button } from "../../ui/button"; // Assuming Button is a reusable component
 
-const FormButtons = ({ onDraft, onSubmit }) => {
+const FormButtons = ({ onDelete, onDraft, onSubmit }) => {
     return (
         <div className="flex justify-between gap-3">
+            {onDelete &&
+                <Button
+                    text="Delete"
+                    className="sm:max-w-1/4 bg-red-500 text-white"
+                    onClick={onDelete}
+                    type="button"
+                />
+            }
             <Button
                 text="Draft"
                 className="sm:max-w-1/4 bg-yellow-500 text-white"
