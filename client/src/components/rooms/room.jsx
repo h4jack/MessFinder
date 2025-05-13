@@ -13,6 +13,7 @@ import { InputField } from "../ui/input"
 import { Alert } from "../ui/alert";
 import { Loader } from "../ui/loader";
 import { formatRelativeTime } from "../../module/js/getTime";
+import { capitalize } from "../../module/js/string";
 
 // ImageCarousel Component
 const ImageCarousel = ({ images }) => {
@@ -81,7 +82,7 @@ const RoomDetailsCard = ({
         images: [],
         status: "",
         ownerId: "",
-        updatedAt: "",
+        createdAt: "",
     },
     ownerInfo = {
         name: "",
@@ -126,11 +127,19 @@ const RoomDetailsCard = ({
                 <tbody>
                     <tr>
                         <td className="font-semibold">Accommodation For:</td>
-                        <td>{roomInfo.accommodationFor}</td>
+                        <td>{
+                            roomInfo.accommodationFor.toLowerCase() === "both"
+                            ? "For Both, Boys and Girls"
+                            : capitalize(roomInfo.accommodationFor)
+                        }</td>
                     </tr>
                     <tr>
                         <td className="font-semibold">Suitable For:</td>
-                        <td>{roomInfo.suitableFor}</td>
+                        <td>{
+                            roomInfo.suitableFor.toLowerCase() === "both"
+                            ? "Students, Working Professionals"
+                            : capitalize(roomInfo.suitableFor)
+                        }</td>
                     </tr>
                     <tr>
                         <td className="font-semibold">Vacant Capacity:</td>
@@ -272,7 +281,7 @@ const RoomDetailsCard = ({
                 {/* Right Section: Posting Time */}
                 <div className="text-right">
                     <p className="text-sm text-gray-600">Posted on</p>
-                    <p className="text-sm font-semibold text-gray-800">{formatRelativeTime(roomInfo.updatedAt)}</p> {/* Replace with actual posting time */}
+                    <p className="text-sm font-semibold text-gray-800">{formatRelativeTime(roomInfo.createdAt)}</p> {/* Replace with actual posting time */}
                 </div>
             </div>
         </div>

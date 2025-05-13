@@ -42,7 +42,7 @@ const RoomCard = ({ roomData }) => {
                     </tbody>
                 </table>
                 <p className="text-xs text-gray-500 mt-2">
-                    Updated: {pg.updatedAt}
+                    Created: {pg.createdAt}
                 </p>
                 <div className="absolute top-2 right-2 flex space-x-2">
                     <a
@@ -99,7 +99,7 @@ const MyPGs = () => {
                         suitableFor: capitalize(data.suitableFor),
                         shared: data.shared,
                     },
-                    updatedAt: formatRelativeTime(data.updatedAt),
+                    createdAt: formatRelativeTime(data.createdAt),
                 }));
 
                 setPGData(transformed);

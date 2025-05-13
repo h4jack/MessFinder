@@ -29,6 +29,7 @@ const AccommodationDetails = ({
                 <Dropdown
                     label="Suitable For"
                     options={[
+                        { value: "both", label: "Both" },
                         { value: "students", label: "Students" },
                         { value: "working", label: "Working Professionals" },
                     ]}

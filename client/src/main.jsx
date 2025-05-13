@@ -55,7 +55,7 @@ let router = createBrowserRouter(
       <Route path="/" element={<Layout />} ErrorBoundary={ErrorPage}>
         <Route path='' element={<HomeSearch />} />
         <Route path="search" element={<SearchResult />}>
-          <Route path=":location" element={<SearchResult />} />
+          <Route path=":query" element={<SearchResult />} />
         </Route>
 
         <Route path="room/:roomId" element={<RoomDetails />} />

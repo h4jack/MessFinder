@@ -25,7 +25,10 @@ const DescriptiveDetails = ({ ...props }) => {
             <InputField
                 label="Facilities"
                 name="facilities"
-                placeholder="List facilities (one per line)"
+                placeholder="List facilities (one per line):
+AC
+Fridge
+Cooler"
                 type="textarea"
                 rows="4"
                 value={props.facilities?.replace(/\\n/g, "\n")}
@@ -34,7 +37,10 @@ const DescriptiveDetails = ({ ...props }) => {
             <InputField
                 label="Services"
                 name="services"
-                placeholder="List services (one per line)"
+                placeholder="List services (one per line)
+Security Guard
+Home Cleaner
+"
                 type="textarea"
                 rows="4"
                 value={props.services?.replace(/\\n/g, "\n")}
@@ -43,7 +49,10 @@ const DescriptiveDetails = ({ ...props }) => {
             <InputField
                 label="Rules"
                 name="rules"
-                placeholder="List rules (one per line)"
+                placeholder="List rules (one per line)
+No Entry after 10pm
+No Smocking
+No Drinking"
                 type="textarea"
                 rows="4"
                 value={props.rules?.replace(/\\n/g, "\n")}
@@ -52,7 +61,7 @@ const DescriptiveDetails = ({ ...props }) => {
             <InputField
                 label="Description"
                 name="description"
-                placeholder="Enter description"
+                placeholder="Write detailed description of your Mess or Hostel, include any extra information, if you want.."
                 type="textarea"
                 rows="6"
                 value={props.description?.replace(/\\n/g, "\n")}
@@ -79,7 +88,7 @@ const SubmitPG = () => {
             totalBeds: 1,
             totalCRooms: 0,
             totalBathrooms: 1,
-            CanteenAvailability: "Near",
+            canteenAvailability: "Near",
             totalFloors: 1,
         },
         facilities: "",
@@ -126,7 +135,7 @@ const SubmitPG = () => {
                     totalBeds: 1,
                     totalCRooms: 0,
                     totalBathrooms: 1,
-                    CanteenAvailability: "Near",
+                    canteenAvailability: "Near",
                     totalFloors: 1,
                 },
                 facilities: "",
@@ -366,7 +375,7 @@ const SubmitPG = () => {
         setFormData((prev) => ({ ...prev, images: newImages }));
     };
 
-    const { uploadRoomImages } = roomStorage();
+
 
     const verifyInputs = (formData) => {
         // Check top-level string fields
@@ -390,7 +399,7 @@ const SubmitPG = () => {
         // Validate messInfo object
         const messInfoFields = [
             'messType', 'totalRooms', 'totalBeds',
-            'totalCRooms', 'totalBathrooms', 'CanteenAvailability', 'totalFloors'
+            'totalCRooms', 'totalBathrooms', 'canteenAvailability', 'totalFloors'
         ];
 
         for (let field of messInfoFields) {
@@ -407,6 +416,8 @@ const SubmitPG = () => {
 
         return { status: true, message: "All inputs are valid" };
     };
+
+    const { uploadRoomImages } = roomStorage();
 
     const submitFormData = async () => {
         setLoading(true);
@@ -428,7 +439,7 @@ const SubmitPG = () => {
 
                 // Now currentRoomId is always valid
                 downloadUrls = await uploadRoomImages(currentRoomId, formData.images, (index, progress) => {
-                    console.log(`File ${index + 1} upload progress: ${progress.toFixed(2)} %`);
+                    // console.log(`File ${index + 1} upload progress: ${progress.toFixed(2)} %`);
                 });
 
                 const updatedImages = downloadUrls.map((url) => ({ preview: url }));
@@ -438,9 +449,6 @@ const SubmitPG = () => {
 
                 // Save updated formData with image URLs
                 await saveRoom(updatedFormData, currentRoomId);
-
-                console.log("Uploaded URLs:", downloadUrls);
-                console.log(updatedFormData);
 
                 setUpdateDone("You can see your room list, on mypgs..");
                 setUploading(false);
@@ -461,23 +469,27 @@ const SubmitPG = () => {
         formData.status = "public";
         setFormData((prev) => ({ ...prev, status: "public" }))
         submitFormData();
-        console.log("Public");
     };
 
     const handleDraft = () => {
         formData.status = "draft";
         setFormData((prev) => ({ ...prev, status: "draft" }))
         submitFormData();
-        console.log("Draft")
     }
+
+    const { deleteRoomImages } = roomStorage();
 
     const handleDelete = () => {
         const { deleteRoom } = roomsRTB(firebase);
-
         deleteRoom(roomId, uid)
             .then((res) => {
                 if (res.status) {
-                    setUpdateDone("Deleted room successfully..")
+                    deleteRoomImages(roomId)
+                        .then(() => {
+                            setUpdateDone("Deleted room successfully, enjoy..")
+                        }).catch(() => {
+                            setErrorMessage("Error: while deleting room images from storage, please contact admin..")
+                        })
                 } else {
                     setUpdateDone(res.message)
                 }
@@ -494,6 +506,7 @@ const SubmitPG = () => {
     if (updateDone) {
         return <Alert type="success" header="Updating Room Successfully." message={updateDone} />;
     }
+
     if (errorMessage) {
         return <Alert type="error" header="Error Occured, Read below." message={errorMessage} />;
     }

@@ -1,22 +1,36 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { useParams, useLocation } from 'react-router-dom';
+
 import { FaFilter } from "react-icons/fa";
 import { FiSearch } from "react-icons/fi";
 import { GoLocation } from "react-icons/go";
 
-const  SearchBar =  ({ onSearch }) => {
-    const [filters, setFilters] = useState({
-        keyword: "",
-        gender: "all",
-        suitableFor: "",
-        maxPrice: "",
-        shared: 0,
-        sortBy: 0,
-    });
+import { useFirebase } from "../../context/firebase";
+import { ownerRTB, roomsRTB } from "../../context/firebase-rtb";
+import { formatRelativeTime } from "../../module/js/getTime";
+import { capitalize } from "../../module/js/string";
+import Loader from "../ui/loader";
+
+const SearchBar = ({ onSearch, filters, setFilters }) => {
     const [showFilters, setShowFilters] = useState(false);
+    const dropdownRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setShowFilters(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFilters({ ...filters, [name]: value });
+        const parsedValue = ["sortBy", "shared", "maxPrice"].includes(name)
+            ? value === "" ? "" : parseInt(value, 10)
+            : value;
+        setFilters(prev => ({ ...prev, [name]: parsedValue }));
     };
 
     const handleSearch = () => {
@@ -24,103 +38,116 @@ const  SearchBar =  ({ onSearch }) => {
     };
 
     const toggleFilters = () => {
-        setShowFilters(!showFilters);
+        setShowFilters(true);
     };
 
     return (
-        <div className="p-4   w-ful">
-            <div className="flex flex-col items-center gap-4">
-                <div className="flex flex-wrap justify-center items-center gap-4 w-full sm:w-10/12">
-                    <input
-                        type="text"
-                        name="keyword"
-                        placeholder="Enter address e.g. street, city and state or zip.."
-                        value={filters.keyword}
-                        onChange={handleInputChange}
-                        className="flex-1 p-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <button
-                        onClick={handleSearch}
-                        className="p-2 bg-blue-500 text-white rounded-md flex items-center gap-2"
-                    >
-                        <FiSearch /> Search
-                    </button>
-                    <button
-                        onClick={toggleFilters}
-                        className="p-2 bg-gray-200 rounded-md flex items-center gap-2"
-                    >
-                        <FaFilter /> Filters
-                    </button>
+        <div className="px-4 pt-4 pb-2 w-full flex justify-center bg-white shadow-sm rounded-md relative z-10">
+            <div className="w-full max-w-[720px]">
+                {/* Search Input & Button */}
+                <div className="flex flex-col items-center gap-4">
+                    <div className="flex flex-wrap justify-center items-center gap-4 w-full">
+                        <div className="relative flex-1">
+                            <input
+                                type="text"
+                                name="keyword"
+                                placeholder="Enter address e.g. street, city, state or zip..."
+                                value={filters.keyword}
+                                onChange={handleInputChange}
+                                className="w-full p-2 pr-10 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            <FiSearch onClick={handleSearch} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                        </div>
+
+                        <button
+                            onClick={toggleFilters}
+                            className="p-2 bg-gray-200 text-gray-700 rounded-md flex items-center justify-center gap-2 hover:bg-gray-300 transition text-sm"
+                        >
+                            <FaFilter className="text-gray-600" />
+                            <span className="hidden sm:inline">Filters</span>
+                        </button>
+                    </div>
                 </div>
-                <div className="">
-                    {showFilters && (
-                        <div className="flex flex-wrap gap-2 justify-center">
-                            <div className="mb-2 w-32">
-                                <label className="block text-sm">Gender</label>
+
+                {/* Filters Dropdown */}
+                {showFilters && (
+                    <div className="flex justify-end relative z-50" ref={dropdownRef}>
+                        <div className="absolute right-0 mt-2 w-72 sm:w-[420px] bg-white border border-gray-200 shadow-lg rounded-md p-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {/* Gender */}
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Gender</label>
                                 <select
-                                    name="gender"
-                                    value={filters.gender}
+                                    name="accommodationFor"
+                                    value={filters.accommodationFor}
                                     onChange={handleInputChange}
-                                    className="w-full p-2 border rounded-md"
+                                    className="w-full p-2 border border-gray-300 rounded-md"
                                 >
-                                    <option value="all">All</option>
-                                    <option value="boy">Boy</option>
-                                    <option value="girl">Girl</option>
+                                    <option value="">Any</option>
+                                    <option value="boys">Boys</option>
+                                    <option value="girls">Girls</option>
                                 </select>
                             </div>
-                            <div className="mb-2 w-32">
-                                <label className="block text-sm">Suitable For</label>
+
+                            {/* Suitable For */}
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Suitable For</label>
                                 <select
                                     name="suitableFor"
                                     value={filters.suitableFor}
                                     onChange={handleInputChange}
-                                    className="w-full p-2 border rounded-md"
+                                    className="w-full p-2 border border-gray-300 rounded-md"
                                 >
-                                    <option value="">Select</option>
-                                    <option value="student">Student</option>
-                                    <option value="workingProfessional">Working Professional</option>
+                                    <option value="">Any</option>
+                                    <option value="Students">Students</option>
+                                    <option value="working">Working Professionals</option>
                                 </select>
                             </div>
-                            <div className="mb-2 w-32">
-                                <label className="block text-sm">Shared</label>
+
+                            {/* Shared */}
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Shared</label>
                                 <select
                                     name="shared"
                                     value={filters.shared}
                                     onChange={handleInputChange}
-                                    className="w-full p-2 border rounded-md"
+                                    className="w-full p-2 border border-gray-300 rounded-md"
                                 >
                                     <option value="">Select</option>
                                     <option value="1">Yes</option>
                                     <option value="0">No</option>
                                 </select>
                             </div>
-                            <div className="mb-2 w-32">
-                                <label className="block text-sm">Sort By</label>
+
+                            {/* Sort By */}
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Sort By</label>
                                 <select
                                     name="sortBy"
                                     value={filters.sortBy}
                                     onChange={handleInputChange}
-                                    className="w-full p-2 border rounded-md"
+                                    className="w-full p-2 border border-gray-300 rounded-md"
                                 >
-                                    <option value="0">Rent (0 - 9)</option>
-                                    <option value="1">Rent (9 - 0)</option>
+                                    <option value="0">Rent (Low to High)</option>
+                                    <option value="1">Rent (High to Low)</option>
                                 </select>
                             </div>
-                            <div className="mb-2 w-32">
-                                <label className="block text-sm">Max Price</label>
+
+                            {/* Max Price */}
+                            <div className="col-span-1 sm:col-span-2">
+                                <label className="block text-sm font-medium mb-1">Max Price</label>
                                 <input
                                     type="number"
                                     name="maxPrice"
                                     value={filters.maxPrice}
                                     onChange={handleInputChange}
-                                    className="w-full p-2 border rounded-md"
+                                    className="w-full p-2 border border-gray-300 rounded-md"
                                 />
                             </div>
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
             </div>
-        </div >
+        </div>
     );
 };
 
@@ -151,22 +178,22 @@ const SearchResultCard = ({ result }) => {
                             <tbody>
                                 <tr>
                                     <td className="font-semibold pr-2">For:</td>
-                                    <td className="text-gray-700">{result.gender}</td>
+                                    <td className="text-gray-700">{capitalize(result.accommodationFor)}</td>
                                 </tr>
                                 <tr>
                                     <td className="font-semibold pr-2">Suitable For:</td>
-                                    <td className="text-gray-700">{result.suitableFor}</td>
+                                    <td className="text-gray-700">{result.suitableFor.toLowerCase() === "both" ? "Students, Working Professionals" : capitalize(result.suitableFor)}</td>
                                 </tr>
                                 <tr>
                                     <td className="font-semibold pr-2">Shared:</td>
-                                    <td className="text-gray-700">{result.shared ? "Yes" : "No"}</td>
+                                    <td className="text-gray-700">{result.shared ? `With ${result.shared} roommate` : "No"}</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                     <div className="text-xs text-gray-500 mt-2 flex justify-between items-center gap-2">
                         <span className="font-medium text-gray-700 text-nowrap overflow-hidden">{result.owner}</span>
-                        <span className="text-nowrap overflow-hidden">{result.postTime}</span>
+                        <span className="text-nowrap overflow-hidden">{result.createdAt}</span>
                     </div>
                 </div>
             </div>
@@ -174,95 +201,199 @@ const SearchResultCard = ({ result }) => {
     );
 };
 
-const SearchResult =() => {
-    const [results, setResults] = useState([]);
+const filterRoomsByCriteria = (rooms, filters, locationFilter) => {
+    let filtered = [...rooms];
 
-    const handleSearch = (filters) => {
-        // Mock search results with real images and realistic data
-        const mockResults = [
-            {
-                thumbnail: "/assets/room1.png",
-                href: "/room/owner/id",
-                name: "Sunrise Hostel",
-                location: "Mumbai, Maharashtra",
-                gender: "Girls",
-                suitableFor: "Students",
-                shared: 1,
-                price: 5000,
-                owner: "John Doe",
-                postTime: "2 hours ago",
-            },
-            {
-                thumbnail: "/assets/room2.png",
-                href: "/room/owner/id",
-                name: "Green Valley PG",
-                location: "Pune, Maharashtra",
-                gender: "Both",
-                suitableFor: "Working Professionals",
-                shared: 1,
-                price: 7000,
-                owner: "Jane Smith",
-                postTime: "1 day ago",
-            },
-            {
-                thumbnail: "/assets/room3.png",
-                href: "/room/owner/id",
-                name: "Blue Horizon PG",
-                location: "Bangalore, Karnataka",
-                gender: "Boys",
-                suitableFor: "Students",
-                shared: 1,
-                price: 6000,
-                owner: "Alice Johnson",
-                postTime: "3 days ago",
-            },
-            {
-                thumbnail: "/assets/room1.png",
-                href: "/room/owner/id",
-                name: "Cozy Nest Hostel",
-                location: "Delhi, Delhi",
-                gender: "Girls",
-                suitableFor: "Working Professionals",
-                shared: 1,
-                price: 8000,
-                owner: "Michael Brown",
-                postTime: "5 hours ago",
-            },
-            {
-                thumbnail: "/assets/room2.png",
-                href: "/room/owner/id",
-                name: "Comfort Stay PG",
-                location: "Hyderabad, Telangana",
-                gender: "Both",
-                suitableFor: "Students",
-                shared: 1,
-                price: 5500,
-                owner: "Emily Davis",
-                postTime: "2 days ago",
-            },
-            {
-                thumbnail: "/assets/room3.png",
-                href: "/room/owner/id",
-                name: "Urban Living Hostel",
-                location: "Chennai, Tamil Nadu",
-                gender: "Boys",
-                suitableFor: "Working Professionals",
-                shared: 1,
-                price: 7500,
-                owner: "Chris Wilson",
-                postTime: "1 week ago",
-            },
-        ];
-        setResults(mockResults);
+    // Location filter
+    if (locationFilter.state.trim() !== "") {
+        filtered = filtered.filter(room =>
+            room.state?.toLowerCase() === locationFilter.state.toLowerCase()
+        );
+
+        if (locationFilter.dist.trim() !== "") {
+            filtered = filtered.filter(room =>
+                room.district?.toLowerCase() === locationFilter.dist.toLowerCase()
+            );
+
+            if (locationFilter.pin.trim() !== "") {
+                filtered = filtered.filter(room =>
+                    room.pincode?.toString().toLowerCase() === locationFilter.pin.toLowerCase()
+                );
+            }
+        }
+    }
+
+    // Keyword (search in name and location)
+    if (filters.keyword.trim() !== "") {
+        const keyword = filters.keyword.toLowerCase();
+        filtered = filtered.filter(room =>
+        (room.name.toLowerCase().includes(keyword) ||
+            room.location.toLowerCase().includes(keyword))
+        );
+    }
+
+    // Accommodation For
+    if (filters.accommodationFor && filters.accommodationFor.trim() !== "") {
+        filtered = filtered.filter(room =>
+        (room.accommodationFor.toLowerCase() === "both" ||
+            room.accommodationFor.toLowerCase() === filters.accommodationFor.toLowerCase())
+        );
+    }
+
+    // Suitable For
+    if (filters.suitableFor && filters.suitableFor.trim() !== "") {
+        filtered = filtered.filter(room =>
+        (room.suitableFor.toLowerCase() === "both" ||
+            room.suitableFor.toLowerCase() === filters.suitableFor.toLowerCase())
+        );
+    }
+
+    // Max Price
+    if (filters.maxPrice) {
+        const max = parseInt(filters.maxPrice, 10);
+        if (!isNaN(max)) {
+            filtered = filtered.filter(room => room.price <= max);
+        }
+    }
+
+    // Shared
+    if (filters.shared !== "") {
+        const shared = parseInt(filters.shared, 10);
+        filtered = filtered.filter(room =>
+            Boolean(parseInt(room.shared)) === Boolean(shared)
+        );
+    }
+
+    // Sort By Price
+    const sortBy = parseInt(filters.sortBy, 10);
+    if (sortBy === 1) {
+        filtered.sort((a, b) => b.price - a.price); // Descending
+    } else {
+        filtered.sort((a, b) => a.price - b.price); // Ascending
+    }
+
+    return filtered;
+};
+
+
+
+const SearchResult = () => {
+    const [filters, setFilters] = useState({
+        keyword: "",
+        accommodationFor: "",
+        suitableFor: "",
+        maxPrice: "",
+        shared: 1,
+        sortBy: 0,
+    });
+
+    const [locationFilter, setLocationFilter] = useState({
+        state: "",
+        dist: "",
+        pin: ""
+    });
+
+    const [results, setResults] = useState([]);
+    const [allRooms, setAllRooms] = useState([]); // ✅ all room data fetched once
+    const [loading, setLoading] = useState(true);
+
+    const params = useParams();
+    const location = useLocation();
+    const queryFilter = new URLSearchParams(location.search);
+
+    const firebase = useFirebase();
+    const { getAllRooms } = roomsRTB(firebase);
+    const { getData } = ownerRTB(firebase);
+
+    // ✅ Fetch room data only ONCE on URL change
+    useEffect(() => {
+        const fetchRooms = async () => {
+            setLoading(true);
+            setFilters(prev => ({ ...prev, keyword: params.query || "" }));
+            setLocationFilter({
+                state: queryFilter.get("state") || "",
+                dist: queryFilter.get("dist") || "",
+                pin: queryFilter.get("pin") || "",
+            });
+            setFilters((prev) => ({ ...prev, accommodationFor: queryFilter.get("accommodationFor") }));
+
+            try {
+                const res = await getAllRooms();
+                if (!res) throw new Error("No data found");
+
+                const roomEntries = Object.entries(res);
+                const fetchedRooms = await Promise.all(
+                    roomEntries.map(async ([roomId, room]) => {
+                        try {
+                            const owner = await getData(room.ownerId);
+                            return {
+                                roomId,
+                                thumbnail: room.images?.[0]?.preview || "",
+                                href: `/room/${roomId}`,
+                                name: room.name,
+                                location: room.location,
+                                accommodationFor: room.accommodationFor,
+                                suitableFor: room.suitableFor,
+                                shared: room.shared,
+                                price: room.price,
+                                owner: owner?.displayName || "Owner",
+                                createdAt: formatRelativeTime(room.createdAt),
+                                state: room.state || "",
+                                district: room.district || "",
+                                pincode: room.pincode || ""
+                            };
+                        } catch (err) {
+                            console.error("Owner fetch error:", err);
+                            return null;
+                        }
+                    })
+                );
+
+                const validRooms = fetchedRooms.filter(r => r !== null);
+                setAllRooms(validRooms); // ✅ store unfiltered data
+            } catch (err) {
+                console.error("Room fetch error:", err);
+                setAllRooms([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchRooms();
+    }, [params.query, location.search]); // ✅ triggers on page load / URL change
+
+
+    // ✅ Filter only when filters change or rooms are loaded
+    useEffect(() => {
+        const filteredResults = filterRoomsByCriteria(allRooms, filters, locationFilter);
+        setResults(filteredResults);
+    }, [filters, locationFilter, allRooms]);
+
+    const handleSearch = () => {
+        const filteredResults = filterRoomsByCriteria(allRooms, filters, locationFilter);
+        setResults(filteredResults);
     };
 
-    useEffect(() => {
-        handleSearch({}); // Call with empty filters to load all results initially
-    }, []);
+    if (loading) {
+        return (
+            <>
+                <main className="flex flex-col min-h-[calc(100vh-72px)] bg-gray-100 px-4">
+                    <SearchBar onSearch={handleSearch} filters={filters} setFilters={setFilters} />
+                    <div className="pt-6 pb-6 flex flex-wrap gap-4 items-center justify-center">
+                        <Loader text="Searching your query to the database.. please wait.." />
+                    </div>
+                </main>
+            </>
+        )
+    }
 
     return (
         <main className="flex flex-col min-h-[calc(100vh-72px)] bg-gray-100 px-4">
-            <SearchBar onSearch={handleSearch} />
+            <SearchBar
+                onSearch={handleSearch}
+                filters={filters}
+                setFilters={setFilters}
+            />
             <div className="pt-6 pb-6 flex flex-wrap gap-4 items-center justify-center">
                 {results.length > 0 ? (
                     results.map((result, index) => (
@@ -272,6 +403,17 @@ const SearchResult =() => {
                     <p className="text-center text-gray-500 text-2xl">No results found.</p>
                 )}
             </div>
+            {results.length > 0 && results.length % 10 === 0 && (
+                <button
+                    onClick={() => {
+                        setLoading(true);
+                        handleSearch({ ...filters, page: (filters.page || 1) + 1 });
+                    }}
+                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                >
+                    Load More
+                </button>
+            )}
         </main>
     );
 };

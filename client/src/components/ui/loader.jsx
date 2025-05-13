@@ -1,4 +1,4 @@
-const Loader = ({text = "Loading"}) => {
+const Loader = ({ text = "Loading" }) => {
     return (
         <div className="flex flex-col items-center justify-center mx-auto">
             <div className="relative w-24 h-24 mb-4">
@@ -12,7 +12,7 @@ const Loader = ({text = "Loading"}) => {
                     className="w-full h-full rounded-full object-cover"
                 />
             </div>
-            <p className="text-gray-600 text-lg font-medium">{text}</p>
+            <p className="text-gray-600 text-lg text-center font-medium">{text}</p>
         </div>
     );
 }
