@@ -113,13 +113,6 @@ npm run dev
 The application should now be running locally.
 
 
-## Acknowledgements
-
- - [Awesome Readme Templates](https://awesomeopensource.com/project/elangosundar/awesome-README-templates)
- - [Awesome README](https://github.com/matiassingers/awesome-readme)
- - [How to write a Good readme](https://bulldogjob.com/news/449-how-to-write-a-good-readme-for-your-github-project)
-
-
 ## Authors
 
 - [@h4jack](https://www.github.com/h4jack)
@@ -132,4 +125,4 @@ The application should now be running locally.
 
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+[MIT](https://github.com/h4jack/MessFinder/tree/dev?tab=License-1-ov-file)
