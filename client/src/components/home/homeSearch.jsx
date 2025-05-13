@@ -2,7 +2,7 @@ import { useState } from "react";
 import { statesAndDistricts } from '/src/module/js/district-pin'; // Import the JSON data
 import { Link } from "react-router-dom";
 
-const  FilterButton = ({ label, isActive, onClick }) => {
+const FilterButton = ({ label, isActive, onClick }) => {
     return (
         <button
             className={`px-4 py-2 text-sm font-medium rounded-lg transition ${isActive
@@ -55,7 +55,11 @@ const HomeSearch = () => {
             label: district
         })) : [];
 
-    const validatePincode = (pincode) => {
+    const validatePincode = (tempPin) => {
+        if (!tempPin) {
+            setPincodeError("");
+            return;
+        }
         if (!selectedState || !selectedDistrict) {
             setPincodeError("Please select a state and district first.");
             return false;
@@ -68,8 +72,7 @@ const HomeSearch = () => {
         }
 
         const [start, end] = districtData.pincode_range.split("-").map(Number);
-        const pincodeNumber = Number(pincode);
-
+        const pincodeNumber = Number(tempPin);
         if (pincodeNumber >= start && pincodeNumber <= end) {
             setPincodeError(""); // Valid pincode
             return true;
@@ -136,8 +139,10 @@ const HomeSearch = () => {
                                     type="text"
                                     placeholder="Enter Pincode"
                                     value={pincode}
-                                    onChange={(e) => setPincode(e.target.value)}
-                                    onBlur={() => validatePincode(pincode)}
+                                    onChange={(e) => {
+                                        setPincode(e.target.value)
+                                        validatePincode(e.target.value)
+                                    }}
                                     className={`border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 ${pincodeError
                                         ? "border-red-500 focus:ring-red-500"
                                         : "border-gray-400 focus:ring-blue-500"
@@ -168,7 +173,7 @@ const HomeSearch = () => {
 
                     <div className="flex justify-center">
                         <Link
-                            to={`/search/${query}?${selectedState ? `state=${selectedState}&` : ""}${selectedDistrict ? `dist=${selectedDistrict}&` : ""}${pincode ? `pin=${pincode}` : ""}`}
+                            to={`/search/${query}?${(selectedFilter && selectedFilter !== "ALL") ? `accommodationFor=${selectedFilter.toLowerCase() + "s"}&` : ""}${selectedState ? `state=${selectedState}&` : ""}${selectedDistrict ? `dist=${selectedDistrict}&` : ""}${pincode ? `pin=${pincode}` : ""}`}
                         >
                             <button
                                 className="px-8 py-3 bg-blue-600 text-white text-lg font-bold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
