@@ -79,7 +79,7 @@ const MyPGs = () => {
             .then((res) => {
                 // Convert the response to an array of [roomId, data]
                 let entries = Object.entries(res);
-
+                entries = entries.filter(([_, data]) => data.ownerId === firebase.auth.currentUser.uid);
                 // Apply filtering based on selectedTab
                 if (selectedTab.toLowerCase() === "draft") {
                     entries = entries.filter(([_, data]) => data.status?.toLowerCase() === "draft");
@@ -110,7 +110,7 @@ const MyPGs = () => {
                 setLoading(false);
                 setErrorMessage("Error while getting, your room details..")
             });
-    }, [selectedTab]);
+    }, [selectedTab, firebase.auth]);
 
     if (errorMessage) {
         return <Alert message={errorMessage} />;
