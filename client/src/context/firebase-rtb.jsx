@@ -195,7 +195,72 @@ const roomsRTB = (firebase) => {
     };
 };
 
+const infoRTB = (firebase) => {
+    const contactUs = async (data) => {
+        try {
+            const { uid, name, email, message } = data;
+
+            if (!uid || !name || !email || !message) {
+                throw new Error("Missing required contact fields.");
+            }
+
+            const contactRef = ref(firebase.db, "/mess-finder/info/contactus");
+            const newContactRef = push(contactRef); // auto ID
+
+            const newContact = {
+                uid,
+                name,
+                email,
+                message,
+                createdAt: serverTimestamp(),
+            };
+
+            await set(newContactRef, newContact);
+
+            return { status: true, message: "Contact message sent successfully." };
+        } catch (error) {
+            console.error("Error submitting contact form:", error);
+            throw error;
+        }
+    };
+
+    const reportRoom = async (data) => {
+        try {
+            const { uid, roomId, ownerUname, reason, description } = data;
+
+            if (!uid || !roomId || !ownerUname || !reason || !description) {
+                throw new Error("Missing required report fields.");
+            }
+
+            const reportRef = ref(firebase.db, "/mess-finder/info/report");
+            const newReportRef = push(reportRef); // auto ID
+
+            const newReport = {
+                uid,
+                roomId,
+                ownerUname,
+                reason,
+                description,
+                createdAt: serverTimestamp(),
+            };
+
+            await set(newReportRef, newReport);
+
+            return { status: true, message: "Report submitted successfully." };
+        } catch (error) {
+            console.error("Error submitting report:", error);
+            throw error;
+        }
+    };
+
+    return {
+        contactUs,
+        reportRoom,
+    };
+};
+
 export {
     roomsRTB,
-    userRTB
+    userRTB,
+    infoRTB
 };
