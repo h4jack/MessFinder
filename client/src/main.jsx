@@ -36,18 +36,16 @@ import {
 import { ErrorPage } from './components/error/error'
 
 // importing the profile of owner..
-import Dashboard from './components/owner/owner'
-import Profile from './components/owner/profile'
-import MyPGs from './components/owner/mypgs'
-import Settings from './components/owner/settings'
-import SubmitPG from './components/owner/submit-pg'
-import Test from './components/owner/test'
+import Dashboard from './components/dashboard/dashboard'
+import Profile from './components/dashboard/profile'
+import Settings from './components/dashboard/settings'
+import IncomingMessages from './components/dashboard/messages'
+import Watchlist from './components/dashboard/user/watchlist'
+import MyPGs from './components/dashboard/owner/mypgs'
+import SubmitPG from './components/dashboard/owner/submit-pg'
 
 //importing the Wrapper context of Firebase.
 import { FirebaseProvider } from './context/firebase'
-import IncomingMessages from './components/owner/messages'
-
-
 
 let router = createBrowserRouter(
   createRoutesFromElements(
@@ -59,15 +57,21 @@ let router = createBrowserRouter(
         </Route>
 
         <Route path="room/:roomId" element={<RoomDetails />} />
-        <Route path="test" element={<Test />} />
 
-        {/* <Route path="owner/:id" element={<span className='text-7xl w-full text-center text-gray-100'>Owner Home</span>} /> */}
         <Route path="owner/" element={<Dashboard />}>
           <Route path='profile' element={<Profile />} />
           <Route path="submit-pg" element={<SubmitPG />} />
           <Route path="submit-pg/:roomId" element={<SubmitPG />} />
           <Route path='settings' element={<Settings />} />
           <Route path='pgs' element={<MyPGs />} />
+          <Route path='messages' element={<IncomingMessages />} />
+          <Route path="logout" element={<Logout />} />
+        </Route>
+
+        <Route path="user/" element={<Dashboard />}>
+          <Route path='profile' element={<Profile />} />
+          <Route path="watchlist" element={<Watchlist />} />
+          <Route path='settings' element={<Settings />} />
           <Route path='messages' element={<IncomingMessages />} />
           <Route path="logout" element={<Logout />} />
         </Route>

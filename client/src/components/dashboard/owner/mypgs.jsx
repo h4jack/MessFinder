@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { FaEdit, FaEye } from "react-icons/fa";
-import { roomsRTB } from "../../context/firebase-rtb";
-import { useFirebase } from "../../context/firebase";
-import { capitalize } from "../../module/js/string";
-import { formatRelativeTime } from "../../module/js/getTime";
-import { Alert } from "../ui/alert"
-import { Loader } from "../ui/loader"
+import { roomsRTB } from "../../../context/firebase-rtb";
+import { useFirebase } from "../../../context/firebase";
+import { capitalize } from "../../../module/js/string";
+import { formatRelativeTime } from "../../../module/js/getTime";
+import { Alert } from "../../ui/alert"
+import { Loader } from "../../ui/loader"
 
 const RoomCard = ({ roomData }) => {
     const pg = roomData;

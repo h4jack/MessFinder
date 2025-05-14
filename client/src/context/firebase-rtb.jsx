@@ -1,7 +1,7 @@
 import { ref, push, get, remove, update, serverTimestamp, set } from "firebase/database";
 import { validateUsername } from "../module/js/string";
 
-const ownerRTB = (firebase) => {
+const userRTB = (firebase) => {
 
     const saveData = async (id, data) => {
         try {
@@ -9,7 +9,7 @@ const ownerRTB = (firebase) => {
                 throw new Error("Missing required user information.");
             }
 
-            const dbRef = ref(firebase.db, `/mess-finder/users/owner/${id}`);
+            const dbRef = ref(firebase.db, `/mess-finder/users/${id}`);
             const snapshot = await get(dbRef);
             const exists = snapshot.exists();
 
@@ -37,7 +37,7 @@ const ownerRTB = (firebase) => {
                 throw new Error("Missing user ID or photo URL.");
             }
 
-            const dbRef = ref(firebase.db, `/mess-finder/users/owner/${id}`);
+            const dbRef = ref(firebase.db, `/mess-finder/users/${id}`);
             const updateData = {
                 photoURL: photoURL,
                 updatedAt: serverTimestamp(),
@@ -53,7 +53,7 @@ const ownerRTB = (firebase) => {
 
     const deleteData = async (id) => {
         try {
-            const dbRef = ref(firebase.db, `/mess-finder/users/owner/${id}`);
+            const dbRef = ref(firebase.db, `/mess-finder/users/${id}`);
             await remove(dbRef);
             return { status: true, message: "Deleted Successfully" };
         } catch (error) {
@@ -63,7 +63,7 @@ const ownerRTB = (firebase) => {
 
     const getData = async (id) => {
         try {
-            const dbRef = ref(firebase.db, `/mess-finder/users/owner/${id}`);
+            const dbRef = ref(firebase.db, `/mess-finder/users/${id}`);
             const snapshot = await get(dbRef);
             if (snapshot.exists()) {
                 return snapshot.val();
@@ -84,7 +84,7 @@ const ownerRTB = (firebase) => {
         }
 
         try {
-            const allUsersRef = ref(firebase.db, "/mess-finder/users/owner");
+            const allUsersRef = ref(firebase.db, "/mess-finder/users");
             const snapshot = await get(allUsersRef);
             if (!snapshot.exists()) {
                 return { valid: true, available: true }; // No users yet, username is available
@@ -197,5 +197,5 @@ const roomsRTB = (firebase) => {
 
 export {
     roomsRTB,
-    ownerRTB
+    userRTB
 };

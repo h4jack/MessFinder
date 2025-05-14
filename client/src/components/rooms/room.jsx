@@ -5,7 +5,7 @@ import { FaPhoneAlt, FaWhatsapp } from "react-icons/fa";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { FaMapMarkerAlt } from "react-icons/fa";
-import { ownerRTB, roomsRTB } from "../../context/firebase-rtb";
+import { userRTB, roomsRTB } from "../../context/firebase-rtb";
 import { useLocation, useParams } from "react-router-dom";
 import { useFirebase } from "../../context/firebase";
 
@@ -72,7 +72,7 @@ const RoomDetailsCard = ({
             totalBeds: 1,
             totalCRooms: 0,
             totalBathrooms: 1,
-            CanteenAvailability: "Near",
+            canteenAvailability: "Near",
             totalFloors: 1,
         },
         facilities: "",
@@ -104,7 +104,7 @@ const RoomDetailsCard = ({
     })
 
     const firebase = useFirebase();
-    const { getData } = ownerRTB(firebase);
+    const { getData } = userRTB(firebase);
 
     return (
         <div className="bg-white shadow-md rounded-lg p-6">
@@ -129,16 +129,16 @@ const RoomDetailsCard = ({
                         <td className="font-semibold">Accommodation For:</td>
                         <td>{
                             roomInfo.accommodationFor.toLowerCase() === "both"
-                            ? "For Both, Boys and Girls"
-                            : capitalize(roomInfo.accommodationFor)
+                                ? "For Both, Boys and Girls"
+                                : capitalize(roomInfo.accommodationFor)
                         }</td>
                     </tr>
                     <tr>
                         <td className="font-semibold">Suitable For:</td>
                         <td>{
                             roomInfo.suitableFor.toLowerCase() === "both"
-                            ? "Students, Working Professionals"
-                            : capitalize(roomInfo.suitableFor)
+                                ? "Students, Working Professionals"
+                                : capitalize(roomInfo.suitableFor)
                         }</td>
                     </tr>
                     <tr>
@@ -174,7 +174,7 @@ const RoomDetailsCard = ({
                             </tr>
                             <tr>
                                 <td className="font-semibold">Canteen:</td>
-                                <td>{roomInfo.messInfo.CanteenAvailability}</td>
+                                <td>{roomInfo.messInfo.canteenAvailability}</td>
                             </tr>
                             <tr>
                                 <td className="font-semibold">Floors:</td>
@@ -377,7 +377,7 @@ const RoomDetails = () => {
     const [loading, setLoading] = useState(true);
     const firebase = useFirebase();
     const { getRoom } = roomsRTB(firebase);
-    const { getData } = ownerRTB(firebase);
+    const { getData } = userRTB(firebase);
 
     useEffect(() => {
         const roomId = params?.roomId;

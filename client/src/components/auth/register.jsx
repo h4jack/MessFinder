@@ -5,15 +5,17 @@ import { FaGoogle } from "react-icons/fa";
 import { Link, useNavigate, useLocation, data } from "react-router-dom";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useFirebase } from "../../context/firebase";
-import { ownerRTB } from "../../context/firebase-rtb";
+import { userRTB } from "../../context/firebase-rtb";
 
 const Register = () => {
+    const [role, setRole] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+
 
     const firebase = useFirebase();
 
@@ -42,7 +44,7 @@ const Register = () => {
     };
 
     const handleRegister = () => {
-        if (!validateInputs()) return;
+        if (!validateInputs() || !role) return;
 
         createUserWithEmailAndPassword(firebase.auth, email, password)
             .then((res) => {
@@ -56,11 +58,12 @@ const Register = () => {
                         phoneNumber: "",
                         photoURL: res.user.photoURL || "",
                         dob: "",
+                        role: role,
                         about: "",
                     };
                     setErrorMessage(""); // Clear error message on success
-                    ownerRTB(firebase).saveData(userData.id, { ...userData }).then(() => {
-                        navigate("/owner/profile", { state: { from: location } });
+                    userRTB(firebase).saveData(userData.id, { ...userData }).then(() => {
+                        navigate(`/${role}/profile`, { state: { from: location } });
                     }).catch((error) => {
                         console.error(error);
                         setErrorMessage("Error, while creating user details on server.");
@@ -81,6 +84,7 @@ const Register = () => {
 
     // Login with Google
     const handleLoginWithGoogle = async () => {
+        if (!role) return;
         const provider = new GoogleAuthProvider();
         signInWithPopup(firebase.auth, provider)
             .then((res) => {
@@ -94,11 +98,12 @@ const Register = () => {
                         phoneNumber: "",
                         photoURL: res.user.photoURL || "",
                         dob: "",
+                        role: role,
                         about: "",
                     };
                     setErrorMessage(""); // Clear error message on success
-                    ownerRTB(firebase).saveData(userData.id, { ...userData }).then(() => {
-                        navigate("/owner/profile", { state: { from: location } });
+                    userRTB(firebase).saveData(userData.id, { ...userData }).then(() => {
+                        navigate(`/${role}/profile`, { state: { from: location } });
                     }).catch((error) => {
                         console.error(error);
                         setErrorMessage("Error, while creating user details on server.");
@@ -114,62 +119,80 @@ const Register = () => {
 
     return (
         <main className="flex flex-col items-center justify-center min-h-[calc(100vh-72px)] p-4">
-            <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-                <h2 className="text-4xl font-bold text-center text-gray-800 mb-6">Register</h2>
-                {errorMessage && <p className="text-red-500 text-center mb-4">{errorMessage}</p>}
-                <InputField
-                    label="Email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email"
-                />
-                <InputField
-                    label="Password"
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter your password"
-                    showToggle
-                    toggleVisibility={() => setShowPassword(!showPassword)}
-                />
-                <InputField
-                    label="Confirm Password"
-                    type={showConfirmPassword ? "text" : "password"}
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="Confirm your password"
-                    showToggle
-                    toggleVisibility={() => setShowConfirmPassword(!showConfirmPassword)}
-                />
-                <p className="text-sm text-gray-600 mb-4">
-                    By registering, you accept our{" "}
-                    <Link to="/terms" className="text-blue-500 hover:underline">
-                        Terms and Conditions
-                    </Link>.
-                </p>
-                <Button
-                    text="Register"
-                    onClick={handleRegister}
-                    className="bg-blue-500 text-white hover:bg-blue-600"
-                />
-                <div className="flex items-center my-4">
-                    <div className="flex-grow border-t border-gray-400"></div>
-                    <span className="mx-2 text-gray-500">OR</span>
-                    <div className="flex-grow border-t border-gray-400"></div>
+            {!role ? (
+                <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-sm text-center">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-6">Register As</h2>
+                    <div className="flex flex-col gap-4">
+                        <Button
+                            text="User"
+                            onClick={() => setRole("user")}
+                            className="bg-blue-500 text-white hover:bg-blue-600"
+                        />
+                        <Button
+                            text="Owner"
+                            onClick={() => setRole("owner")}
+                            className="bg-green-500 text-white hover:bg-green-600"
+                        />
+                    </div>
                 </div>
-                <Button
-                    text={<><FaGoogle className="mr-2" /> Sign up with Google</>}
-                    onClick={handleLoginWithGoogle}
-                    className="bg-red-500 text-white hover:bg-red-600 mt-4 flex items-center justify-center"
-                />
-                <Link to="/auth/login" className="p-2 flex justify-center items-center">
-                    <span>
-                        Already have an account?{" "}
-                        <span className="text-blue-500 hover:underline cursor-pointer"> Login</span>
-                    </span>
-                </Link>
-            </div>
+            ) : (
+                <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+                    <h2 className="text-4xl font-bold text-center text-gray-800 mb-6">Register</h2>
+                    {errorMessage && <p className="text-red-500 text-center mb-4">{errorMessage}</p>}
+                    <InputField
+                        label="Email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Enter your email"
+                    />
+                    <InputField
+                        label="Password"
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Enter your password"
+                        showToggle
+                        toggleVisibility={() => setShowPassword(!showPassword)}
+                    />
+                    <InputField
+                        label="Confirm Password"
+                        type={showConfirmPassword ? "text" : "password"}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Confirm your password"
+                        showToggle
+                        toggleVisibility={() => setShowConfirmPassword(!showConfirmPassword)}
+                    />
+                    <p className="text-sm text-gray-600 mb-4">
+                        By registering, you accept our{" "}
+                        <Link to="/terms" className="text-blue-500 hover:underline">
+                            Terms and Conditions
+                        </Link>.
+                    </p>
+                    <Button
+                        text="Register"
+                        onClick={handleRegister}
+                        className="bg-blue-500 text-white hover:bg-blue-600"
+                    />
+                    <div className="flex items-center my-4">
+                        <div className="flex-grow border-t border-gray-400"></div>
+                        <span className="mx-2 text-gray-500">OR</span>
+                        <div className="flex-grow border-t border-gray-400"></div>
+                    </div>
+                    <Button
+                        text={<><FaGoogle className="mr-2" /> Sign up with Google</>}
+                        onClick={handleLoginWithGoogle}
+                        className="bg-red-500 text-white hover:bg-red-600 mt-4 flex items-center justify-center"
+                    />
+                    <Link to="/auth/login" className="p-2 flex justify-center items-center">
+                        <span>
+                            Already have an account?{" "}
+                            <span className="text-blue-500 hover:underline cursor-pointer"> Login</span>
+                        </span>
+                    </Link>
+                </div>
+            )}
         </main>
     );
 }

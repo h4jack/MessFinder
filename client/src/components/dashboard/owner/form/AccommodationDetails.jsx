@@ -1,6 +1,6 @@
 import React from 'react';
-import { InputField } from "../../ui/input";
-import { Dropdown } from "../../ui/option";
+import { InputField } from "../../../ui/input";
+import { Dropdown } from "../../../ui/option";
 
 const AccommodationDetails = ({ 
     accommodationFor,
