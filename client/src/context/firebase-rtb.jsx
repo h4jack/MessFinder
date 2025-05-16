@@ -76,6 +76,17 @@ const userRTB = (firebase) => {
         }
     };
 
+    const getAllUsers = async () => {
+        try {
+            const dbRef = ref(firebase.db, "/mess-finder/users");
+            const snapshot = await get(dbRef);
+            return snapshot.exists() ? snapshot.val() : null;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+
     const userExists = async (username) => {
         // 1. Validate format: starts with a-z, can include numbers and underscores
         const valid = validateUsername(username);
@@ -104,7 +115,7 @@ const userRTB = (firebase) => {
         }
     };
 
-    return { saveData, uploadPhoto, deleteData, getData, userExists };
+    return { saveData, uploadPhoto, deleteData, getData, getAllUsers, userExists };
 };
 
 
