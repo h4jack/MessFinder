@@ -1,4 +1,4 @@
-import { ref, push, get, remove, update, serverTimestamp, set } from "firebase/database";
+import { ref, push, get, remove, update, serverTimestamp, onValue, set } from "firebase/database";
 import { validateUsername } from "../module/js/string";
 
 const userRTB = (firebase) => {
@@ -332,7 +332,160 @@ const bookmarksRTB = (firebase) => {
     };
 };
 
-export { bookmarksRTB };
+const chatRTB = (firebase) => {
+    // Create new chat with first message or add message to existing chat
+    const createChat = async (ownerId, userId, firstMessage) => {
+        try {
+            if (!ownerId || !userId) {
+                throw new Error("Missing required chat information.");
+            }
+
+            const chatRef = ref(firebase.db, '/mess-finder/chats');
+            const newChatRef = push(chatRef);
+            const chatId = newChatRef.key;
+
+            const chatData = {
+                ownerId,
+                userId,
+                messages: {
+                    // Use push for messages stored as keyed map - create initial message with push
+                }
+            };
+
+            // Prepare first message with push key
+            const msgRef = push(ref(firebase.db, `/mess-finder/chats/${chatId}/messages`));
+            const msgId = msgRef.key;
+            const messageData = {
+                text: firstMessage,
+                sent: true,
+                timestamp: serverTimestamp(),
+            };
+
+            // Write chat ownerId and userId first
+            await set(newChatRef, {
+                ownerId,
+                userId,
+            });
+
+            // Add first message
+            await set(msgRef, messageData);
+
+            // Also add chat to userChats for user and owner for quick access
+            const userChatsRefOwner = ref(firebase.db, `/mess-finder/userChats/${ownerId}/${chatId}`);
+            const userChatsRefUser = ref(firebase.db, `/mess-finder/userChats/${userId}/${chatId}`);
+            await set(userChatsRefOwner, { chatId, userId });
+            await set(userChatsRefUser, { chatId, ownerId });
+
+            return { status: true, chatId, message: "Chat created successfully." };
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    // Add new message to existing chat
+    const sendMessage = async (chatId, message, sent = true) => {
+        try {
+            if (!chatId || !message) {
+                throw new Error("Missing chat ID or message.");
+            }
+
+            const chatMessagesRef = ref(firebase.db, `/mess-finder/chats/${chatId}/messages`);
+            const newMsgRef = push(chatMessagesRef);
+
+            const messageData = {
+                text: message,
+                sent,
+                timestamp: serverTimestamp(),
+            };
+
+            await set(newMsgRef, messageData);
+
+            return { status: true, message: "Message sent successfully." };
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    // Delete a chat entirely
+    const deleteChat = async (chatId) => {
+        try {
+            // Remove chat data
+            const chatRef = ref(firebase.db, `/mess-finder/chats/${chatId}`);
+            await remove(chatRef);
+
+            // Remove chat references from userChats for both owner and user
+            // Note: To remove, we need to get the owner/user IDs first
+            const chatSnapshot = await get(chatRef);
+            let ownerId, userId;
+            if (chatSnapshot.exists()) {
+                const chatData = chatSnapshot.val();
+                ownerId = chatData.ownerId;
+                userId = chatData.userId;
+            }
+
+            if (ownerId) {
+                await remove(ref(firebase.db, `/mess-finder/userChats/${ownerId}/${chatId}`));
+            }
+            if (userId) {
+                await remove(ref(firebase.db, `/mess-finder/userChats/${userId}/${chatId}`));
+            }
+
+            return { status: true, message: "Chat deleted successfully." };
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    // Get chat data once by chatId
+    const getChat = async (chatId) => {
+        try {
+            const chatRef = ref(firebase.db, `/mess-finder/chats/${chatId}`);
+            const snapshot = await get(chatRef);
+            if (snapshot.exists()) {
+                return snapshot.val();
+            }
+            return null;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    // Listen for realtime updates on a chat messages
+    const onChatMessages = (chatId, callback) => {
+        const messagesRef = ref(firebase.db, `/mess-finder/chats/${chatId}/messages`);
+        return onValue(messagesRef, (snapshot) => {
+            const messagesObj = snapshot.val() || {};
+            // Convert to sorted array by timestamp (if present)
+            const messages = Object.entries(messagesObj)
+                .map(([key, value]) => ({ id: key, ...value }))
+                .sort((a, b) => {
+                    if (!a.timestamp || !b.timestamp) return 0;
+                    return a.timestamp - b.timestamp;
+                });
+            callback(messages);
+        });
+    };
+
+    // Get list of chat IDs associated with a user
+    const getUserChats = async (userId) => {
+        try {
+            const userChatsRef = ref(firebase.db, `/mess-finder/userChats/${userId}`);
+            const snapshot = await get(userChatsRef);
+            if (!snapshot.exists()) {
+                return {};
+            }
+            return snapshot.val();
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    return { createChat, sendMessage, deleteChat, getChat, onChatMessages, getUserChats };
+};
+
+export { chatRTB };
+
+
 
 
 export {
@@ -340,3 +493,5 @@ export {
     userRTB,
     infoRTB
 };
+
+export { bookmarksRTB };

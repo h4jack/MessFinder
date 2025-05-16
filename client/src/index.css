@@ -1,38 +1,59 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Sansation:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
 @import "tailwindcss";
 
-*{
+* {
     font-family: "DM Sans", sans-serif;
 }
 
-#root{
+#root {
     @apply flex flex-col min-h-screen justify-between;
 }
 
-.my-nav{
+.my-nav {
     @apply sticky flex justify-between items-center bg-white h-16 w-full pr-20 pl-20 shadow top-0 z-10;
 }
-.my-btn{
+
+.my-btn {
     @apply bg-blue-600 border-2 border-blue-700 p-1 pl-4 pr-3 text-white rounded-full hover:bg-blue-700;
 }
 
+/* width */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    @apply bg-gray-200 rounded-full;    
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    @apply bg-gray-400 rounded-full;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-500;
+}
 
 @media (max-width: 668px) {
-    .my-nav .right>:first-child{
+    .my-nav .right>:first-child {
         display: none;
     }
-    .my-nav{
+
+    .my-nav {
         @apply pl-2 pr-2;
     }
 
-    .my-footer{
+    .my-footer {
         @apply pr-4 pl-4;
     }
 
 }
 
 @media (max-width: 400px) {
-    .my-btn{
+    .my-btn {
         @apply p-1 pl-2 pr-2 text-sm;
     }
 }

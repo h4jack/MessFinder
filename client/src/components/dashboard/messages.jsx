@@ -3,20 +3,20 @@ import { FaEllipsisV, FaTrash, FaCopy, FaArrowLeft, FaEllipsisH } from 'react-ic
 
 const ChatApp = () => {
     const [chats, setChats] = useState([
-        {
-            id: 1, name: 'Alice Johnson', messages: [
-                { text: 'Hello! How are you?', sent: false },
-                { text: 'Hi Alice! I am good, thanks. What about you?', sent: true },
-                { text: 'I am great, thanks for asking.', sent: false },
-            ]
-        },
-        {
-            id: 2, name: 'Bob Smith', messages: [
-                { text: 'Are we still on for tomorrow?', sent: false },
-                { text: 'Yes, can’t wait!', sent: true },
-            ]
-        },
-        { id: 3, name: 'Charlie Brown', messages: [] },
+        // {
+        //     id: 1, name: 'Alice Johnson', messages: [
+        //         { text: 'Hello! How are you?', sent: false },
+        //         { text: 'Hi Alice! I am good, thanks. What about you?', sent: true },
+        //         { text: 'I am great, thanks for asking.', sent: false },
+        //     ]
+        // },
+        // {
+        //     id: 2, name: 'Bob Smith', messages: [
+        //         { text: 'Are we still on for tomorrow?', sent: false },
+        //         { text: 'Yes, can’t wait!', sent: true },
+        //     ]
+        // },
+        // { id: 3, name: 'Charlie Brown', messages: [] },
     ]);
     const [selectedChatId, setSelectedChatId] = useState(null);
     const [newMessage, setNewMessage] = useState('');
@@ -136,14 +136,14 @@ const ChatApp = () => {
     };
 
     return (
-        <div className="flex flex-col w-full mx-auto rounded-lg shadow-md bg-white select-none">
+        <div className="flex flex-col h-[calc(100vh-120px)] w-full mx-auto  rounded-lg shadow-md bg-white select-none custom-scrollbar">
             {!selectedChat && (
                 <ChatList chats={chats} onSelectChat={handleSelectChat} />
             )}
             {selectedChat && (
                 <>
                     {/* Top Bar */}
-                    <div className="flex items-center border-b px-4 py-3 relative">
+                    <div className="flex items-center shadow-sm px-4 py-3 relative">
                         <button
                             onClick={handleBack}
                             aria-label="Back to chat list"
@@ -153,7 +153,7 @@ const ChatApp = () => {
                             <FaArrowLeft size={20} />
                         </button>
                         <img
-                            src="/assets/default-profile.svg"
+                            src="/assets/avatar-default.svg"
                             alt={`${selectedChat.name} profile`}
                             className="w-10 h-10 rounded-full object-cover mr-3"
                             loading="lazy"
@@ -198,7 +198,7 @@ const ChatApp = () => {
                     {/* Messages */}
                     <div
                         ref={chatWindowRef}
-                        className="flex-1 overflow-y-auto p-4 space-y-2 bg-gray-50"
+                        className="flex-1 overflow-y-auto p-4 space-y-2 bg-gray-50 custom-scrollbar"
                         aria-label="Messages"
                         tabIndex={0}
                     >
@@ -221,7 +221,7 @@ const ChatApp = () => {
                     {/* Message input */}
                     <form
                         onSubmit={handleFormSubmit}
-                        className="flex items-center border-t p-3 bg-white"
+                        className="flex items-center shadow-[0_3px_5px] p-3"
                         role="form"
                         aria-label="Send message form"
                     >
@@ -291,12 +291,12 @@ const ChatApp = () => {
 };
 
 const ChatList = ({ chats, onSelectChat }) => (
-    <div className="h-full flex flex-col overflow-auto p-4 bg-white rounded-t-lg shadow-inner">
-        <h2 className="text-2xl font-semibold mb-6 text-gray-900">Chats</h2>
+    <div className="relative flex flex-col overflow-auto p-4 bg-white rounded-t-lg shadow-inner custom-scrollbar">
+        <h2 className="text-2xl font-semibold mb-6 text-gray-900 sticky top-0">Chats</h2>
         {chats.length === 0 && (
             <p className="text-gray-500 select-text">No chats available.</p>
         )}
-        <ul className="divide-y divide-gray-200 overflow-auto">
+        <ul className="divide-y divide-gray-200 overflow-auto custom-scrollbar">
             {chats.map(chat => (
                 <li
                     key={chat.id}
@@ -312,7 +312,7 @@ const ChatList = ({ chats, onSelectChat }) => (
                     }}
                 >
                     <img
-                        src="/assets/default-profile.svg"
+                        src="/assets/avatar-default.svg"
                         alt={`${chat.name} profile`}
                         className="w-12 h-12 rounded-full object-cover mr-4 flex-shrink-0"
                         loading="lazy"
