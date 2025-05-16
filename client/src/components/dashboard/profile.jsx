@@ -4,8 +4,8 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import { useFirebase } from "../../context/firebase";
-import { ownerRTB } from "../../context/firebase-rtb";
-import { ownerStorage } from "./../../context/firebase-storage";
+import { userRTB } from "../../context/firebase-rtb";
+import { userStorage } from "./../../context/firebase-storage";
 import { sendEmailVerification, updateEmail, updateProfile } from "firebase/auth";
 import Loader from "../ui/loader"
 
@@ -18,7 +18,7 @@ const Profile = () => {
     const [uName, setUname] = useState("")
     const [uploadProgress, setUploadProgress] = useState(0);
     const [file, setFile] = useState(null);
-    const { uploadProfileImage, deleteProfileImage } = ownerStorage();
+    const { uploadProfileImage, deleteProfileImage } = userStorage();
     const firebase = useFirebase();
     const [loading, setLoading] = useState(true); // not false
 
@@ -39,7 +39,7 @@ const Profile = () => {
     }, [firebase.auth]);
 
     useEffect(() => {
-        const { getData } = ownerRTB(firebase);
+        const { getData } = userRTB(firebase);
         const loadUserData = async () => {
             if (!uid) return; // <- Add this check
             try {
@@ -98,7 +98,7 @@ const Profile = () => {
     };
 
     const handleImageUpload = async () => {
-        const { uploadPhoto } = ownerRTB(firebase);
+        const { uploadPhoto } = userRTB(firebase);
         if (!file) {
             showAlert("No image selected for upload.", "error");
             return;
@@ -149,7 +149,7 @@ const Profile = () => {
         }
     };
     const handleSave = async () => {
-        const { saveData, userExists } = ownerRTB(firebase);
+        const { saveData, userExists } = userRTB(firebase);
         const user = firebase.auth.currentUser;
 
         if (file) {
@@ -176,7 +176,6 @@ const Profile = () => {
             showAlert("Failed to update profile. If email change fails, try logging in again, OR " + error, "error");
         }
     };
-
 
     const handleCancel = () => {
         setIsEditing(false);

@@ -1,23 +1,23 @@
 import { useEffect, useState } from "react";
 import { useLocation, useParams } from 'react-router-dom';
 
-import { InputField } from "../ui/input";
-import { Dropdown } from "../ui/option";
+import { InputField } from "../../ui/input";
+import { Dropdown } from "../../ui/option";
+import { Alert } from "../../ui/alert"
+import Loader from "../../ui/loader";
 
+import { isAgeAboveLimit, validateIndianPhoneNumber, validateUsername } from "../../../module/js/string";
 
-import { Alert } from "../ui/alert"
+import { onAuthStateChanged } from "firebase/auth";
 import { statesAndDistricts } from '/src/module/js/district-pin';
-import { useFirebase } from "../../context/firebase"
-import { ownerRTB, roomsRTB } from "./../../context/firebase-rtb"
+import { useFirebase } from "../../../context/firebase"
+import { roomStorage } from "../../../context/firebase-storage";
+import { userRTB, roomsRTB } from "../../../context/firebase-rtb"
 
 import ImageUpload from './form/ImageUpload';
 import AccommodationDetails from './form/AccommodationDetails';
 import MessDetails from './form/MessDetails';
 import FormButtons from './form/FormButtons';
-import { roomStorage } from "../../context/firebase-storage";
-import { onAuthStateChanged } from "firebase/auth";
-import Loader from "../ui/loader";
-import { isAgeAboveLimit, validateIndianPhoneNumber, validateUsername } from "../../module/js/string";
 
 const DescriptiveDetails = ({ ...props }) => {
     return (
@@ -152,7 +152,7 @@ const SubmitPG = () => {
 
     useEffect(() => {
         const unregisterAuthObserver = onAuthStateChanged(firebase.auth, user => {
-            const { getData } = ownerRTB(firebase);
+            const { getData } = userRTB(firebase);
             if (user) {
                 setUID(user.uid);
                 getData(user.uid)

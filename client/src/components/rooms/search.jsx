@@ -6,7 +6,7 @@ import { FiSearch } from "react-icons/fi";
 import { GoLocation } from "react-icons/go";
 
 import { useFirebase } from "../../context/firebase";
-import { ownerRTB, roomsRTB } from "../../context/firebase-rtb";
+import { userRTB, roomsRTB } from "../../context/firebase-rtb";
 import { formatRelativeTime } from "../../module/js/getTime";
 import { capitalize } from "../../module/js/string";
 import Loader from "../ui/loader";
@@ -303,7 +303,7 @@ const SearchResult = () => {
 
     const firebase = useFirebase();
     const { getAllRooms } = roomsRTB(firebase);
-    const { getData } = ownerRTB(firebase);
+    const { getData } = userRTB(firebase);
 
     // ✅ Fetch room data only ONCE on URL change
     useEffect(() => {

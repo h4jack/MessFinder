@@ -14,7 +14,7 @@ const AuthPage = () => {
             if (user) {
                 if (!(location.pathname === "/auth/reset-password/"
                     || location.pathname === "/auth/reset-password")) {
-                    navigate("/owner/profile", { state: { from: location } })
+                    navigate("/user/profile", { state: { from: location } })
                 }
             }
         });

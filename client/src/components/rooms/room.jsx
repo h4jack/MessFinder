@@ -1,11 +1,17 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom"; // ✅ Add this
 
-import { FaPhoneAlt, FaWhatsapp } from "react-icons/fa";
+import {
+    FaPhoneAlt,
+    FaWhatsapp,
+    FaHeart,
+    FaShare,
+    FaBookmark,
+    FaMapMarkerAlt,
+} from "react-icons/fa";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { FaMapMarkerAlt } from "react-icons/fa";
-import { ownerRTB, roomsRTB } from "../../context/firebase-rtb";
+import { userRTB, roomsRTB, bookmarksRTB } from "../../context/firebase-rtb";
 import { useLocation, useParams } from "react-router-dom";
 import { useFirebase } from "../../context/firebase";
 
@@ -27,11 +33,11 @@ const ImageCarousel = ({ images }) => {
                 infiniteLoop
                 autoPlay
                 showArrows
-                className="rounded-lg overflow-hidden"
+                className="rounded-lg overflow-hidden w-full max-w-full"
             >
                 {images.map((image, index) => (
                     <div key={index} onClick={() => setSelectedImage(image.preview)} className="cursor-pointer">
-                        <img src={image.preview} alt={`Room Image ${index + 1}`} className="aspect-video object-cover" />
+                        <img src={image.preview} alt={`Room Image ${index + 1}`} className="w-full object-cover aspect-video" />
                     </div>
                 ))}
             </Carousel>
@@ -72,7 +78,7 @@ const RoomDetailsCard = ({
             totalBeds: 1,
             totalCRooms: 0,
             totalBathrooms: 1,
-            CanteenAvailability: "Near",
+            canteenAvailability: "Near",
             totalFloors: 1,
         },
         facilities: "",
@@ -89,13 +95,15 @@ const RoomDetailsCard = ({
         photoURL: "",
         username: "",
     },
+    roomId = "",
     ...props
 }) => {
     const [showFacilities, setShowFacilities] = useState(false);
     const [showServices, setShowServices] = useState(false);
     const [showRules, setShowRules] = useState(false);
-    const parseMultilineString = (text) => text.split("\\n").map(line => line.trim()).filter(Boolean);
+    const [isSaved, setIsSaved] = useState(false);
 
+    const parseMultilineString = (text) => text.split("\\n").map(line => line.trim()).filter(Boolean);
 
     const [moreDetails, setMoreDetails] = useState({
         facilities: parseMultilineString(roomInfo.facilities),
@@ -104,11 +112,88 @@ const RoomDetailsCard = ({
     })
 
     const firebase = useFirebase();
-    const { getData } = ownerRTB(firebase);
+    const { getData } = userRTB(firebase);
+
+
+    const { saveBookmark, deleteBookmark, getBookmarks } = bookmarksRTB(firebase);
+
+    const [bookmarkId, setBookmarkId] = useState(null);
+
+    // Check if current room is bookmarked on mount or when roomId changes
+    useEffect(() => {
+        const fetchBookmarks = async () => {
+            const currentUser = firebase.auth.currentUser;
+            if (!currentUser || !roomId) return;
+            try {
+                const uid = currentUser.uid;
+                const bookmarks = await getBookmarks(uid);
+                // bookmarks is an object: {bookmarkKey: {roomId, createdAt}, ...}
+                const found = Object.entries(bookmarks).find(([key, value]) => value.roomId === roomId);
+                if (found) {
+                    setIsSaved(true);
+                    setBookmarkId(found[0]); // bookmarkKey
+                } else {
+                    setIsSaved(false);
+                    setBookmarkId(null);
+                }
+            } catch (err) {
+                // handle error if needed
+            }
+        };
+        fetchBookmarks();
+    }, [roomId, firebase.auth]);
+
+    const handleSave = async () => {
+        const currentUser = firebase.auth.currentUser;
+        if (!currentUser || !roomId) return;
+
+        const uid = currentUser.uid;
+
+        try {
+            if (isSaved && bookmarkId) {
+                // Delete bookmark
+                await deleteBookmark(uid, bookmarkId);
+                setIsSaved(false);
+                setBookmarkId(null);
+            } else {
+                // Save bookmark
+                const res = await saveBookmark(uid, roomId);
+                if (res?.bookmarkId) {
+                    setIsSaved(true);
+                    setBookmarkId(res.bookmarkId);
+                }
+            }
+        } catch (error) {
+            console.error("Bookmark action failed:", error);
+        }
+    };
+
+
+    const handleShare = async () => {
+        const shareData = {
+            title: roomInfo.name,
+            text: `Check out this room: ${roomInfo.name}`,
+            url: window.location.href,
+        };
+
+        if (navigator.share) {
+            try {
+                await navigator.share(shareData);
+            } catch (err) {
+                console.error("Sharing failed:", err);
+            }
+        } else {
+            try {
+                await navigator.clipboard.writeText(window.location.href);
+                alert("Link copied to clipboard!");
+            } catch (err) {
+                alert("Failed to copy link.");
+            }
+        }
+    };
 
     return (
         <div className="bg-white shadow-md rounded-lg p-6">
-
             {/* Title */}
             <h1 className="text-2xl font-bold mb-2">{roomInfo.name}</h1>
 
@@ -119,8 +204,34 @@ const RoomDetailsCard = ({
             </p>
 
             {/* Price */}
-            <p className="text-xl text-gray-600 mb-4">₹{roomInfo.price}<span className="text-lg">/month</span> </p>
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                <p className="text-xl text-gray-600 mb-2 sm:mb-0">₹{roomInfo.price}<span className="text-lg">/month</span> </p>
+                <div className="flex gap-2 justify-between w-full sm:w-auto">
+                    {/* Save/Like Button */}
+                    <button
+                        onClick={handleSave}
+                        className={`w-full sm:w-auto flex items-center gap-2 px-3 py-2 rounded-md ${isSaved
+                            ? "bg-blue-700 text-white hover:bg-blue-800"
+                            : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                            }`}
+                        title={isSaved ? "Saved" : "Save"}
+                    >
+                        <FaBookmark className={isSaved ? "fill-current" : ""} />
+                        {isSaved ? "Saved" : "Save"}
+                    </button>
 
+
+                    {/* Share Button */}
+                    <button
+                        onClick={handleShare}
+                        className="w-full sm:w-auto flex items-center gap-2 bg-green-100 text-green-700 px-3 py-2 rounded-md hover:bg-green-200"
+                        title="Share"
+                    >
+                        <FaShare />
+                        Share
+                    </button>
+                </div>
+            </div>
             {/* Basic Details */}
             <h2 className="text-lg font-semibold mb-2">Basic Details</h2>
             <table className="w-full text-gray-700 mb-4 ml-4">
@@ -129,16 +240,16 @@ const RoomDetailsCard = ({
                         <td className="font-semibold">Accommodation For:</td>
                         <td>{
                             roomInfo.accommodationFor.toLowerCase() === "both"
-                            ? "For Both, Boys and Girls"
-                            : capitalize(roomInfo.accommodationFor)
+                                ? "For Both, Boys and Girls"
+                                : capitalize(roomInfo.accommodationFor)
                         }</td>
                     </tr>
                     <tr>
                         <td className="font-semibold">Suitable For:</td>
                         <td>{
                             roomInfo.suitableFor.toLowerCase() === "both"
-                            ? "Students, Working Professionals"
-                            : capitalize(roomInfo.suitableFor)
+                                ? "Students, Working Professionals"
+                                : capitalize(roomInfo.suitableFor)
                         }</td>
                     </tr>
                     <tr>
@@ -151,7 +262,7 @@ const RoomDetailsCard = ({
             </table>
             {/* Mess Info */}
             <h2 className="text-lg font-semibold mb-2">Mess Info</h2>
-            <div className="ml-4 text-gray-700 mb-4">
+            <div className="overflow-x-auto ml-4 text-gray-700 mb-4">
                 <p className="font-semibold">Mess Type: <span className="font-normal">{roomInfo.messInfo.messType === "home" ? "Home" : "PG/Hostel"}</span></p>
                 {roomInfo.messInfo.messType !== "home" && (
                     <table className="w-full text-gray-700 mt-2">
@@ -174,7 +285,7 @@ const RoomDetailsCard = ({
                             </tr>
                             <tr>
                                 <td className="font-semibold">Canteen:</td>
-                                <td>{roomInfo.messInfo.CanteenAvailability}</td>
+                                <td>{roomInfo.messInfo.canteenAvailability}</td>
                             </tr>
                             <tr>
                                 <td className="font-semibold">Floors:</td>
@@ -267,7 +378,7 @@ const RoomDetailsCard = ({
                 <Link to={`/owner/profile/${ownerInfo.username}`}>
                     <div className="flex items-center">
                         <img
-                            src={ownerInfo.photoURL || "/assets/john-doe.png"} // Replace with actual profile photo URL
+                            src={ownerInfo.photoURL || "/assets/avatar-default.svg"} // Replace with actual profile photo URL
                             alt="Owner Profile"
                             className="w-12 h-12 rounded-full object-cover mr-4"
                         />
@@ -377,7 +488,7 @@ const RoomDetails = () => {
     const [loading, setLoading] = useState(true);
     const firebase = useFirebase();
     const { getRoom } = roomsRTB(firebase);
-    const { getData } = ownerRTB(firebase);
+    const { getData } = userRTB(firebase);
 
     useEffect(() => {
         const roomId = params?.roomId;
@@ -422,7 +533,7 @@ const RoomDetails = () => {
     }, [roomInfo.ownerId]);
 
     return (
-        <div className="bg-gray-100 w-full min-h-[calc(100vh-80px)] mx-auto h-full p-6 flex justify-center items-center">
+        <div className="bg-gray-100 w-full min-h-[calc(100vh-80px)] mx-auto h-full px-4 sm:px-6 py-6">
             {errorMessage ? (
                 <Alert type="error" message={errorMessage} />
             ) : loading ? (
@@ -430,14 +541,14 @@ const RoomDetails = () => {
             ) : (
                 <div className="max-w-[1080px] flex flex-col sm:flex-row gap-6">
                     {/* Left Section: Room Details */}
-                    <div className="flex-1 sm:flex-4 lg:flex-6">
+                    <div className="flex-1 sm:flex-[4] lg:flex-[6] w-full">
                         {/* Image Carousel */}
-                        <div className="mb-6">
+                        <div>
                             <ImageCarousel images={roomInfo.images} />
                         </div>
 
                         {/* Room Details */}
-                        <RoomDetailsCard roomInfo={roomInfo} ownerInfo={ownerInfo} />
+                        <RoomDetailsCard roomId={params.roomId} roomInfo={roomInfo} ownerInfo={ownerInfo} />
                     </div>
 
                     {/* Right Section: Contact Details */}

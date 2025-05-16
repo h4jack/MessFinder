@@ -1,30 +1,95 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaExclamationTriangle } from "react-icons/fa";
 import { InputField } from "../ui/input";
+import { useSearchParams } from "react-router-dom";
+import { useFirebase } from "../../context/firebase";
+import { infoRTB } from "../../context/firebase-rtb";
 
 const ReportOwner = () => {
     const [formData, setFormData] = useState({
+        uid: "",
         roomId: "",
-        ownerName: "",
+        ownerUname: "",
         reason: "",
         description: "",
     });
+    const [errorMessage, setErrorMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
+
+    const firebase = useFirebase();
+    const [searchParams] = useSearchParams();
+
+    // Populate roomId and ownerUname from URL
+    useEffect(() => {
+        const roomId = searchParams.get("roomId") || "";
+        const ownerUname = searchParams.get("ownerUname") || "";
+
+        // Set room info immediately
+        setFormData((prev) => ({
+            ...prev,
+            roomId,
+            ownerUname,
+        }));
+
+        // Watch for auth state
+        const unsubscribe = firebase.auth.onAuthStateChanged((user) => {
+            if (user) {
+                setFormData((prev) => ({
+                    ...prev,
+                    uid: user.uid,
+                }));
+                setErrorMessage(""); // clear error if user is present
+            } else {
+                setErrorMessage("Please log in to submit a report.");
+            }
+        });
+
+        return () => unsubscribe(); // Clean up listener on unmount
+    }, [firebase.auth, searchParams]);
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Report Submitted:", formData);
-        alert("Your report has been submitted successfully!");
-        setFormData({
-            roomId: "",
-            ownerName: "",
-            reason: "",
-            description: "",
-        });
+
+        const { uid, roomId, ownerUname, reason, description } = formData;
+        if (!uid) {
+            setErrorMessage("You must be logged in to submit a report.");
+            return;
+        }
+
+        if (!reason || !description) {
+            setErrorMessage("Please provide both a reason and a description.");
+            return;
+        }
+
+        try {
+            const { reportRoom } = infoRTB(firebase);
+            await reportRoom({
+                uid: uid,
+                roomId: roomId,
+                ownerUname: ownerUname,
+                reason: reason,
+                description: description,
+            });
+
+            setSuccessMessage("Your report has been submitted successfully!");
+            setFormData({
+                uid: uid,
+                roomId: roomId,
+                ownerUname: ownerUname,
+                reason: "",
+                description: "",
+            });
+            setErrorMessage("");
+        } catch (err) {
+            console.error(err);
+            setErrorMessage("An error occurred while submitting your report.");
+        }
     };
 
     return (
@@ -34,23 +99,23 @@ const ReportOwner = () => {
                     <FaExclamationTriangle className="text-red-500 text-2xl mr-2" />
                     <h1 className="text-2xl font-bold text-gray-800">Report a Room/Owner</h1>
                 </div>
-                <p className="text-gray-600 mb-6">
-                    If you find any issues with a room or owner, please fill out the form below to report it.
-                </p>
+                {errorMessage ? (
+                    <p className="text-red-500 text-center mb-4">{errorMessage}</p>
+                ) : successMessage ? (
+                    <p className="text-green-500 text-center mb-4">{successMessage}</p>
+                ) : null}
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <InputField
-                        label="Room ID (if applicable)"
+                        label="Room ID"
                         type="text"
                         value={formData.roomId}
-                        onChange={(e) => handleChange({ target: { name: "roomId", value: e.target.value } })}
-                        placeholder="Enter Room ID"
+                        disabled
                     />
                     <InputField
-                        label="Owner Name"
+                        label="Owner Username"
                         type="text"
-                        value={formData.ownerName}
-                        onChange={(e) => handleChange({ target: { name: "ownerName", value: e.target.value } })}
-                        placeholder="Enter Owner's Name"
+                        value={formData.ownerUname}
+                        disabled
                     />
                     <div>
                         <label htmlFor="reason" className="block text-sm font-medium text-gray-700">

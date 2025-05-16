@@ -7,15 +7,15 @@ import {
 } from "firebase/storage";
 import { useFirebase } from "./firebase"; // Adjust if needed
 
-const ownerStorage = () => {
+const userStorage = () => {
     const firebase = useFirebase();
 
-    const uploadProfileImage = async (ownerId, file, onProgress) => {
+    const uploadProfileImage = async (userId, file, onProgress) => {
         if (!file) {
             throw new Error("No file provided for upload.");
         }
 
-        const storageRef = ref(firebase.storage, `mess-finder/owners/${ownerId}/profile.png`);
+        const storageRef = ref(firebase.storage, `mess-finder/users/${userId}/profile.png`);
 
         // Create a reference to the file to be uploaded
         const uploadTask = uploadBytesResumable(storageRef, file);
@@ -48,8 +48,8 @@ const ownerStorage = () => {
         });
     };
 
-    const deleteProfileImage = async (ownerId) => {
-        const storageRef = ref(firebase.storage, `mess-finder/owners/${ownerId}/profile.png`); // Adjust extension if needed
+    const deleteProfileImage = async (userId) => {
+        const storageRef = ref(firebase.storage, `mess-finder/users/${userId}/profile.png`); // Adjust extension if needed
 
         return new Promise((resolve, reject) => {
             deleteObject(storageRef)
@@ -141,7 +141,7 @@ const roomStorage = () => {
 };
 
 export {
-    ownerStorage,
+    userStorage,
     roomStorage,
 };
 

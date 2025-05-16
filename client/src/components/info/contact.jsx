@@ -1,32 +1,104 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaUser, FaEnvelope, FaRegCommentDots } from "react-icons/fa";
+import { useFirebase } from "../../context/firebase";
+import { infoRTB } from "../../context/firebase-rtb";
 
 const Contact = () => {
     const [formData, setFormData] = useState({
+        uid: "",
         name: "",
         email: "",
         message: "",
     });
+    const [errorMessage, setErrorMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
+
+    const firebase = useFirebase();
+
+    // Prefill form with user data if logged in
+    useEffect(() => {
+        const unsubscribe = firebase.auth.onAuthStateChanged((user) => {
+            if (user) {
+                setFormData((prev) => ({
+                    ...prev,
+                    uid: user.uid,
+                    name: user.displayName || "",
+                    email: user.email || "",
+                }));
+            }
+        });
+        return () => unsubscribe();
+    }, [firebase.auth]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Form Submitted:", formData);
-        // Add your form submission logic here
+        setErrorMessage("");
+        setSuccessMessage("");
+
+        const { contactUs } = infoRTB(firebase);
+        const currentUser = firebase.auth.currentUser;
+
+        if (!currentUser) {
+            setErrorMessage("Due to spam concerns, you must be logged in to submit a message.");
+            return;
+        }
+
+        if (!formData.uid || currentUser.uid !== formData.uid) {
+            setErrorMessage("Invalid user session. Please log in again.");
+            return;
+        }
+
+        if (!formData.email || !formData.email.includes("@")) {
+            setErrorMessage("Please enter a valid email address.");
+            return;
+        }
+
+
+        if (!formData.message.trim()) {
+            setErrorMessage("Message cannot be empty.");
+            return;
+        }
+
+        try {
+            await contactUs(formData);
+            setSuccessMessage("Your message has been submitted successfully.");
+            setFormData({
+                uid: currentUser.uid,
+                name: currentUser.displayName || "",
+                email: currentUser.email || "",
+                message: "",
+            });
+        } catch (error) {
+            setErrorMessage("Failed to submit your message. Please try again later.");
+        }
     };
 
     const handleCancel = () => {
-        setFormData({ name: "", email: "", message: "" });
+        setFormData((prev) => ({
+            ...prev,
+            message: "",
+        }));
+        setErrorMessage("");
+        setSuccessMessage("");
     };
 
     return (
         <main className="flex flex-col items-center justify-center min-h-[calc(100vh-72px)] px-4 sm:px-6 lg:px-8">
             <div className="bg-white shadow-md rounded-lg w-80 sm:w-120 p-6">
                 <h2 className="text-2xl font-bold text-gray-700 text-center mb-4">Contact Us</h2>
+
+                {errorMessage && (
+                    <p className="text-red-500 text-center mb-4">{errorMessage}</p>
+                )}
+                {successMessage && (
+                    <p className="text-green-500 text-center mb-4">{successMessage}</p>
+                )}
+
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="flex items-center border-b border-gray-400 py-2">
                         <FaUser className="text-gray-500 mr-2" />
@@ -85,6 +157,4 @@ const Contact = () => {
     );
 };
 
-export {
-    Contact
-};
+export { Contact };
