@@ -36,21 +36,9 @@ const Dashboard = () => {
         });
 
         return () => unsubscribe();
-    }, [firebase.auth]);
+    }, [firebase.auth, firebase.db]);
 
     const isActive = (path) => location.pathname === `${basePath}/${path}`;
-
-    useEffect(() => {
-        if (role) {
-            const currentBase = location.pathname.split("/")[1]; // 'user' or 'owner'
-            if (currentBase && currentBase !== role) {
-                // Get subpath after incorrect role (e.g. 'profile')
-                const subPath = location.pathname.split("/").slice(2).join("/");
-                navigate(`/${role}/${subPath}`, { replace: true });
-            }
-        }
-    }, [role, location.pathname, navigate]);
-
 
     // Show loading while role is being determined
     if (role === null) {

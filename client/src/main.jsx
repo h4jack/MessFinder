@@ -37,15 +37,16 @@ import { ErrorPage } from './components/error/error'
 
 // importing the profile of owner..
 import Dashboard from './components/dashboard/dashboard'
+import IncomingMessages from './components/dashboard/messages'
+import Bookmarks from './components/dashboard/bookmarks'
 import Profile from './components/dashboard/profile'
 import Settings from './components/dashboard/settings'
-import IncomingMessages from './components/dashboard/messages'
-import Watchlist from './components/dashboard/user/watchlist'
 import MyPGs from './components/dashboard/owner/mypgs'
 import SubmitPG from './components/dashboard/owner/submit-pg'
 
 //importing the Wrapper context of Firebase.
 import { FirebaseProvider } from './context/firebase'
+import OwnerPublicProfile from './components/dashboard/owner/publicProfile'
 
 let router = createBrowserRouter(
   createRoutesFromElements(
@@ -60,6 +61,7 @@ let router = createBrowserRouter(
 
         <Route path="owner/" element={<Dashboard />}>
           <Route path='profile' element={<Profile />} />
+          <Route path='profile/:username' element={<OwnerPublicProfile />} />
           <Route path="submit-pg" element={<SubmitPG />} />
           <Route path="submit-pg/:roomId" element={<SubmitPG />} />
           <Route path='settings' element={<Settings />} />
@@ -70,7 +72,7 @@ let router = createBrowserRouter(
 
         <Route path="user/" element={<Dashboard />}>
           <Route path='profile' element={<Profile />} />
-          <Route path="watchlist" element={<Watchlist />} />
+          <Route path="bookmarks" element={<Bookmarks />} />
           <Route path='settings' element={<Settings />} />
           <Route path='messages' element={<IncomingMessages />} />
           <Route path="logout" element={<Logout />} />

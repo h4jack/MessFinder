@@ -259,6 +259,71 @@ const infoRTB = (firebase) => {
     };
 };
 
+const bookmarksRTB = (firebase) => {
+    const baseRef = ref(firebase.db, "/mess-finder/bookmarks");
+
+    // Save a bookmark for a specific room
+    const saveBookmark = async (uid, roomId) => {
+        try {
+            if (!uid || !roomId) {
+                throw new Error("Missing user ID or room ID.");
+            }
+
+            const bookmarkRef = ref(firebase.db, `/mess-finder/bookmarks/${uid}`);
+            const newBookmarkRef = push(bookmarkRef); // Generate a unique ID for the bookmark
+
+            const newBookmark = {
+                roomId,
+                createdAt: serverTimestamp(),
+            };
+
+            await set(newBookmarkRef, newBookmark);
+            return { status: true, message: "Bookmark saved successfully.", bookmarkId: newBookmarkRef.key };
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    // Get all bookmarks for a specific user
+    const getBookmarks = async (uid) => {
+        try {
+            if (!uid) {
+                throw new Error("Missing user ID.");
+            }
+
+            const bookmarksRef = ref(firebase.db, `/mess-finder/bookmarks/${uid}`);
+            const snapshot = await get(bookmarksRef);
+            return snapshot.exists() ? snapshot.val() : {};
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    // Delete a specific bookmark for a user
+    const deleteBookmark = async (uid, bookmarkId) => {
+        try {
+            if (!uid || !bookmarkId) {
+                throw new Error("Missing user ID or bookmark ID.");
+            }
+
+            const bookmarkRef = ref(firebase.db, `/mess-finder/bookmarks/${uid}/${bookmarkId}`);
+            await remove(bookmarkRef);
+            return { status: true, message: "Bookmark deleted successfully." };
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    return {
+        saveBookmark,
+        getBookmarks,
+        deleteBookmark,
+    };
+};
+
+export { bookmarksRTB };
+
+
 export {
     roomsRTB,
     userRTB,
