@@ -8,7 +8,7 @@ const Settings = () => {
     const [isEmailPublic, setIsEmailPublic] = useState(true);
 
     const handleDeleteAccount = () => {
-        setAlert("Account deletion is not implemented yet.");
+        setAlert("Account deletion is not Allowed. Please contact the admin.");
         setTimeout(() => {
             setAlert(""); // Clear the alert after 3 seconds
         }, 3000);
@@ -25,7 +25,7 @@ const Settings = () => {
             <h2 className="text-3xl font-bold mb-4">Settings</h2>
             <div className="bg-white p-6 rounded shadow-md">
                 <h3 className="text-xl font-semibold mb-4">Privacy Settings</h3>
-                <div className="mb-4">
+                {/* <div className="mb-4">
                     <label className="flex items-center justify-between">
                         <span className="mr-2">Date of Birth:</span>
                         <button
@@ -63,7 +63,7 @@ const Settings = () => {
                             {isPhonePublic ? "Public" : "Private"}
                         </button>
                     </label>
-                </div>
+                </div> */}
                 <div className="mt-6">
                     <button
                         className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
