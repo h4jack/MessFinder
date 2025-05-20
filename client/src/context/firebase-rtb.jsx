@@ -1,5 +1,6 @@
 import { ref, push, get, remove, update, serverTimestamp, onValue, set } from "firebase/database";
 import { validateUsername } from "../module/js/string";
+import { useId } from "react";
 
 const userRTB = (firebase) => {
 
@@ -334,38 +335,47 @@ const bookmarksRTB = (firebase) => {
 
 const chatRTB = (firebase) => {
     // Create new chat with first message or add message to existing chat
-    const createChat = async (ownerId, userId, firstMessage) => {
+    const createChat = async (ownerId, userId, existingChatId = null, firstMessage = "") => {
         try {
             if (!ownerId || !userId) {
                 throw new Error("Missing required chat information.");
             }
 
-            // Check if chat already exists between ownerId and userId
+            let chatId = existingChatId;
+
+            // ✅ Check if a chat already exists between these users
             const userChatsRef = ref(firebase.db, `/mess-finder/userChats/${ownerId}`);
             const snapshot = await get(userChatsRef);
 
             if (snapshot.exists()) {
                 const chats = snapshot.val();
-                for (const chatId in chats) {
-                    if (chats[chatId].userId === userId) {
-                        return { status: false, chatId, message: "Chat already exists." };
+                for (const existingChatId in chats) {
+                    if (chats[existingChatId].userId === userId) {
+                        chatId = existingChatId; // ✅ Use the existing chat ID
+                        break;
                     }
                 }
             }
 
-            // Create new chat
-            const chatRef = ref(firebase.db, '/mess-finder/chats');
-            const newChatRef = push(chatRef);
-            const chatId = newChatRef.key;
+            // ✅ If no chat exists, create a new one
+            if (!chatId) {
+                const chatRef = ref(firebase.db, "/mess-finder/chats");
+                const newChatRef = push(chatRef);
+                chatId = newChatRef.key;
 
-            // Set up basic chat info
-            await set(newChatRef, {
-                ownerId,
-                userId,
-            });
+                await set(newChatRef, {
+                    ownerId: ownerId,
+                    userId: userId,
+                });
 
-            // Conditionally add first message
-            if (firstMessage && firstMessage.trim() !== "") {
+                const userChatsRefOwner = ref(firebase.db, `/mess-finder/userChats/${ownerId}/${chatId}`);
+                const userChatsRefUser = ref(firebase.db, `/mess-finder/userChats/${userId}/${chatId}`);
+                await set(userChatsRefOwner, { chatId: chatId, userId: userId });
+                await set(userChatsRefUser, { chatId: chatId, ownerId: ownerId });
+            }
+
+            // ✅ Send the message regardless of whether a new chat was created or not
+            if (firstMessage.trim() !== "") {
                 const msgRef = push(ref(firebase.db, `/mess-finder/chats/${chatId}/messages`));
                 const messageData = {
                     text: firstMessage,
@@ -375,17 +385,13 @@ const chatRTB = (firebase) => {
                 await set(msgRef, messageData);
             }
 
-            // Add chat reference to both users
-            const userChatsRefOwner = ref(firebase.db, `/mess-finder/userChats/${ownerId}/${chatId}`);
-            const userChatsRefUser = ref(firebase.db, `/mess-finder/userChats/${userId}/${chatId}`);
-            await set(userChatsRefOwner, { chatId, userId });
-            await set(userChatsRefUser, { chatId, ownerId });
-
-            return { status: true, chatId, message: "Chat created successfully." };
+            return { status: true, chatId: chatId, message: "Message sent successfully." };
         } catch (error) {
             throw error;
         }
     };
+
+
 
 
 
@@ -533,7 +539,6 @@ const chatRTB = (firebase) => {
     return { createChat, sendMessage, deleteMessage, deleteChat, getChat, onChatMessages, getUserChats };
 };
 
-export { chatRTB };
 
 
 
@@ -541,7 +546,7 @@ export { chatRTB };
 export {
     roomsRTB,
     userRTB,
-    infoRTB
+    infoRTB,
+    chatRTB,
+    bookmarksRTB
 };
-
-export { bookmarksRTB };

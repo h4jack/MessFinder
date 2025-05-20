@@ -60,27 +60,36 @@ const ChatApp = () => {
                 const chatEntries = Object.entries(userChats || {});
                 const fullChats = await Promise.all(
                     chatEntries.map(async ([chatId, data]) => {
-                        const chatData = await chat.getChat(chatId);
-                        // TODO: create chat with existing id. if not exists..
-                        const otherUserId = chatData.ownerId === currentUserId ? chatData.userId : chatData.ownerId;
+                        let chatData = await chat.getChat(chatId);
+
+                        // ✅ If chatData is null, initialize an empty chat with existing ID
+                        if (!chatData) {
+                            await chat.createChat(data.ownerId, data.userId, chatId);
+                            chatData = await chat.getChat(chatId);
+                        }
+
+                        const otherUserId =
+                            chatData?.ownerId === currentUserId
+                                ? chatData?.userId
+                                : chatData?.ownerId;
                         const otherUser = await user.getData(otherUserId);
 
                         return {
                             id: chatId,
-                            name: otherUser?.displayName || 'Unknown User', // fallback if user not found
-                            username: otherUser?.username || 'Unknown User', // fallback if user not found
-                            photoURL: otherUser?.photoURL || '/assets/avatar-default.svg',
+                            name: otherUser?.displayName || "Unknown User",
+                            username: otherUser?.username || "Unknown User",
+                            photoURL: otherUser?.photoURL || "/assets/avatar-default.svg",
                             messages: [],
                             chatId: chatId,
                             ownerId: chatData.ownerId,
-                            userId: chatData.userId
+                            userId: chatData.userId,
                         };
                     })
                 );
 
                 setChats(fullChats);
 
-                // Listen for messages
+                // ✅ Listen for messages
                 fullChats.forEach((chatObj) => {
                     chat.onChatMessages(chatObj.id, (messages) => {
                         setChats((prevChats) =>
@@ -91,12 +100,13 @@ const ChatApp = () => {
                     });
                 });
             } catch (err) {
-                console.error('Failed to fetch chats:', err);
+                console.error("Failed to fetch chats:", err);
             }
         };
 
         fetchChats();
     }, [currentUserId]);
+
 
 
 
