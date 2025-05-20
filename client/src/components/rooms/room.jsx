@@ -434,6 +434,9 @@ const ContactForm = ({ ownerInfo, userInfo }) => {
         phone: "",
         message: "",
     })
+    const [successMessage, setSuccessMessage] = useState("")
+    const [errorMessage, setErrorMessage] = useState("")
+
     const firebase = useFirebase();
     const { createChat } = chatRTB(firebase);
 
@@ -444,25 +447,25 @@ const ContactForm = ({ ownerInfo, userInfo }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const message = `Hey, my name is ${formData.name}. You can reach me at ${formData.phone}. ${formData.message}`;
+        const message = `Hey, my name is ${formData?.name}. You can reach me at ${formData?.phone}. ${formData?.message}`;
         if (ownerInfo.id && userInfo.uid) {
-            createChat(ownerInfo.id, userInfo.uid, message)
+            createChat(ownerInfo.id, userInfo.uid, "", message)
                 .then((res) => {
-                    console.log(res)
-                    console.log("Complete")
+                    setSuccessMessage("Message Sent to Owner. click on profile and then Messages to see the messages");
                 }).catch((error) => {
-                    console.error(error)
+                    setErrorMessage("Error sending details to owner. please contact admin..");
                 })
         } else {
-            console.log(userInfo);
-            console.log(ownerInfo);
+            setErrorMessage("Invalid owner and user id. it seems like you are not logged in..")
         }
-        console.log("Hello World");
+        setFormData((prev) => ({}));
     }
 
     return (
         <div className="sticky top-[64px] bg-gray-100 p-6 rounded-lg">
             <h2 className="text-xl font-semibold mb-4">Contact Owner</h2>
+            <p className="text-red-500">{errorMessage}</p>
+            <p className="text-green-500">{successMessage}</p>
             <form className="space-y-4">
                 <InputField onChange={handleChange} name="name" label="Full Name" placeholder="Enter your full name" />
                 <InputField onChange={handleChange} name="phone" label="Mobile Number" placeholder="Enter your mobile number" />

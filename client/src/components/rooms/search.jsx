@@ -167,7 +167,7 @@ const SearchResultCard = ({ result }) => {
                 </div>
                 <div className="flex flex-col justify-between flex-grow p-4">
                     <div>
-                        <h3 className="text-lg font-bold mb-1 text-nowrap overflow-hidden">{result.name}</h3>
+                        <h3 className="text-lg font-bold mb-1 truncate">{result.name}</h3>
                         <div className="flex items-center text-sm text-gray-600 mb-2">
                             <GoLocation className="h-4 w-4 mr-1 text-gray-500 text-nowrap overflow-hidden" />
                             {result.location}
@@ -325,6 +325,9 @@ const SearchResult = () => {
                 const fetchedRooms = await Promise.all(
                     roomEntries.map(async ([roomId, room]) => {
                         try {
+                            if (room.status !== "public") {
+                                return null; // ✅ Exclude non-public rooms
+                            }
                             const owner = await getData(room.ownerId);
                             return {
                                 roomId,
@@ -349,8 +352,8 @@ const SearchResult = () => {
                     })
                 );
 
-                const validRooms = fetchedRooms.filter(r => r !== null);
-                setAllRooms(validRooms); // ✅ store unfiltered data
+                const validRooms = fetchedRooms.filter(r => r !== null); // ✅ Filters out non-public and failed fetches
+                setAllRooms(validRooms);
             } catch (err) {
                 console.error("Room fetch error:", err);
                 setAllRooms([]);
