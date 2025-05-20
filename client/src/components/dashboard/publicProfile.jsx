@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useLocation, useNavigate } from "react-router-dom";
 import { FaPhoneAlt, FaFlag } from "react-icons/fa";
 import { FiMessageCircle } from "react-icons/fi";
 
-import { userRTB, roomsRTB } from "../../context/firebase-rtb"; // Adjust this path
+import { userRTB, roomsRTB, chatRTB } from "../../context/firebase-rtb"; // Adjust this path
 import { useFirebase } from "../../context/firebase";     // Adjust this path
 import Loader from "../ui/loader";
 
@@ -14,8 +14,11 @@ const OwnerPublicProfile = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const firebase = useFirebase();
+    const chat = chatRTB(firebase);
 
     const [rooms, setRooms] = useState([]);
+
+
 
     useEffect(() => {
         const fetchUserByUsername = async () => {
@@ -67,6 +70,34 @@ const OwnerPublicProfile = () => {
         fetchUserByUsername();
     }, [username]);
 
+    const handleChatClick = async () => {
+        const location = useLocation()
+        const navigate = useNavigate()
+        // ✅ Get the current user's UID
+        const currentUser = firebase.auth.currentUser;
+        if (!currentUser) {
+            console.error("User not authenticated.");
+            return;
+        }
+
+        const currentUserId = currentUser.uid;
+        const ownerId = owner.id;
+
+        // ✅ If the user is trying to chat with themselves, do nothing
+        if (currentUserId === ownerId) {
+            console.warn("Cannot chat with yourself.");
+            return;
+        }
+
+        // ✅ Call createChat with correct arguments (empty chat)
+        try {
+            await chat.createChat(ownerId, currentUserId);
+            navigate("/user/profile", { state: { from: location } })
+        } catch (error) {
+            console.error("Failed to create chat:", error);
+        }
+    };
+
     if (loading) return (
         <div className="min-h-screen flex justify-center items-center w-full bg-gray-50">
             <Loader text="Loading user profile data, please wait." />
@@ -104,29 +135,25 @@ const OwnerPublicProfile = () => {
 
                         {/* Action Buttons */}
                         <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-between">
-                            <a href={`tel:${owner.phoneNumber}`} className="flex-1">
+                            <Link to={`tel:${owner.phoneNumber}`} className="flex-1">
                                 <button className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
                                     <FaPhoneAlt /> Call
                                 </button>
-                            </a>
-
-                            <a
-                                href={`https://wa.me/${owner.phoneNumber}?text=${encodeURIComponent("Hi, I found your profile and I'm interested in a room.")}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex-1"
-                            >
-                                <button className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-green-700">
-                                    <FiMessageCircle /> Chat
-                                </button>
-                            </a>
+                            </Link>
 
                             <button
-                                onClick={() => alert("Report sent!")}
-                                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-100 text-red-600 rounded-md hover:bg-red-200"
-                            >
-                                <FaFlag /> Report
+                                onClick={handleChatClick}
+                                className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-green-700">
+                                <FiMessageCircle /> Chat
                             </button>
+
+                            <Link to="/info/report">
+                                <button
+                                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-100 text-red-600 rounded-md hover:bg-red-200"
+                                >
+                                    <FaFlag /> Report
+                                </button>
+                            </Link>
                         </div>
                     </div>
                     {
