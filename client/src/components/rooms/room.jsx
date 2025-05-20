@@ -11,7 +11,7 @@ import {
 } from "react-icons/fa";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { userRTB, roomsRTB, bookmarksRTB } from "../../context/firebase-rtb";
+import { userRTB, roomsRTB, bookmarksRTB, chatRTB } from "../../context/firebase-rtb";
 import { useLocation, useParams } from "react-router-dom";
 import { useFirebase } from "../../context/firebase";
 
@@ -20,6 +20,7 @@ import { Alert } from "../ui/alert";
 import { Loader } from "../ui/loader";
 import { formatRelativeTime } from "../../module/js/getTime";
 import { capitalize } from "../../module/js/string";
+import { firebaseConfig } from "../../context/firebase-config";
 
 // ImageCarousel Component
 const ImageCarousel = ({ images }) => {
@@ -375,7 +376,7 @@ const RoomDetailsCard = ({
             {/* Owner Details */}
             <div className="flex items-center justify-between bg-gray-100 p-4 rounded-lg mb-6 shadow-md">
                 {/* Left Section: Owner Info */}
-                <Link to={`/owner/profile/${ownerInfo.username}`}>
+                <Link to={`/profile/${ownerInfo.username}`}>
                     <div className="flex items-center">
                         <img
                             src={ownerInfo.photoURL || "/assets/avatar-default.svg"} // Replace with actual profile photo URL
@@ -427,16 +428,48 @@ const ContactButtons = ({ ownerInfo }) => {
 }
 
 // ContactForm Component
-const ContactForm = ({ ownerInfo }) => {
+const ContactForm = ({ ownerInfo, userInfo }) => {
+    const [formData, setFormData] = useState({
+        name: "",
+        phone: "",
+        message: "",
+    })
+    const firebase = useFirebase();
+    const { createChat } = chatRTB(firebase);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const message = `Hey, my name is ${formData.name}. You can reach me at ${formData.phone}. ${formData.message}`;
+        if (ownerInfo.id && userInfo.uid) {
+            createChat(ownerInfo.id, userInfo.uid, message)
+                .then((res) => {
+                    console.log(res)
+                    console.log("Complete")
+                }).catch((error) => {
+                    console.error(error)
+                })
+        } else {
+            console.log(userInfo);
+            console.log(ownerInfo);
+        }
+        console.log("Hello World");
+    }
+
     return (
         <div className="sticky top-[64px] bg-gray-100 p-6 rounded-lg">
             <h2 className="text-xl font-semibold mb-4">Contact Owner</h2>
             <form className="space-y-4">
-                <InputField label="Full Name" placeholder="Enter your full name" />
-                <InputField label="Mobile Number" placeholder="Enter your mobile number" />
-                <InputField type="textarea" label="Message" placeholder="Enter your message" rows={5} />
+                <InputField onChange={handleChange} name="name" label="Full Name" placeholder="Enter your full name" />
+                <InputField onChange={handleChange} name="phone" label="Mobile Number" placeholder="Enter your mobile number" />
+                <InputField onChange={handleChange} name="message" label="Message" type="textarea" placeholder="Enter your message" rows={5} />
 
                 <button
+                    onClick={handleSubmit}
                     type="submit"
                     className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
                 >
@@ -476,6 +509,7 @@ const RoomDetails = () => {
         status: "",
     });
     const [ownerInfo, setOwnerInfo] = useState({
+        id: "",
         name: "",
         photoURL: "",
         username: "",
@@ -490,6 +524,8 @@ const RoomDetails = () => {
     const { getRoom } = roomsRTB(firebase);
     const { getData } = userRTB(firebase);
 
+    const [user, setUser] = useState(false);
+
     useEffect(() => {
         const roomId = params?.roomId;
         if (!roomId) {
@@ -501,6 +537,7 @@ const RoomDetails = () => {
         getRoom(roomId)
             .then((res) => {
                 const currentUser = firebase.auth.currentUser;
+                setUser(currentUser);
                 if (res.status === "draft") {
                     if (!currentUser || res.ownerId !== currentUser.uid) {
                         setErrorMessage("The Room is in draft mode, and you are not authorised to view this.");
@@ -522,6 +559,7 @@ const RoomDetails = () => {
             getData(roomInfo.ownerId)
                 .then((owner) => {
                     setOwnerInfo({
+                        id: owner.id,
                         name: owner.displayName,
                         username: owner.username,
                         photoURL: owner.photoURL,
@@ -533,13 +571,13 @@ const RoomDetails = () => {
     }, [roomInfo.ownerId]);
 
     return (
-        <div className="bg-gray-100 w-full min-h-[calc(100vh-80px)] mx-auto h-full px-4 sm:px-6 py-6">
+        <div className="bg-gray-100 w-full min-h-[calc(100vh-80px)] mx-auto h-full px-4 sm:px-6 py-6 justify-center flex">
             {errorMessage ? (
                 <Alert type="error" message={errorMessage} />
             ) : loading ? (
                 <Loader />
             ) : (
-                <div className="max-w-[1080px] flex flex-col sm:flex-row gap-6">
+                <div className="max-w-[1080px] w-full flex flex-col sm:flex-row gap-6 justify-center">
                     {/* Left Section: Room Details */}
                     <div className="flex-1 sm:flex-[4] lg:flex-[6] w-full">
                         {/* Image Carousel */}
@@ -554,7 +592,7 @@ const RoomDetails = () => {
                     {/* Right Section: Contact Details */}
                     <div className="flex-1 sm:flex-2">
                         <ContactButtons ownerInfo={ownerInfo} />
-                        <ContactForm ownerInfo={ownerInfo} />
+                        <ContactForm ownerInfo={ownerInfo} userInfo={user} />
                     </div>
                 </div>
             )}

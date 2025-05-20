@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { FaPhoneAlt, FaWhatsapp, FaFlag } from "react-icons/fa";
-import { userRTB, roomsRTB } from "../../../context/firebase-rtb"; // Adjust this path
-import { useFirebase } from "../../../context/firebase";     // Adjust this path
+import { userRTB, roomsRTB } from "../../context/firebase-rtb"; // Adjust this path
+import { useFirebase } from "../../context/firebase";     // Adjust this path
 
 
 const OwnerPublicProfile = () => {

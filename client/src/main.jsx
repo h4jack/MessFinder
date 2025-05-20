@@ -46,7 +46,7 @@ import SubmitPG from './components/dashboard/owner/submit-pg'
 
 //importing the Wrapper context of Firebase.
 import { FirebaseProvider } from './context/firebase'
-import OwnerPublicProfile from './components/dashboard/owner/publicProfile'
+import OwnerPublicProfile from './components/dashboard/publicProfile'
 
 let router = createBrowserRouter(
   createRoutesFromElements(
@@ -58,10 +58,10 @@ let router = createBrowserRouter(
         </Route>
 
         <Route path="room/:roomId" element={<RoomDetails />} />
+        <Route path='profile/:username' element={<OwnerPublicProfile />} />
 
         <Route path="owner/" element={<Dashboard />}>
           <Route path='profile' element={<Profile />} />
-          <Route path='profile/:username' element={<OwnerPublicProfile />} />
           <Route path="submit-pg" element={<SubmitPG />} />
           <Route path="submit-pg/:roomId" element={<SubmitPG />} />
           <Route path='settings' element={<Settings />} />

@@ -1,5 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { FaEllipsisV, FaTrash, FaCopy, FaArrowLeft, FaEllipsisH } from 'react-icons/fa';
+
+import { chatRTB, userRTB } from './../../context/firebase-rtb';
+import { useFirebase } from '../../context/firebase';
+import { child } from 'firebase/database';
 
 const ChatApp = () => {
     const [chats, setChats] = useState([
@@ -24,7 +29,76 @@ const ChatApp = () => {
     const [popupMenu, setPopupMenu] = useState({ visible: false, x: 0, y: 0, chatId: null, messageIndex: null });
     const chatWindowRef = useRef(null);
 
+    const firebase = useFirebase();
+    const chat = chatRTB(firebase);
+    const user = userRTB(firebase);
+
+
     const selectedChat = chats.find(c => c.id === selectedChatId);
+
+    const [currentUserId, setCurrentUserId] = useState(null);
+
+    useEffect(() => {
+        const unsubscribe = firebase.auth.onAuthStateChanged((user) => {
+            if (user) {
+                setCurrentUserId(user.uid);
+            } else {
+                setCurrentUserId(null); // user is signed out
+            }
+        });
+
+        return () => unsubscribe(); // cleanup on unmount
+    }, []);
+
+
+    useEffect(() => {
+        const fetchChats = async () => {
+            if (!currentUserId) return;
+            try {
+                const userChats = await chat.getUserChats(currentUserId);
+
+                const chatEntries = Object.entries(userChats || {});
+                const fullChats = await Promise.all(
+                    chatEntries.map(async ([chatId, data]) => {
+                        const chatData = await chat.getChat(chatId);
+                        // TODO: create chat with existing id. if not exists..
+                        const otherUserId = chatData.ownerId === currentUserId ? chatData.userId : chatData.ownerId;
+                        const otherUser = await user.getData(otherUserId);
+
+                        return {
+                            id: chatId,
+                            name: otherUser?.displayName || 'Unknown User', // fallback if user not found
+                            username: otherUser?.username || 'Unknown User', // fallback if user not found
+                            photoURL: otherUser?.photoURL || '/assets/avatar-default.svg',
+                            messages: [],
+                            chatId: chatId,
+                            ownerId: chatData.ownerId,
+                            userId: chatData.userId
+                        };
+                    })
+                );
+
+                setChats(fullChats);
+
+                // Listen for messages
+                fullChats.forEach((chatObj) => {
+                    chat.onChatMessages(chatObj.id, (messages) => {
+                        setChats((prevChats) =>
+                            prevChats.map((c) =>
+                                c.id === chatObj.id ? { ...c, messages } : c
+                            )
+                        );
+                    });
+                });
+            } catch (err) {
+                console.error('Failed to fetch chats:', err);
+            }
+        };
+
+        fetchChats();
+    }, [currentUserId]);
+
+
 
     // Scroll chat to bottom on messages change
     useEffect(() => {
@@ -34,20 +108,21 @@ const ChatApp = () => {
     }, [selectedChat?.messages]);
 
     // Send message handler
-    const handleSendMessage = () => {
+    const handleSendMessage = async () => {
         if (!newMessage.trim() || !selectedChat) return;
-        const updatedChats = chats.map(chat => {
-            if (chat.id === selectedChat.id) {
-                return {
-                    ...chat,
-                    messages: [...chat.messages, { text: newMessage.trim(), sent: true }],
-                };
-            }
-            return chat;
-        });
-        setChats(updatedChats);
-        setNewMessage('');
+
+        const isOwner = selectedChat.ownerId === currentUserId;
+        const sentFlag = !isOwner; // Invert logic: owner sends with `sent: false`
+
+        try {
+            await chat.sendMessage(selectedChat.id, newMessage.trim(), sentFlag);
+            setNewMessage('');
+        } catch (error) {
+            console.error('Failed to send message:', error);
+        }
     };
+
+
 
     // Select chat
     const handleSelectChat = (chatId) => {
@@ -70,11 +145,26 @@ const ChatApp = () => {
     // Show message popup menu on message click
     const handleMessageClick = (e, chatId, messageIndex) => {
         e.preventDefault();
+
+        const chatObj = chats.find(c => c.chatId === chatId);
+
+        if (chatObj && chatObj.messages[messageIndex]) {
+            const message = chatObj.messages[messageIndex];
+
+            const isOwner = chatObj.ownerId === currentUserId;
+            const isSentByCurrentUser = isOwner ? !message.sent : message.sent;
+
+            if (!isSentByCurrentUser) {
+                return; // Block if message is not from current user
+            }
+        }
+
         const rect = e.currentTarget.getBoundingClientRect();
         const x = rect.right + window.scrollX;
         const y = rect.top + window.scrollY;
         setPopupMenu({ visible: true, x, y, chatId, messageIndex });
     };
+
 
     // Close popup menu on clicking outside
     useEffect(() => {
@@ -88,21 +178,20 @@ const ChatApp = () => {
     }, [popupMenu.visible]);
 
     // Handle delete message
-    const handleDeleteMessage = () => {
+    const handleDeleteMessage = async () => {
         if (!popupMenu.visible) return;
         const { chatId, messageIndex } = popupMenu;
-        const updatedChats = chats.map(chat => {
-            if (chat.id === chatId) {
-                return {
-                    ...chat,
-                    messages: chat.messages.filter((_, i) => i !== messageIndex),
-                };
-            }
-            return chat;
-        });
-        setChats(updatedChats);
+
+        try {
+            await chat.deleteMessage(chatId, messageIndex);
+            // No need to manually update `setChats` if `chat.onChatMessages` is subscribed.
+        } catch (error) {
+            console.error("Failed to delete message:", error);
+        }
+
         setPopupMenu({ visible: false, x: 0, y: 0, chatId: null, messageIndex: null });
     };
+
 
     // Handle copy message
     const handleCopyMessage = () => {
@@ -117,12 +206,18 @@ const ChatApp = () => {
     };
 
     // Handle header option actions
-    const handleDeleteChat = () => {
+    const handleDeleteChat = async () => {
         if (!selectedChat) return;
-        const updatedChats = chats.filter(chat => chat.id !== selectedChat.id);
-        setChats(updatedChats);
-        handleBack();
+
+        try {
+            await chat.deleteChat(selectedChat.id);
+            setChats(prev => prev.filter(c => c.id !== selectedChat.id));
+            handleBack();
+        } catch (error) {
+            console.error('Failed to delete chat:', error);
+        }
     };
+
 
     const handleReportChat = () => {
         alert("Thank you for reporting. We will look into this chat.");
@@ -152,12 +247,15 @@ const ChatApp = () => {
                         >
                             <FaArrowLeft size={20} />
                         </button>
-                        <img
-                            src="/assets/avatar-default.svg"
-                            alt={`${selectedChat.name} profile`}
-                            className="w-10 h-10 rounded-full object-cover mr-3"
-                            loading="lazy"
-                        />
+                        <Link to={"/profile/" + selectedChat.username}>
+                            <img
+                                src={selectedChat.photoURL}
+                                alt={`${selectedChat.name} profile`}
+                                className="w-10 h-10 rounded-full object-cover mr-3"
+                                loading="lazy"
+                            />
+                        </Link>
+
                         <div className="flex-1 font-semibold truncate">{selectedChat.name}</div>
                         <div className="relative">
                             <button
@@ -174,14 +272,14 @@ const ChatApp = () => {
                                     className="absolute right-0 top-10 w-36 bg-white border rounded shadow-md z-20"
                                     role="menu"
                                 >
-                                    <button
+                                    {/* <button
                                         onClick={handleDeleteChat}
                                         className="flex items-center w-full px-4 py-2 text-left text-red-600 hover:bg-red-100 focus:outline-none"
                                         role="menuitem"
                                         type="button"
                                     >
                                         <FaTrash className="mr-2" /> Delete
-                                    </button>
+                                    </button> */}
                                     <button
                                         onClick={handleReportChat}
                                         className="flex items-center w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 focus:outline-none"
@@ -214,8 +312,10 @@ const ChatApp = () => {
                                 message={message}
                                 index={index}
                                 onMessageClick={handleMessageClick}
+                                isOwner={selectedChat.ownerId === currentUserId}
                             />
                         ))}
+
                     </div>
 
                     {/* Message input */}
@@ -312,11 +412,12 @@ const ChatList = ({ chats, onSelectChat }) => (
                     }}
                 >
                     <img
-                        src="/assets/avatar-default.svg"
+                        src={chat.photoURL}
                         alt={`${chat.name} profile`}
                         className="w-12 h-12 rounded-full object-cover mr-4 flex-shrink-0"
                         loading="lazy"
                     />
+
                     <div className="flex flex-col flex-1 min-w-0">
                         <span className="text-lg font-medium text-gray-900 truncate select-text">{chat.name}</span>
                         {chat.messages.length > 0 ? (
@@ -333,10 +434,12 @@ const ChatList = ({ chats, onSelectChat }) => (
     </div>
 );
 
-const Message = ({ chatId, message, index, onMessageClick }) => {
-    const alignment = message.sent ? 'justify-end' : 'justify-start';
-    const bgColor = message.sent ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-900';
-    const borderRadius = message.sent
+const Message = ({ chatId, message, index, onMessageClick, isOwner }) => {
+    const actualSent = isOwner ? !message.sent : message.sent;
+
+    const alignment = actualSent ? 'justify-end' : 'justify-start';
+    const bgColor = actualSent ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-900';
+    const borderRadius = actualSent
         ? 'rounded-tl-lg rounded-bl-lg rounded-br-lg'
         : 'rounded-tr-lg rounded-br-lg rounded-bl-lg';
 
@@ -347,7 +450,7 @@ const Message = ({ chatId, message, index, onMessageClick }) => {
             onClick={(e) => onMessageClick(e, chatId, index)}
             role="button"
             tabIndex={0}
-            aria-label={`${message.sent ? 'Sent' : 'Received'} message: ${message.text}`}
+            aria-label={`${actualSent ? 'Sent' : 'Received'} message: ${message.text}`}
             onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
@@ -363,6 +466,7 @@ const Message = ({ chatId, message, index, onMessageClick }) => {
         </div>
     );
 };
+
 
 export default ChatApp;
 
