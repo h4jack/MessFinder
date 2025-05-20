@@ -61,20 +61,21 @@ let router = createBrowserRouter(
         <Route path='profile/:username' element={<OwnerPublicProfile />} />
 
         <Route path="owner/" element={<Dashboard />}>
-          <Route path='profile' element={<Profile />} />
+          <Route path='messages' element={<IncomingMessages />} />
+          <Route path="bookmarks" element={<Bookmarks />} />
+          <Route path='pgs' element={<MyPGs />} />
           <Route path="submit-pg" element={<SubmitPG />} />
           <Route path="submit-pg/:roomId" element={<SubmitPG />} />
+          <Route path='profile' element={<Profile />} />
           <Route path='settings' element={<Settings />} />
-          <Route path='pgs' element={<MyPGs />} />
-          <Route path='messages' element={<IncomingMessages />} />
           <Route path="logout" element={<Logout />} />
         </Route>
 
         <Route path="user/" element={<Dashboard />}>
-          <Route path='profile' element={<Profile />} />
-          <Route path="bookmarks" element={<Bookmarks />} />
-          <Route path='settings' element={<Settings />} />
           <Route path='messages' element={<IncomingMessages />} />
+          <Route path="bookmarks" element={<Bookmarks />} />
+          <Route path='profile' element={<Profile />} />
+          <Route path='settings' element={<Settings />} />
           <Route path="logout" element={<Logout />} />
         </Route>
 
