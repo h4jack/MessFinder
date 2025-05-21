@@ -58,7 +58,7 @@ const ChatApp = () => {
                         return {
                             id: chatId,
                             name: otherUser?.displayName || "Unknown User",
-                            username: otherUser?.username || "Unknown User",
+                            username: otherUser?.username || "",
                             photoURL: otherUser?.photoURL || "/assets/avatar-default.svg",
                             messages: [],
                             chatId,
