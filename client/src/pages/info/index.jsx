@@ -1,5 +1,5 @@
 import { Outlet, useLocation } from "react-router-dom"
-import { ErrorPage } from "../../components/error/error";
+import { ErrorPage } from "../../components/error";
 
 const Info = () => {
     const location = useLocation();

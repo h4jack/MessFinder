@@ -1,6 +1,5 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
-import Logo from '../ui/logo';
+import { Logo } from '../ui';
 
 const FooterLink = ({ href, children }) => (
     <Link to={href} className="hover:underline text-gray-300 text-sm">
@@ -91,4 +90,4 @@ const Footer = () => {
     );
 }
 
-export { Footer };
+export default Footer;

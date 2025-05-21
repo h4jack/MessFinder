@@ -1,10 +1,7 @@
-// components/ui/errors/ErrorPage.jsx
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaExclamationTriangle, FaArrowLeft } from 'react-icons/fa';
 
 const ErrorPage = () => {
-
   return (
     <div className="min-h-[calc(100vh-72px)]  flex items-center justify-center px-4">
       <div className="bg-white shadow-lg rounded-lg p-8 max-w-md text-center">
@@ -30,6 +27,4 @@ const ErrorPage = () => {
 }
 
 
-export {
-  ErrorPage,
-}
+export default ErrorPage;

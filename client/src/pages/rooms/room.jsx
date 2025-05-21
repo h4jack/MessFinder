@@ -15,9 +15,8 @@ import { userRTB, roomsRTB, bookmarksRTB, chatRTB } from "../../context/firebase
 import { useParams } from "react-router-dom";
 import { useFirebase } from "../../context/firebase";
 
-import { InputField } from "../../components/ui/input"
-import { Alert } from "../../components/ui/alert";
-import { Loader } from "../../components/ui/loader";
+import { InputField, Alert, Loader } from "../../components/ui"
+
 import { formatRelativeTime } from "../../module/js/getTime";
 import { capitalize } from "../../module/js/string";
 

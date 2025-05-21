@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { useFirebase } from "../../context/firebase";
-import { ErrorPage } from "../../components/error/error";
+import { ErrorPage } from "../../components/error";
 import { userRTB } from "../../context/firebase-rtb";
-import Loader from "../../components/ui/loader";
+import { Loader } from "../../components/ui";
 import { NAV_ITEMS } from "../../module/js/navItems";
 
 const Dashboard = () => {
@@ -86,8 +86,8 @@ const Dashboard = () => {
                                 key={item.path}
                                 to={`${basePath}/${item.path}`}
                                 className={`p-2 rounded-md transition-colors flex items-center ${isActive(item.path)
-                                        ? "bg-gray-700 text-white"
-                                        : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                                    ? "bg-gray-700 text-white"
+                                    : "text-gray-300 hover:bg-gray-700 hover:text-white"
                                     }`}
                             >
                                 {item.label}

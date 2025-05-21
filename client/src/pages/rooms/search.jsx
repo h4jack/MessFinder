@@ -11,7 +11,7 @@ import { userRTB, roomsRTB } from "../../context/firebase-rtb";
 import { formatRelativeTime } from "../../module/js/getTime";
 import { capitalize } from "../../module/js/string";
 
-import Loader from "../../components/ui/loader";
+import { Loader } from "../../components/ui";
 
 const SearchBar = ({ onSearch, filters, setFilters }) => {
     const [showFilters, setShowFilters] = useState(false);

@@ -4,8 +4,7 @@ import { roomsRTB } from "../../../context/firebase-rtb";
 import { useFirebase } from "../../../context/firebase";
 import { capitalize } from "../../../module/js/string";
 import { formatRelativeTime } from "../../../module/js/getTime";
-import { Alert } from "../../../components/ui/alert"
-import { Loader } from "../../../components/ui/loader"
+import { Alert, Loader } from "../../../components/ui"
 
 const RoomCard = ({ roomData }) => {
     const pg = roomData;

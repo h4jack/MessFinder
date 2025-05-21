@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useFirebase } from "../../context/firebase";
 import { bookmarksRTB, roomsRTB } from "../../context/firebase-rtb";
-import { Loader } from "../../components/ui/loader";
+import { Loader } from "../../components/ui";
 
 const Bookmarks = () => {
     const firebase = useFirebase();
@@ -87,4 +87,3 @@ const Bookmarks = () => {
 };
 
 export default Bookmarks;
-export { Bookmarks };

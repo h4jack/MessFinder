@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { InputField } from "../../components/ui/input"
-import { Button } from "../../components/ui/button";
+import { InputField, Button } from "../../components/ui"
 import { FaGoogle } from "react-icons/fa";
 import { Link, useNavigate, useLocation, data } from "react-router-dom";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
@@ -198,4 +197,3 @@ const Register = () => {
 }
 
 export default Register;
-export { Register };

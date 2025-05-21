@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useParams } from 'react-router-dom';
 
-import { InputField } from "../../../components/ui/input";
-import { Dropdown } from "../../../components/ui/option";
-import { Alert } from "../../../components/ui/alert"
-import Loader from "../../../components/ui/loader";
+import { InputField, Dropdown, Alert, Loader } from "../../../components/ui";
 
 import { isAgeAboveLimit, validateIndianPhoneNumber, validateUsername } from "../../../module/js/string";
 
@@ -611,4 +608,3 @@ const SubmitPG = () => {
 };
 
 export default SubmitPG;
-export { SubmitPG };

@@ -45,4 +45,3 @@ const Alert = ({ type = 'info', header = '', message = '' }) => {
 };
 
 export default Alert;
-export { Alert };

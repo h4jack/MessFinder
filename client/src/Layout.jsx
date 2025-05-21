@@ -1,6 +1,6 @@
 import './index.css'
-import { Header } from './components/layout/header'
-import { Footer } from './components/layout/footer'
+import { Header, Footer } from './components/layout'
+
 import {
   Outlet,
 } from "react-router-dom";

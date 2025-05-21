@@ -188,4 +188,4 @@ const HomeSearch = () => {
     );
 }
 
-export { HomeSearch };
+export default HomeSearch;

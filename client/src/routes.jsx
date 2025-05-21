@@ -6,20 +6,16 @@ import {
 
 // Layout & Error
 import Layout from './Layout';
-import { ErrorPage } from './components/error/error';
+import { ErrorPage } from './components/error/';
 
 // Pages: Home & Search
-import { HomeSearch } from './pages/home/homeSearch';
+import { HomeSearch } from './pages/home';
 import { SearchResult } from './pages/rooms/search';
 import { RoomDetails } from './pages/rooms/room';
 import OwnerPublicProfile from './pages/profile/publicProfile';
 
 // Pages: Auth
-import AuthPage from './pages/auth';
-import Login from './pages/auth/login';
-import { Register } from './pages/auth/register';
-import { ResettPassword } from './pages/auth/reset';
-import Logout from './pages/auth/logout';
+import { AuthPage, Login, Logout, Register, ResettPassword } from './pages/auth';
 
 // Pages: Info
 import Info from './pages/info';
@@ -30,15 +26,15 @@ import { About } from './pages/info/about';
 import { TermsAndConditions } from './pages/info/terms';
 
 // Dashboard Shared
-import Dashboard from './pages/dashboard/dashboard';
-import IncomingMessages from './pages/dashboard/messages';
-import Bookmarks from './pages/dashboard/bookmarks';
-import Profile from './pages/dashboard/profile';
-import Settings from './pages/dashboard/settings';
-
-// Dashboard Owner
-import MyPGs from './pages/dashboard/owner/mypgs';
-import SubmitPG from './pages/dashboard/owner/submit-pg';
+import {
+  Dashboard,
+  ChatApp,
+  Bookmarks,
+  Profile,
+  Settings,
+  MyPGs,
+  SubmitPG
+} from './pages/dashboard';
 
 export const routes = createRoutesFromElements(
   <Route path="/" element={<Layout />} ErrorBoundary={ErrorPage}>
@@ -52,7 +48,7 @@ export const routes = createRoutesFromElements(
 
     {/* Owner Dashboard */}
     <Route path="owner/" element={<Dashboard />}>
-      <Route path="messages" element={<IncomingMessages />} />
+      <Route path="messages" element={<ChatApp />} />
       <Route path="bookmarks" element={<Bookmarks />} />
       <Route path="pgs" element={<MyPGs />} />
       <Route path="submit-pg" element={<SubmitPG />} />
@@ -64,7 +60,7 @@ export const routes = createRoutesFromElements(
 
     {/* User Dashboard */}
     <Route path="user/" element={<Dashboard />}>
-      <Route path="messages" element={<IncomingMessages />} />
+      <Route path="messages" element={<ChatApp />} />
       <Route path="bookmarks" element={<Bookmarks />} />
       <Route path="profile" element={<Profile />} />
       <Route path="settings" element={<Settings />} />

@@ -3,7 +3,7 @@ import { useFirebase } from "../../context/firebase";
 import { useEffect, useState } from "react";
 import { userRTB } from "../../context/firebase-rtb";
 import { NAV_ITEMS } from "../../module/js/navItems"
-import { Logo } from "../ui/logo";
+import { Logo } from '../ui';
 
 const Header = () => {
     const firebase = useFirebase();
@@ -110,4 +110,4 @@ const Header = () => {
     );
 };
 
-export { Header };
+export default Header;

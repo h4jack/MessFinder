@@ -5,7 +5,7 @@ import { FiMessageCircle } from "react-icons/fi";
 
 import { userRTB, roomsRTB, chatRTB } from "../../context/firebase-rtb"; // Adjust this path
 import { useFirebase } from "../../context/firebase"; // Adjust this path
-import Loader from "../../components/ui/loader";
+import { Loader } from "../../components/ui";
 
 const OwnerPublicProfile = () => {
     const { username } = useParams();

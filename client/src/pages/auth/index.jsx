@@ -1,7 +1,12 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom"
-import { ErrorPage } from "../../components/error/error";
+import { ErrorPage } from "../../components/error/";
 import { useFirebase } from "../../context/firebase";
 import { useEffect } from "react";
+
+import Login from "./login"
+import Logout from "./logout";
+import ResettPassword from "./reset";
+import Register from "./register";
 
 const AuthPage = () => {
     const location = useLocation();
@@ -29,4 +34,5 @@ const AuthPage = () => {
 }
 
 export default AuthPage;
-export { AuthPage }
+
+export { AuthPage, Login, Logout, Register, ResettPassword }

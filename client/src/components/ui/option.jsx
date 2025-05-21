@@ -18,4 +18,3 @@ const Dropdown = ({ label, options, required, ...props }) => (
 );
 
 export default Dropdown;
-export { Dropdown };

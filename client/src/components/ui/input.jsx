@@ -46,4 +46,3 @@ const InputField = ({ label, name, type, value, onChange, placeholder, showToggl
 }
 
 export default InputField;
-export { InputField };

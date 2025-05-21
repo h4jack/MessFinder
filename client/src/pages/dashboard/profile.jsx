@@ -7,7 +7,7 @@ import { useFirebase } from "../../context/firebase";
 import { userRTB } from "../../context/firebase-rtb";
 import { userStorage } from "../../context/firebase-storage";
 import { sendEmailVerification, updateEmail, updateProfile } from "firebase/auth";
-import Loader from "../../components/ui/loader"
+import { Loader } from "../../components/ui"
 
 const Profile = () => {
     const [uid, setUID] = useState("")
