@@ -63,13 +63,15 @@ const Bookmarks = () => {
                             <Link to={`/room/${roomId}`} className="block hover:bg-gray-100 transition p-4">
                                 <img
                                     src={roomDetails.images?.[0]?.preview || "/assets/default-img.svg"}
-                                    alt={roomDetails.name}
+                                    alt={roomDetails.name || "Room Image"}
                                     className="w-full h-32 object-cover rounded-md"
                                 />
                                 <div className="mt-3">
                                     <h2 className="text-lg font-semibold text-gray-900 truncate">{roomDetails.name}</h2>
                                     <p className="text-sm text-gray-600 truncate">{roomDetails.location}</p>
-                                    <p className="text-lg font-bold text-blue-700 mt-2">₹{roomDetails.price}/mo</p>
+                                    <p className="text-lg font-bold text-blue-700 mt-2">
+                                        ₹{roomDetails.price.toLocaleString()}/mo
+                                    </p>
                                 </div>
                             </Link>
                         ) : (

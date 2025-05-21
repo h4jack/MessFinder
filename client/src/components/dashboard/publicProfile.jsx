@@ -100,6 +100,7 @@ const OwnerPublicProfile = () => {
         try {
             const res = await chat.createChat(ownerId, currentUserId);
             navigate("/user/messages", { state: { chatId: res.chatId } })
+            console.log(res.chatId);
         } catch (error) {
             console.error(error);
             setErrorMessage("Failed to create chat:");
