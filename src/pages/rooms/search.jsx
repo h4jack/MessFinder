@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useLocation, Link } from 'react-router-dom';
 
 import { FaFilter } from "react-icons/fa";
 import { FiSearch } from "react-icons/fi";
@@ -155,7 +155,7 @@ const SearchBar = ({ onSearch, filters, setFilters }) => {
 
 const SearchResultCard = ({ result }) => {
     return (
-        <a href={result.href} className="max-w-80">
+        <Link to={result.href} className="max-w-80">
             <div className="bg-white rounded-lg shadow-md flex flex-col w-full h-full overflow-hidden transition-transform transform hover:scale-105 focus:scale-105 hover:shadow-lg focus:shadow-lg">
                 <div className="relative">
                     <img
@@ -199,7 +199,7 @@ const SearchResultCard = ({ result }) => {
                     </div>
                 </div>
             </div>
-        </a>
+        </Link>
     );
 };
 

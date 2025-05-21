@@ -423,14 +423,14 @@ const ContactButtons = ({ ownerInfo }) => {
         <div className="bg-white shadow-md rounded-lg p-6 mb-6">
             <h2 className="text-xl font-semibold mb-4">Contact Options</h2>
             <div className="flex flex-col gap-4">
-                <a className="flex" href={"tel:" + ownerInfo.phoneNumber}>
+                <Link className="flex" to={"tel:" + ownerInfo.phoneNumber}>
                     <button className="flex items-center w-full gap-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
                         <FaPhoneAlt />
                         Call Owner
                     </button>
-                </a>
-                <a className="flex"
-                    href={`https://wa.me/${ownerInfo.phoneNumber}?text=${encodeURIComponent("Hi, I'm interested in your room listing.")}`}
+                </Link>
+                <Link className="flex"
+                    to={`https://wa.me/${ownerInfo.phoneNumber}?text=${encodeURIComponent("Hi, I'm interested in your room listing.")}`}
                     target="_blank"
                     rel="noopener noreferrer"
                 >
@@ -438,7 +438,7 @@ const ContactButtons = ({ ownerInfo }) => {
                         <FaWhatsapp />
                         WhatsApp
                     </button>
-                </a>
+                </Link>
             </div>
         </div>
     );
