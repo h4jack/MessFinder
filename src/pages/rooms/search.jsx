@@ -74,13 +74,13 @@ const SearchBar = ({ onSearch, filters, setFilters }) => {
                 {/* Filters Dropdown */}
                 {showFilters && (
                     <div className="flex justify-end relative z-50" ref={dropdownRef}>
-                        <div className="absolute right-0 mt-2 w-72 sm:w-[420px] bg-white border border-gray-200 shadow-lg rounded-md p-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="absolute right-0 mt-2 w-64 sm:w-[420px] bg-white border border-gray-200 shadow-lg rounded-md p-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {/* Gender */}
                             <div>
                                 <label className="block text-sm font-medium mb-1">Gender</label>
                                 <select
                                     name="accommodationFor"
-                                    value={filters.accommodationFor}
+                                    value={filters.accommodationFor || ""}
                                     onChange={handleInputChange}
                                     className="w-full p-2 border border-gray-300 rounded-md"
                                 >
@@ -155,8 +155,8 @@ const SearchBar = ({ onSearch, filters, setFilters }) => {
 
 const SearchResultCard = ({ result }) => {
     return (
-        <a href={result.href}>
-            <div className="bg-white rounded-lg shadow-md flex flex-col w-72 h-max overflow-hidden transition-transform transform hover:scale-105 focus:scale-105 hover:shadow-lg focus:shadow-lg">
+        <a href={result.href} className="max-w-80">
+            <div className="bg-white rounded-lg shadow-md flex flex-col w-full h-full overflow-hidden transition-transform transform hover:scale-105 focus:scale-105 hover:shadow-lg focus:shadow-lg">
                 <div className="relative">
                     <img
                         src={result.thumbnail}
@@ -257,7 +257,7 @@ const filterRoomsByCriteria = (rooms, filters, locationFilter) => {
             filtered = filtered.filter(room => room.price <= max);
         }
     }
-
+    console.log(filters)
     // Shared
     if (filters.shared !== "") {
         const shared = parseInt(filters.shared, 10);
@@ -283,7 +283,7 @@ const SearchResult = () => {
         accommodationFor: "",
         suitableFor: "",
         maxPrice: "",
-        shared: 1,
+        shared: "",
         sortBy: 0,
     });
 
@@ -397,15 +397,19 @@ const SearchResult = () => {
                 filters={filters}
                 setFilters={setFilters}
             />
-            <div className="pt-6 pb-6 flex flex-wrap gap-4 items-center justify-center">
+
+            <div className="pt-6 pb-6 flex flex-wrap gap-6 justify-center">
                 {results.length > 0 ? (
                     results.map((result, index) => (
-                        <SearchResultCard key={index} result={result} />
+                        <div key={index} className="w-full sm:w-[48%] lg:w-[30%] xl:w-[22%] max-w-80">
+                            <SearchResultCard result={result} />
+                        </div>
                     ))
                 ) : (
-                    <p className="text-center text-gray-500 text-2xl">No results found.</p>
+                    <p className="text-center text-gray-500 text-2xl w-full">No results found.</p>
                 )}
             </div>
+
             {results.length > 0 && results.length % 10 === 0 && (
                 <button
                     onClick={() => {

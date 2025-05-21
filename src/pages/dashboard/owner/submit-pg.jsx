@@ -279,7 +279,6 @@ const SubmitPG = () => {
         }));
     };
 
-
     // Handlers to update accommodation related fields
     const setAccommodationFor = (value) => {
         setFormData(prev => ({ ...prev, accommodationFor: value }));
@@ -296,7 +295,6 @@ const SubmitPG = () => {
         const num = Number(value);
         setFormData(prev => ({ ...prev, shared: isNaN(num) ? 0 : num }));
     };
-
 
     const setMessType = (value) => {
         setFormData(prev => ({
@@ -372,8 +370,6 @@ const SubmitPG = () => {
         setFormData((prev) => ({ ...prev, images: newImages }));
     };
 
-
-
     const verifyInputs = (formData) => {
         // Check top-level string fields
         const requiredFields = [
@@ -389,8 +385,8 @@ const SubmitPG = () => {
         }
 
         // Check price and shared (must be non-zero positive numbers)
-        if (formData.price <= 0 || formData.shared <= 0) {
-            return { status: false, message: "Price and shared must be non-zero positive numbers.." };
+        if (formData.price <= 0 || formData.shared < 0) {
+            return { status: false, message: "Price must be non-zero positive numbers.. Or wrong value for shared" };
         }
 
         // Validate messInfo object

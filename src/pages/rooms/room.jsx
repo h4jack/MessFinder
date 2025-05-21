@@ -195,12 +195,9 @@ const RoomDetailsCard = ({
     };
 
     const handleReportChat = () => {
-        // Navigate to /info/report/:uid with state
         navigate(`/info/report/`, {
             state: { userId: ownerInfo.id, username: ownerInfo.username, roomId: roomId }
         });
-
-        setShowHeaderOptions(false);
     };
 
 
