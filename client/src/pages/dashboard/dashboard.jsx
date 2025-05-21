@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { useFirebase } from "../../context/firebase";
-import { ErrorPage } from "../error/error";
+import { ErrorPage } from "../../components/error/error";
 import { userRTB } from "../../context/firebase-rtb";
-import Loader from "../ui/loader";
+import Loader from "../../components/ui/loader";
 import { NAV_ITEMS } from "../../module/js/navItems";
 
 const Dashboard = () => {

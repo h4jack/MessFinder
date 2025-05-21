@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaExclamationTriangle } from "react-icons/fa";
-import { InputField } from "../ui/input";
+import { InputField } from "../../components/ui/input";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { useFirebase } from "../../context/firebase";
 import { infoRTB } from "../../context/firebase-rtb";

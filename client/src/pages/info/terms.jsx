@@ -1,5 +1,3 @@
-import React from 'react';
-
 const TermsAndConditions = () => {
     return (
         <main className="flex-grow bg-gray-100 p-6 bg-[url('/assets/rooms-cover.png')] min-h-[calc(100vh-72px)] md:min-h-[calc(100vh-80px)] bg-cover bg-center bg-no-repeat">

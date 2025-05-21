@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { statesAndDistricts } from '/src/module/js/district-pin'; // Import the JSON data
+import { statesAndDistricts } from '../../module/js/district-pin'; // Import the JSON data
 import { Link } from "react-router-dom";
 
 const FilterButton = ({ label, isActive, onClick }) => {

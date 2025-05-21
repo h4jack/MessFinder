@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { InputField } from "../ui/input";
-import { Button } from "../ui/button";
+import { InputField } from "../../components/ui/input";
+import { Button } from "../../components/ui/button";
 import { FaGoogle } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useFirebase } from "../../context/firebase";
 import { userRTB } from "../../context/firebase-rtb";
-import Loader from "../ui/loader";
+import Loader from "../../components/ui/loader";
 
 const Login = () => {
     // State management

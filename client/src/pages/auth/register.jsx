@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { InputField } from "../ui/input";
-import { Button } from "../ui/button";
+import { InputField } from "../../components/ui/input"
+import { Button } from "../../components/ui/button";
 import { FaGoogle } from "react-icons/fa";
 import { Link, useNavigate, useLocation, data } from "react-router-dom";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";

@@ -1,5 +1,5 @@
-import { InputField } from "../../../ui/input";
-import { Dropdown } from "../../../ui/option";
+import { InputField } from "../ui/input";
+import { Dropdown } from "../ui/option";
 
 const MessDetails = ({
     messType,

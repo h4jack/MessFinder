@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useFirebase } from "../../context/firebase";
 import { bookmarksRTB, roomsRTB } from "../../context/firebase-rtb";
-import { Loader } from "../ui/loader";
+import { Loader } from "../../components/ui/loader";
 
 const Bookmarks = () => {
     const firebase = useFirebase();

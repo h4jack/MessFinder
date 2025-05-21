@@ -1,23 +1,23 @@
 import { useEffect, useState } from "react";
 import { useLocation, useParams } from 'react-router-dom';
 
-import { InputField } from "../../ui/input";
-import { Dropdown } from "../../ui/option";
-import { Alert } from "../../ui/alert"
-import Loader from "../../ui/loader";
+import { InputField } from "../../../components/ui/input";
+import { Dropdown } from "../../../components/ui/option";
+import { Alert } from "../../../components/ui/alert"
+import Loader from "../../../components/ui/loader";
 
 import { isAgeAboveLimit, validateIndianPhoneNumber, validateUsername } from "../../../module/js/string";
 
 import { onAuthStateChanged } from "firebase/auth";
-import { statesAndDistricts } from '/src/module/js/district-pin';
+import { statesAndDistricts } from '../../../module/js/district-pin';
 import { useFirebase } from "../../../context/firebase"
 import { roomStorage } from "../../../context/firebase-storage";
 import { userRTB, roomsRTB } from "../../../context/firebase-rtb"
 
-import ImageUpload from './form/ImageUpload';
-import AccommodationDetails from './form/AccommodationDetails';
-import MessDetails from './form/MessDetails';
-import FormButtons from './form/FormButtons';
+import ImageUpload from '../../../components/owner-form/ImageUpload';
+import AccommodationDetails from '../../../components/owner-form/AccommodationDetails';
+import MessDetails from '../../../components/owner-form/MessDetails';
+import FormButtons from '../../../components/owner-form/FormButtons';
 
 const DescriptiveDetails = ({ ...props }) => {
     return (

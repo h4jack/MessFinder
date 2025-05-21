@@ -9,36 +9,36 @@ import Layout from './Layout';
 import { ErrorPage } from './components/error/error';
 
 // Pages: Home & Search
-import { HomeSearch } from './components/home/homeSearch';
-import { SearchResult } from './components/rooms/search';
-import { RoomDetails } from './components/rooms/room';
-import OwnerPublicProfile from './components/dashboard/publicProfile';
+import { HomeSearch } from './pages/home/homeSearch';
+import { SearchResult } from './pages/rooms/search';
+import { RoomDetails } from './pages/rooms/room';
+import OwnerPublicProfile from './pages/profile/publicProfile';
 
 // Pages: Auth
-import AuthPage from './components/auth/auth';
-import Login from './components/auth/login';
-import { Register } from './components/auth/register';
-import { ResettPassword } from './components/auth/reset';
-import Logout from './components/auth/logout';
+import AuthPage from './pages/auth';
+import Login from './pages/auth/login';
+import { Register } from './pages/auth/register';
+import { ResettPassword } from './pages/auth/reset';
+import Logout from './pages/auth/logout';
 
 // Pages: Info
-import Info from './components/info/info';
-import { ReportOwner } from './components/info/report';
-import { Contact } from './components/info/contact';
-import { Faqs } from './components/info/faqs';
-import { About } from './components/info/about';
-import { TermsAndConditions } from './components/info/terms';
+import Info from './pages/info';
+import { ReportOwner } from './pages/info/report';
+import { Contact } from './pages/info/contact';
+import { Faqs } from './pages/info/faqs';
+import { About } from './pages/info/about';
+import { TermsAndConditions } from './pages/info/terms';
 
 // Dashboard Shared
-import Dashboard from './components/dashboard/dashboard';
-import IncomingMessages from './components/dashboard/messages';
-import Bookmarks from './components/dashboard/bookmarks';
-import Profile from './components/dashboard/profile';
-import Settings from './components/dashboard/settings';
+import Dashboard from './pages/dashboard/dashboard';
+import IncomingMessages from './pages/dashboard/messages';
+import Bookmarks from './pages/dashboard/bookmarks';
+import Profile from './pages/dashboard/profile';
+import Settings from './pages/dashboard/settings';
 
 // Dashboard Owner
-import MyPGs from './components/dashboard/owner/mypgs';
-import SubmitPG from './components/dashboard/owner/submit-pg';
+import MyPGs from './pages/dashboard/owner/mypgs';
+import SubmitPG from './pages/dashboard/owner/submit-pg';
 
 export const routes = createRoutesFromElements(
   <Route path="/" element={<Layout />} ErrorBoundary={ErrorPage}>

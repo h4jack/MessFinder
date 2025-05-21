@@ -1,4 +1,4 @@
-import { Button } from "../../../ui/button"; // Assuming Button is a reusable component
+import { Button } from "../ui/button"; // Assuming Button is a reusable component
 
 const FormButtons = ({ onDelete, onDraft, onSubmit }) => {
     return (

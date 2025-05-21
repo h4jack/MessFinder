@@ -1,5 +1,5 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom"
-import { ErrorPage } from "../error/error";
+import { ErrorPage } from "../../components/error/error";
 import { useFirebase } from "../../context/firebase";
 import { useEffect } from "react";
 

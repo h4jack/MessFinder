@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FaEllipsisV, FaTrash, FaCopy, FaArrowLeft, FaEllipsisH } from 'react-icons/fa';
 
-import { chatRTB, userRTB } from './../../context/firebase-rtb';
+import { chatRTB, userRTB } from '../../context/firebase-rtb';
 import { useFirebase } from '../../context/firebase';
 
 const ChatApp = () => {

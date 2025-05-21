@@ -5,9 +5,9 @@ import { useEffect, useState } from "react";
 
 import { useFirebase } from "../../context/firebase";
 import { userRTB } from "../../context/firebase-rtb";
-import { userStorage } from "./../../context/firebase-storage";
+import { userStorage } from "../../context/firebase-storage";
 import { sendEmailVerification, updateEmail, updateProfile } from "firebase/auth";
-import Loader from "../ui/loader"
+import Loader from "../../components/ui/loader"
 
 const Profile = () => {
     const [uid, setUID] = useState("")

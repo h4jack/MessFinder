@@ -12,15 +12,14 @@ import { MdOutlineReport } from "react-icons/md";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { userRTB, roomsRTB, bookmarksRTB, chatRTB } from "../../context/firebase-rtb";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useFirebase } from "../../context/firebase";
 
-import { InputField } from "../ui/input"
-import { Alert } from "../ui/alert";
-import { Loader } from "../ui/loader";
+import { InputField } from "../../components/ui/input"
+import { Alert } from "../../components/ui/alert";
+import { Loader } from "../../components/ui/loader";
 import { formatRelativeTime } from "../../module/js/getTime";
 import { capitalize } from "../../module/js/string";
-import { firebaseConfig } from "../../context/firebase-config";
 
 // ImageCarousel Component
 const ImageCarousel = ({ images }) => {

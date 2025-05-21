@@ -7,9 +7,11 @@ import { GoLocation } from "react-icons/go";
 
 import { useFirebase } from "../../context/firebase";
 import { userRTB, roomsRTB } from "../../context/firebase-rtb";
+
 import { formatRelativeTime } from "../../module/js/getTime";
 import { capitalize } from "../../module/js/string";
-import Loader from "../ui/loader";
+
+import Loader from "../../components/ui/loader";
 
 const SearchBar = ({ onSearch, filters, setFilters }) => {
     const [showFilters, setShowFilters] = useState(false);
