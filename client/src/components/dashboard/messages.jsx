@@ -232,8 +232,8 @@ const ChatApp = () => {
                 : selectedChat.ownerId;
 
         // Navigate to /info/report/:uid with state
-        navigate(`/info/report/${otherUserId}`, {
-            state: { userId: otherUserId }
+        navigate(`/info/report/`, {
+            state: { userId: otherUserId, username: selectedChat.username }
         });
 
         setShowHeaderOptions(false);
