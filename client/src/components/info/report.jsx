@@ -24,8 +24,6 @@ const ReportOwner = () => {
 
     const location = useLocation();
 
-    useState
-
     // Populate roomId and ownerUname from URL
     useEffect(() => {
         const roomId = location.state?.roomId || "";
@@ -123,7 +121,7 @@ const ReportOwner = () => {
                         disabled
                     />
                     <InputField
-                        label="Suspect Username"
+                        label="Username"
                         type="text"
                         value={formData.ownerUname}
                         disabled

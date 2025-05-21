@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom"; // ✅ Add this
+import { Link, useNavigate } from "react-router-dom"; // ✅ Add this
 
 import {
     FaPhoneAlt,
     FaWhatsapp,
-    FaHeart,
     FaShare,
     FaBookmark,
     FaMapMarkerAlt,
 } from "react-icons/fa";
+import { MdOutlineReport } from "react-icons/md";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { userRTB, roomsRTB, bookmarksRTB, chatRTB } from "../../context/firebase-rtb";
@@ -92,6 +92,7 @@ const RoomDetailsCard = ({
         createdAt: "",
     },
     ownerInfo = {
+        userId: "",
         name: "",
         photoURL: "",
         username: "",
@@ -111,6 +112,8 @@ const RoomDetailsCard = ({
         services: parseMultilineString(roomInfo.services),
         rules: parseMultilineString(roomInfo.rules)
     })
+
+    const navigate = useNavigate();
 
     const firebase = useFirebase();
     const { getData } = userRTB(firebase);
@@ -193,6 +196,16 @@ const RoomDetailsCard = ({
         }
     };
 
+    const handleReportChat = () => {
+        // Navigate to /info/report/:uid with state
+        navigate(`/info/report/`, {
+            state: { userId: ownerInfo.id, username: ownerInfo.username, roomId: roomId }
+        });
+
+        setShowHeaderOptions(false);
+    };
+
+
     return (
         <div className="bg-white shadow-md rounded-lg p-6">
             {/* Title */}
@@ -211,25 +224,34 @@ const RoomDetailsCard = ({
                     {/* Save/Like Button */}
                     <button
                         onClick={handleSave}
-                        className={`w-full sm:w-auto flex items-center gap-2 px-3 py-2 rounded-md ${isSaved
+                        className={`w-full sm:w-auto flex items-center justify-center gap-2 px-3 py-2 rounded-md ${isSaved
                             ? "bg-blue-700 text-white hover:bg-blue-800"
                             : "bg-blue-100 text-blue-700 hover:bg-blue-200"
                             }`}
                         title={isSaved ? "Saved" : "Save"}
                     >
                         <FaBookmark className={isSaved ? "fill-current" : ""} />
-                        {isSaved ? "Saved" : "Save"}
+                        <span className="max-[400px]:hidden sm:hidden lg:block">{isSaved ? "Saved" : "Save"}</span>
                     </button>
 
 
                     {/* Share Button */}
                     <button
                         onClick={handleShare}
-                        className="w-full sm:w-auto flex items-center gap-2 bg-green-100 text-green-700 px-3 py-2 rounded-md hover:bg-green-200"
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 bg-green-100 text-green-700 px-3 py-2 rounded-md hover:bg-green-200"
                         title="Share"
                     >
                         <FaShare />
-                        Share
+                        <span className="max-[400px]:hidden sm:hidden lg:block">Share</span>
+                    </button>
+                    <button
+                        onClick={handleReportChat}
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 bg-red-100 text-red-700 px-3 py-2 rounded-md hover:bg-red-200"
+                        role="menuitem"
+                        type="button"
+                    >
+                        < MdOutlineReport className="max-[400px]:m-0 mr-2" />
+                        <span className="max-[400px]:hidden sm:hidden lg:block">Report</span>
                     </button>
                 </div>
             </div>
