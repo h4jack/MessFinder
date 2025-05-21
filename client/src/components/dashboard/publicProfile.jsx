@@ -13,12 +13,13 @@ const OwnerPublicProfile = () => {
     const [owner, setOwner] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [errorMessage, setErrorMessage] = useState("")
+    const navigate = useNavigate();
+
     const firebase = useFirebase();
     const chat = chatRTB(firebase);
 
     const [rooms, setRooms] = useState([]);
-
-
 
     useEffect(() => {
         const fetchUserByUsername = async () => {
@@ -70,13 +71,19 @@ const OwnerPublicProfile = () => {
         fetchUserByUsername();
     }, [username]);
 
+    useEffect(() => {
+        const cleaner = setTimeout(() => {
+            setErrorMessage("");
+        }, 2000);
+        return () => clearTimeout(cleaner);
+    }, [errorMessage]); // ← Also make sure this dependency is correct
+
+
     const handleChatClick = async () => {
-        const location = useLocation()
-        const navigate = useNavigate()
         // ✅ Get the current user's UID
         const currentUser = firebase.auth.currentUser;
         if (!currentUser) {
-            console.error("User not authenticated.");
+            setErrorMessage("User not authenticated, Please Login first.");
             return;
         }
 
@@ -85,18 +92,30 @@ const OwnerPublicProfile = () => {
 
         // ✅ If the user is trying to chat with themselves, do nothing
         if (currentUserId === ownerId) {
-            console.warn("Cannot chat with yourself.");
+            setErrorMessage("Cannot chat with yourself.");
             return;
         }
 
         // ✅ Call createChat with correct arguments (empty chat)
         try {
-            await chat.createChat(ownerId, currentUserId);
-            navigate("/user/profile", { state: { from: location } })
+            const res = await chat.createChat(ownerId, currentUserId);
+            navigate("/user/messages", { state: { chatId: res.chatId } })
         } catch (error) {
-            console.error("Failed to create chat:", error);
+            console.error(error);
+            setErrorMessage("Failed to create chat:");
         }
     };
+
+    const handleReportChat = () => {
+        // Navigate to /info/report/ with state
+        navigate(`/info/report/`, {
+            state: {
+                userId: owner.id,
+                username: owner.username
+            }
+        });
+    };
+
 
     if (loading) return (
         <div className="min-h-screen flex justify-center items-center w-full bg-gray-50">
@@ -132,7 +151,8 @@ const OwnerPublicProfile = () => {
                                 {owner.about || "No description provided."}
                             </p>
                         </div>
-
+                        {/* Show Error Message */}
+                        <span className="text-red-400 text-center">{errorMessage}</span>
                         {/* Action Buttons */}
                         <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-between">
                             <Link to={`tel:${owner.phoneNumber}`} className="flex-1">
@@ -147,13 +167,12 @@ const OwnerPublicProfile = () => {
                                 <FiMessageCircle /> Chat
                             </button>
 
-                            <Link to="/info/report">
-                                <button
-                                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-100 text-red-600 rounded-md hover:bg-red-200"
-                                >
-                                    <FaFlag /> Report
-                                </button>
-                            </Link>
+                            <button
+                                onClick={handleReportChat}
+                                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-100 text-red-600 rounded-md hover:bg-red-200"
+                            >
+                                <FaFlag /> Report
+                            </button>
                         </div>
                     </div>
                     {

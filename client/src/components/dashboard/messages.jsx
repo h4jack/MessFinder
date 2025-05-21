@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FaEllipsisV, FaTrash, FaCopy, FaArrowLeft, FaEllipsisH } from 'react-icons/fa';
 
 import { chatRTB, userRTB } from './../../context/firebase-rtb';
@@ -33,6 +33,9 @@ const ChatApp = () => {
     const chat = chatRTB(firebase);
     const user = userRTB(firebase);
 
+    const navigate = useNavigate();
+
+    console.log(navigate.state?.chatId);
 
     const selectedChat = chats.find(c => c.id === selectedChatId);
 
@@ -49,7 +52,6 @@ const ChatApp = () => {
 
         return () => unsubscribe(); // cleanup on unmount
     }, []);
-
 
     useEffect(() => {
         const fetchChats = async () => {
@@ -107,9 +109,6 @@ const ChatApp = () => {
         fetchChats();
     }, [currentUserId]);
 
-
-
-
     // Scroll chat to bottom on messages change
     useEffect(() => {
         if (chatWindowRef.current) {
@@ -131,8 +130,6 @@ const ChatApp = () => {
             console.error('Failed to send message:', error);
         }
     };
-
-
 
     // Select chat
     const handleSelectChat = (chatId) => {
@@ -175,7 +172,6 @@ const ChatApp = () => {
         setPopupMenu({ visible: true, x, y, chatId, messageIndex });
     };
 
-
     // Close popup menu on clicking outside
     useEffect(() => {
         const handleClickOutside = () => {
@@ -202,7 +198,6 @@ const ChatApp = () => {
         setPopupMenu({ visible: false, x: 0, y: 0, chatId: null, messageIndex: null });
     };
 
-
     // Handle copy message
     const handleCopyMessage = () => {
         if (!popupMenu.visible) return;
@@ -215,7 +210,7 @@ const ChatApp = () => {
         setPopupMenu({ visible: false, x: 0, y: 0, chatId: null, messageIndex: null });
     };
 
-    // Handle header option actions
+    // Handle header option actions on delete chat, - now allowed for now.
     const handleDeleteChat = async () => {
         if (!selectedChat) return;
 
@@ -228,11 +223,22 @@ const ChatApp = () => {
         }
     };
 
-
     const handleReportChat = () => {
-        alert("Thank you for reporting. We will look into this chat.");
+        if (!selectedChat || !currentUserId) return;
+
+        const otherUserId =
+            selectedChat.ownerId === currentUserId
+                ? selectedChat.userId
+                : selectedChat.ownerId;
+
+        // Navigate to /info/report/:uid with state
+        navigate(`/info/report/${otherUserId}`, {
+            state: { userId: otherUserId }
+        });
+
         setShowHeaderOptions(false);
     };
+
 
     // Prevent form submit reload
     const handleFormSubmit = (e) => {

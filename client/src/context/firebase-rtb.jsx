@@ -238,9 +238,9 @@ const infoRTB = (firebase) => {
 
     const reportRoom = async (data) => {
         try {
-            const { uid, roomId, ownerUname, reason, description } = data;
+            const { uid, roomId, ownerUname, ownerId, reason, description } = data;
 
-            if (!uid || !roomId || !ownerUname || !reason || !description) {
+            if (!uid || !ownerId || !ownerUname || !reason || !description) {
                 throw new Error("Missing required report fields.");
             }
 
@@ -251,6 +251,7 @@ const infoRTB = (firebase) => {
                 uid,
                 roomId,
                 ownerUname,
+                ownerId,
                 reason,
                 description,
                 createdAt: serverTimestamp(),

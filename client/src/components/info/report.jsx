@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FaExclamationTriangle } from "react-icons/fa";
 import { InputField } from "../ui/input";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { useFirebase } from "../../context/firebase";
 import { infoRTB } from "../../context/firebase-rtb";
 
@@ -10,25 +10,34 @@ const ReportOwner = () => {
         uid: "",
         roomId: "",
         ownerUname: "",
+        ownerId: "",
         reason: "",
         description: "",
     });
+
     const [errorMessage, setErrorMessage] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
 
     const firebase = useFirebase();
     const [searchParams] = useSearchParams();
 
+
+    const location = useLocation();
+
+    useState
+
     // Populate roomId and ownerUname from URL
     useEffect(() => {
-        const roomId = searchParams.get("roomId") || "";
-        const ownerUname = searchParams.get("ownerUname") || "";
+        const roomId = location.state?.roomId || "";
+        const ownerUname = location.state?.username || "";
+        const ownerId = location.state?.userId || "";
 
         // Set room info immediately
         setFormData((prev) => ({
             ...prev,
             roomId,
             ownerUname,
+            ownerId,
         }));
 
         // Watch for auth state
@@ -56,7 +65,7 @@ const ReportOwner = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const { uid, roomId, ownerUname, reason, description } = formData;
+        const { uid, roomId, ownerUname, ownerId, reason, description } = formData;
         if (!uid) {
             setErrorMessage("You must be logged in to submit a report.");
             return;
@@ -73,6 +82,7 @@ const ReportOwner = () => {
                 uid: uid,
                 roomId: roomId,
                 ownerUname: ownerUname,
+                ownerId: ownerId,
                 reason: reason,
                 description: description,
             });
@@ -82,6 +92,7 @@ const ReportOwner = () => {
                 uid: uid,
                 roomId: roomId,
                 ownerUname: ownerUname,
+                ownerId: ownerId,
                 reason: "",
                 description: "",
             });
@@ -97,7 +108,7 @@ const ReportOwner = () => {
             <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-lg">
                 <div className="flex items-center mb-4">
                     <FaExclamationTriangle className="text-red-500 text-2xl mr-2" />
-                    <h1 className="text-2xl font-bold text-gray-800">Report a Room/Owner</h1>
+                    <h1 className="text-2xl font-bold text-gray-800">Report a Room/Owner/User</h1>
                 </div>
                 {errorMessage ? (
                     <p className="text-red-500 text-center mb-4">{errorMessage}</p>
@@ -106,13 +117,13 @@ const ReportOwner = () => {
                 ) : null}
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <InputField
-                        label="Room ID"
+                        label="Room ID (Optional)"
                         type="text"
                         value={formData.roomId}
                         disabled
                     />
                     <InputField
-                        label="Owner Username"
+                        label="Suspect Username"
                         type="text"
                         value={formData.ownerUname}
                         disabled
