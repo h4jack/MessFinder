@@ -3,7 +3,7 @@ import { FaEdit, FaEye } from "react-icons/fa";
 import { roomsRTB } from "../../../context/firebase-rtb";
 import { useFirebase } from "../../../context/firebase";
 import { capitalize } from "../../../module/js/string";
-import { formatRelativeTime } from "../../../module/js/getTime";
+import { formatRelativeTime } from "../../../module/js/relative-time";
 import { Alert, Loader } from "../../../components/ui"
 
 const RoomCard = ({ roomData }) => {

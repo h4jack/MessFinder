@@ -31,6 +31,4 @@ const TermsAndConditions = () => {
     );
 };
 
-export {
-    TermsAndConditions
-};
+export default TermsAndConditions;

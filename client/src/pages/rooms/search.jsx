@@ -8,7 +8,7 @@ import { GoLocation } from "react-icons/go";
 import { useFirebase } from "../../context/firebase";
 import { userRTB, roomsRTB } from "../../context/firebase-rtb";
 
-import { formatRelativeTime } from "../../module/js/getTime";
+import { formatRelativeTime } from "../../module/js/relative-time";
 import { capitalize } from "../../module/js/string";
 
 import { Loader } from "../../components/ui";
@@ -277,8 +277,6 @@ const filterRoomsByCriteria = (rooms, filters, locationFilter) => {
     return filtered;
 };
 
-
-
 const SearchResult = () => {
     const [filters, setFilters] = useState({
         keyword: "",
@@ -423,4 +421,4 @@ const SearchResult = () => {
     );
 };
 
-export { SearchResult, SearchResultCard };
+export default SearchResult;

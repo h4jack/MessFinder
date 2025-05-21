@@ -17,7 +17,7 @@ import { useFirebase } from "../../context/firebase";
 
 import { InputField, Alert, Loader } from "../../components/ui"
 
-import { formatRelativeTime } from "../../module/js/getTime";
+import { formatRelativeTime } from "../../module/js/relative-time";
 import { capitalize } from "../../module/js/string";
 
 // ImageCarousel Component
@@ -623,4 +623,4 @@ const RoomDetails = () => {
     );
 };
 
-export { RoomDetails };
+export default RoomDetails;

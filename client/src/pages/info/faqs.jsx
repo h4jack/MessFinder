@@ -97,4 +97,4 @@ const Faqs = () => {
     );
 };
 
-export { Faqs };
+export default Faqs;

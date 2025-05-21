@@ -4,7 +4,7 @@ import { Header, Footer } from './components/layout'
 import {
   Outlet,
 } from "react-router-dom";
-import ScrollToTop from './scroll-to-top';
+import { ScrollToTop } from './scroll-to-top';
 
 const Layout = () => {
   const user = {

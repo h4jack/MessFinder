@@ -170,4 +170,4 @@ const ReportOwner = () => {
     );
 };
 
-export { ReportOwner };
+export default ReportOwner;

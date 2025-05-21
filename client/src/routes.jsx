@@ -10,20 +10,27 @@ import { ErrorPage } from './components/error/';
 
 // Pages: Home & Search
 import { HomeSearch } from './pages/home';
-import { SearchResult } from './pages/rooms/search';
-import { RoomDetails } from './pages/rooms/room';
-import OwnerPublicProfile from './pages/profile/publicProfile';
+import { OwnerPublicProfile } from './pages/profile';
+import { SearchResult, RoomDetails } from './pages/rooms';
 
 // Pages: Auth
-import { AuthPage, Login, Logout, Register, ResettPassword } from './pages/auth';
+import {
+  AuthPage,
+  Login,
+  Logout,
+  Register,
+  ResettPassword
+} from './pages/auth';
 
 // Pages: Info
-import Info from './pages/info';
-import { ReportOwner } from './pages/info/report';
-import { Contact } from './pages/info/contact';
-import { Faqs } from './pages/info/faqs';
-import { About } from './pages/info/about';
-import { TermsAndConditions } from './pages/info/terms';
+import {
+  Info,
+  ReportOwner,
+  Contact,
+  Faqs,
+  About,
+  TermsAndConditions
+} from './pages/info';
 
 // Dashboard Shared
 import {
