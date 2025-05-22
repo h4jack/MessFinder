@@ -1,46 +1,163 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="MessFinder is a platform designed to help students and working professionals find affordable rooms for rent. Connect with property owners and discover verified listings." />
-    <meta name="keywords" content="MessFinder, affordable rooms, student accommodation, working professionals, property rental, verified listings" />
-    <meta name="author" content="MessFinder Team" />
-    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
-    <link rel="canonical" href="https://mess-finder.vercel.app/" />
-    <title>MessFinder - Find Affordable Rooms for Rent</title>
-    
-    <!-- Open Graph Meta Tags for Social Media -->
-    <meta property="og:title" content="MessFinder - Find Affordable Rooms for Rent" />
-    <meta property="og:description" content="MessFinder helps students and working professionals find affordable rooms in their desired locations. Connect with property owners directly!" />
-    <meta property="og:image" content="/assets/rooms-cover.png" />
-    <meta property="og:url" content="https://mess-finder.vercel.app/" />
-    <meta property="og:type" content="website" />
 
-    <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="MessFinder - Find Affordable Rooms for Rent" />
-    <meta name="twitter:description" content="MessFinder helps students and working professionals find affordable rooms in their desired locations. Connect with property owners directly!" />
-    <meta name="twitter:image" content="/assets/rooms-cover.png" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="MessFinder is a platform designed to help students and working professionals find affordable rooms for rent. Connect with property owners and discover verified listings." />
+  <meta name="keywords"
+    content="MessFinder, Mess Finder, affordable rooms, student accommodation, working professionals, property rental, verified listings, Room Finder, RoomFinder" />
+  <meta name="author"
+    content="MessFinder Team, Susanta, Sujoy, Souvik, Aakash, Subhadip, Priti, Reshmi, Moumita, Puja" />
+  <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+  <link rel="canonical" href="https://mess-finder.vercel.app/" />
+  <title>MessFinder - Find Affordable Rooms for Rent</title>
 
-    <!-- Structured Data for SEO -->
-    <script type="application/ld+json">
+  <!-- Open Graph -->
+  <meta property="og:title" content="MessFinder - Find Affordable Rooms for Rent" />
+  <meta property="og:description"
+    content="MessFinder helps students and working professionals find affordable rooms in their desired locations. Connect with property owners directly!" />
+  <meta property="og:image" content="/assets/rooms-cover.png" />
+  <meta property="og:url" content="https://mess-finder.vercel.app/" />
+  <meta property="og:type" content="website" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="MessFinder - Find Affordable Rooms for Rent" />
+  <meta name="twitter:description"
+    content="MessFinder helps students and working professionals find affordable rooms in their desired locations. Connect with property owners directly!" />
+  <meta name="twitter:image" content="/assets/rooms-cover.png" />
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": "https://mess-finder.vercel.app/#organization",
+    "name": "MessFinder",
+    "url": "https://mess-finder.vercel.app/",
+    "logo": "https://mess-finder.vercel.app/logo.svg",
+    "sameAs": [
+      "https://www.facebook.com/mess-finder",
+      "https://www.instagram.com/mess-finder"
+    ],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "Customer Support",
+      "email": "mess-finder@gmail.com"
+    }
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "MessFinder",
+    "url": "https://mess-finder.vercel.app/",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://mess-finder.vercel.app/search?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    },
+    "publisher": {
+      "@id": "https://mess-finder.vercel.app/#organization"
+    }
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://mess-finder.vercel.app/" },
+      { "@type": "ListItem", "position": 2, "name": "Search", "item": "https://mess-finder.vercel.app/search" },
+      { "@type": "ListItem", "position": 3, "name": "Login Now", "item": "https://mess-finder.vercel.app/auth/login" },
+      { "@type": "ListItem", "position": 4, "name": "Rooms for Rent", "item": "https://mess-finder.vercel.app/room/-OQDeJO5EVX7ZUkSG8F1" },
+      { "@type": "ListItem", "position": 5, "name": "About", "item": "https://mess-finder.vercel.app/info/about" },
+      { "@type": "ListItem", "position": 6, "name": "Contact", "item": "https://mess-finder.vercel.app/info/contact" },
+      { "@type": "ListItem", "position": 7, "name": "FAQs", "item": "https://mess-finder.vercel.app/info/faqs" },
+      { "@type": "ListItem", "position": 8, "name": "Terms", "item": "https://mess-finder.vercel.app/info/terms" }
+    ]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
       {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "MessFinder",
-        "url": "https://mess-finder.vercel.app/",
-        "description": "A platform for students and working professionals to find affordable rooms for rent.",
-        "potentialAction": {
-          "@type": "SearchAction",
-          "target": "https://mess-finder.vercel.app/search?q={search_term_string}",
-          "query-input": "required name=search_term_string"
+        "@type": "Question",
+        "name": "What types of rooms are available?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "We offer both single and shared room options."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is there a verification process for listings?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, all listings go through a basic verification process to ensure authenticity."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I directly contact the property owner?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, our platform allows direct messaging and calling features for verified owners."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I list my property?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Simply sign up as an owner and use the 'Submit PG' option in the dashboard."
         }
       }
-    </script>
-  </head>
-  <body class="relative bg-white bg-[url('/assets/rooms-cover.png')] bg-cover bg-center bg-no-repeat">
-    <div id="root" class="relative z-10"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+    ]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Featured Rooms",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "url": "https://mess-finder.vercel.app/room/-OQDeJO5EVX7ZUkSG8F1",
+        "description": "Shared room in Chhatna, Bankura for students, ₹3500/month"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "url": "https://mess-finder.vercel.app/room/-OQnci73mw3Dpjs_qUXl",
+        "description": "Room in Kenduadihi, Bankura for Students and Working Professionals, ₹1800/month"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "url": "https://mess-finder.vercel.app/room/-OWgH9S0u2v4w6x8y0z2",
+        "description": "Luxarious Hostel near Salt Lake City, Kolkata for Students, ₹6800/month"
+      }
+    ]
+  }
+  </script>
+
+</head>
+
+<body class="relative bg-white bg-[url('/assets/rooms-cover.png')] bg-cover bg-center bg-no-repeat">
+  <div id="root" class="relative z-10"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+
 </html>

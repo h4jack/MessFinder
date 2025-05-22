@@ -3,7 +3,9 @@ User-agent: *
 Allow: /
 
 # Block specific private or admin paths if applicable (example)
-// Disallow: /owner/
-// Disallow: /auth/
-// Disallow: /admin/
-// Disallow: /user/
+# Disallow: /owner/
+# Disallow: /auth/
+# Disallow: /admin/
+# Disallow: /user/
+
+Sitemap: /sitemap.xml
