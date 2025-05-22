@@ -38,7 +38,7 @@ const Header = () => {
         });
 
         return () => unsubscribe();
-    }, [firebase]);
+    }, [firebase.auth, firebase.db]);
 
     const dropdownItems = role && NAV_ITEMS[role] ? NAV_ITEMS[role] : [];
 
