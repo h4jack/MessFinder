@@ -47,13 +47,13 @@ const ImageUpload = ({ images, setImages }) => {
         <div>
             <label className="block font-medium mb-1">Upload Images (Upto 7)</label>
 
-            <div className="border-dashed border-2 border-gray-300 p-4 rounded-md bg-gray-50">
+            <div className="relative border-dashed border-2 border-gray-300 p-4 rounded-md bg-gray-50">
                 <input
                     type="file"
                     accept="image/jpeg, image/png, image/jpg"
                     multiple
                     onChange={handleImageUpload}
-                    className="hidden"
+                    className="absolute top-0 left-0 h-full w-full opacity-0"
                     id="image-upload"
                 />
                 <label

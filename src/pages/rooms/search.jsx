@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useLocation, Link } from 'react-router-dom';
 
 import { FaFilter } from "react-icons/fa";
 import { FiSearch } from "react-icons/fi";
@@ -74,13 +74,13 @@ const SearchBar = ({ onSearch, filters, setFilters }) => {
                 {/* Filters Dropdown */}
                 {showFilters && (
                     <div className="flex justify-end relative z-50" ref={dropdownRef}>
-                        <div className="absolute right-0 mt-2 w-72 sm:w-[420px] bg-white border border-gray-200 shadow-lg rounded-md p-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="absolute right-0 mt-2 w-64 sm:w-[420px] bg-white border border-gray-200 shadow-lg rounded-md p-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {/* Gender */}
                             <div>
                                 <label className="block text-sm font-medium mb-1">Gender</label>
                                 <select
                                     name="accommodationFor"
-                                    value={filters.accommodationFor}
+                                    value={filters.accommodationFor || ""}
                                     onChange={handleInputChange}
                                     className="w-full p-2 border border-gray-300 rounded-md"
                                 >
@@ -155,8 +155,8 @@ const SearchBar = ({ onSearch, filters, setFilters }) => {
 
 const SearchResultCard = ({ result }) => {
     return (
-        <a href={result.href}>
-            <div className="bg-white rounded-lg shadow-md flex flex-col w-72 h-max overflow-hidden transition-transform transform hover:scale-105 focus:scale-105 hover:shadow-lg focus:shadow-lg">
+        <Link to={result.href} className="max-w-80">
+            <div className="bg-white rounded-lg shadow-md flex flex-col w-full h-full overflow-hidden transition-transform transform hover:scale-105 focus:scale-105 hover:shadow-lg focus:shadow-lg">
                 <div className="relative">
                     <img
                         src={result.thumbnail}
@@ -199,7 +199,7 @@ const SearchResultCard = ({ result }) => {
                     </div>
                 </div>
             </div>
-        </a>
+        </Link>
     );
 };
 
@@ -257,7 +257,7 @@ const filterRoomsByCriteria = (rooms, filters, locationFilter) => {
             filtered = filtered.filter(room => room.price <= max);
         }
     }
-
+    console.log(filters)
     // Shared
     if (filters.shared !== "") {
         const shared = parseInt(filters.shared, 10);
@@ -283,7 +283,7 @@ const SearchResult = () => {
         accommodationFor: "",
         suitableFor: "",
         maxPrice: "",
-        shared: 1,
+        shared: "",
         sortBy: 0,
     });
 
@@ -296,6 +296,8 @@ const SearchResult = () => {
     const [results, setResults] = useState([]);
     const [allRooms, setAllRooms] = useState([]); // ✅ all room data fetched once
     const [loading, setLoading] = useState(true);
+    const [visibleCount, setVisibleCount] = useState(10);
+    const [filteredAll, setFilteredAll] = useState([]);
 
     const params = useParams();
     const location = useLocation();
@@ -368,55 +370,70 @@ const SearchResult = () => {
 
     // ✅ Filter only when filters change or rooms are loaded
     useEffect(() => {
-        const filteredResults = filterRoomsByCriteria(allRooms, filters, locationFilter);
-        setResults(filteredResults);
+        const filtered = filterRoomsByCriteria(allRooms, filters, locationFilter);
+        setFilteredAll(filtered);
+        setResults(filtered.slice(0, 8));
+        setVisibleCount(8);
     }, [filters, locationFilter, allRooms]);
 
     const handleSearch = () => {
-        const filteredResults = filterRoomsByCriteria(allRooms, filters, locationFilter);
-        setResults(filteredResults);
+        const filtered = filterRoomsByCriteria(allRooms, filters, locationFilter);
+        setFilteredAll(filtered);
+        setResults(filtered.slice(0, 8));
+        setVisibleCount(8);
     };
+
+    const handleLoadMore = () => {
+        const nextCount = visibleCount + 8;
+        const moreResults = filteredAll.slice(0, nextCount);
+        setResults(moreResults);
+        setVisibleCount(nextCount);
+    };
+
+    const allLoaded = results.length >= filteredAll.length;
 
     if (loading) {
         return (
-            <>
-                <main className="flex flex-col min-h-[calc(100vh-72px)] bg-gray-100 px-4">
-                    <SearchBar onSearch={handleSearch} filters={filters} setFilters={setFilters} />
-                    <div className="pt-6 pb-6 flex flex-wrap gap-4 items-center justify-center">
-                        <Loader text="Searching your query to the database.. please wait.." />
-                    </div>
-                </main>
-            </>
-        )
+            <main className="flex flex-col min-h-[calc(100vh-72px)] bg-gray-100 px-4">
+                <SearchBar onSearch={handleSearch} filters={filters} setFilters={setFilters} />
+                <div className="pt-6 pb-6 flex flex-wrap gap-4 items-center justify-center">
+                    <Loader text="Searching your query to the database.. please wait.." />
+                </div>
+            </main>
+        );
     }
 
     return (
-        <main className="flex flex-col min-h-[calc(100vh-72px)] bg-gray-100 px-4">
-            <SearchBar
-                onSearch={handleSearch}
-                filters={filters}
-                setFilters={setFilters}
-            />
-            <div className="pt-6 pb-6 flex flex-wrap gap-4 items-center justify-center">
+        <main className="flex flex-col min-h-[calc(100vh-72px)] bg-gray-100 px-4 items-center">
+            <SearchBar onSearch={handleSearch} filters={filters} setFilters={setFilters} />
+
+            <div className="max-w-[1024px] pt-6 pb-6 flex flex-wrap gap-6 justify-center">
                 {results.length > 0 ? (
                     results.map((result, index) => (
-                        <SearchResultCard key={index} result={result} />
+                        <div key={index} className="w-full max-w-80">
+                            <SearchResultCard result={result} />
+                        </div>
                     ))
                 ) : (
-                    <p className="text-center text-gray-500 text-2xl">No results found.</p>
+                    <p className="text-center text-gray-500 text-2xl w-full">No results found.</p>
                 )}
             </div>
-            {results.length > 0 && results.length % 10 === 0 && (
-                <button
-                    onClick={() => {
-                        setLoading(true);
-                        handleSearch({ ...filters, page: (filters.page || 1) + 1 });
-                    }}
-                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                >
-                    Load More
-                </button>
-            )}
+            <div className="pb-6">
+                {results.length > 0 && !allLoaded && (
+                    <button
+                        onClick={handleLoadMore}
+                        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                    >
+                        Load More
+                    </button>
+                )}
+
+                {allLoaded && results.length > 0 && (
+                    <p className="mt-4 text-gray-500 text-sm sm:text-lg italic">
+                        You've listed all {filteredAll.length} rooms.
+                    </p>
+                )}
+            </div>
         </main>
     );
 };

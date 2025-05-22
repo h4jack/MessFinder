@@ -1,4 +1,4 @@
-﻿# <img src="https://raw.githubusercontent.com/h4jack/MessFinder/refs/heads/dev/client/public/logo.svg" alt="Logo" height="30"/> MessFinder
+﻿# <img src="https://raw.githubusercontent.com/h4jack/MessFinder/refs/heads/main/public/logo.svg" alt="Logo" height="30"/> MessFinder
 
 ## 🚀 Introduction
 

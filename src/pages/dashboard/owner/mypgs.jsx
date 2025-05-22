@@ -5,6 +5,7 @@ import { useFirebase } from "../../../context/firebase";
 import { capitalize } from "../../../module/js/string";
 import { formatRelativeTime } from "../../../module/js/relative-time";
 import { Alert, Loader } from "../../../components/ui"
+import { Link } from "react-router-dom";
 
 const RoomCard = ({ roomData }) => {
     const pg = roomData;
@@ -44,18 +45,18 @@ const RoomCard = ({ roomData }) => {
                     Created: {pg.createdAt}
                 </p>
                 <div className="absolute top-2 right-2 flex space-x-2">
-                    <a
-                        href={`/owner/submit-pg/${pg.roomId}`}
+                    <Link
+                        to={`/owner/submit-pg/${pg.roomId}`}
                         className="text-blue-500 hover:text-blue-700 p-2 bg-gray-100 rounded-md"
                     >
                         <FaEdit />
-                    </a>
-                    <a
-                        href={`/room/${pg.roomId}`}
+                    </Link>
+                    <Link
+                        to={`/room/${pg.roomId}`}
                         className="text-green-500 hover:text-green-700 p-2 bg-gray-100 rounded-md"
                     >
                         <FaEye />
-                    </a>
+                    </Link>
                 </div>
             </div>
         </div>
