@@ -4,6 +4,7 @@ import InputField from "./input";
 import Loader from "./loader";
 import Logo from "./logo";
 import Dropdown from "./option";
+import SetRoleBox from "./set-role";
 
 export {
     Alert,
@@ -12,4 +13,5 @@ export {
     Loader,
     Logo,
     Dropdown,
+    SetRoleBox,
 }

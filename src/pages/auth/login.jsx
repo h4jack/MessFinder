@@ -1,14 +1,15 @@
-import { useState } from "react";
-import { InputField, Button, Loader } from "../../components/ui";
+import { useState, useEffect } from "react";
+import { InputField, Button, Loader, SetRoleBox } from "../../components/ui";
 import { FaGoogle } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useFirebase } from "../../context/firebase";
 import { userRTB } from "../../context/firebase-rtb";
+import useGoogleAuth from "../../context/useGoogleAuth"; // Import the new hook
 
 const Login = () => {
     // State management
-    const [role, setRole] = useState("")
+    const [role, setRole] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -16,13 +17,31 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
 
     const firebase = useFirebase();
-
     const navigate = useNavigate();
     const location = useLocation();
+
+    // Destructure values from the custom hook
+    const { handleGoogleSignIn, authLoading, authError } = useGoogleAuth();
+
+    useEffect(() => {
+        if (location.state && location.state.role) {
+            setRole(location.state.role);
+        }
+    }, [location.state]);
+
+    // Update errorMessage when authError changes
+    useEffect(() => {
+        if (authError) {
+            setErrorMessage(authError);
+        } else {
+            setErrorMessage(""); // Clear authError if it's resolved or initially empty
+        }
+    }, [authError]);
 
     // Login with email and password
     const handleLogin = async () => {
         setLoading(true);
+        setErrorMessage(""); // Clear previous errors
         try {
             const res = await signInWithEmailAndPassword(firebase.auth, email, password);
             const { getData } = userRTB(firebase);
@@ -41,75 +60,35 @@ const Login = () => {
         setLoading(false);
     };
 
+    // New: Call the common Google sign-in handler
+    const handleGoogleLogin = () => {
+        handleGoogleSignIn(role);
+    };
 
-    // Login with Google
-    const handleLoginWithGoogle = async () => {
-        if (!role) {
-            return;
-        }
-        const provider = new GoogleAuthProvider();
-        signInWithPopup(firebase.auth, provider)
-            .then((res) => {
-                if (res.user) {
-                    userRTB(firebase).getData(res.user.uid)
-                        .then((exists) => {
-                            if (exists && exists.role) {
-                                navigate(`/${exists.role}/profile`, { state: { from: location } });
-                            } else {
-                                const userData = {
-                                    id: res.user.uid,
-                                    displayName: res.user.displayName || "",
-                                    username: "",
-                                    email: res.user.email,
-                                    phoneNumber: "",
-                                    photoURL: res.user.photoURL || "",
-                                    dob: "",
-                                    role: role,
-                                    about: "",
-                                };
-                                setErrorMessage(""); // Clear error message on success
-                                userRTB(firebase).saveData(userData.id, { ...userData }).then(() => {
-                                    navigate(`/${role}/profile`, { state: { from: location } });
-                                }).catch((error) => {
-                                    console.error(error);
-                                    setErrorMessage("Error, while creating user details on server.");
-                                })
-                            }
-                        }).catch(() => {
-                            setErrorMessage("Error, while fetching user details from server.");
-                        })
-                }
-            }).catch(() => {
-                setErrorMessage("Google login failed. Please try again.");
-            });
+    const handleNavigateToRegister = () => {
+        navigate('/auth/register', { state: { role: role } });
     };
 
     return (
         <main className="flex flex-col items-center justify-center min-h-[calc(100vh-72px)] px-4">
             {!role ? (
-                <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-sm text-center">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-6">Login As</h2>
-                    <div className="flex flex-col gap-4">
-                        <Button
-                            text="User"
-                            onClick={() => setRole("user")}
-                            className="bg-blue-500 text-white hover:bg-blue-600"
-                        />
-                        <Button
-                            text="Owner"
-                            onClick={() => setRole("owner")}
-                            className="bg-green-500 text-white hover:bg-green-600"
-                        />
-                    </div>
-                </div>
+                <SetRoleBox setRole={setRole} />
             ) : (
                 <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-                    {loading ? (
+                    {loading || authLoading ? ( // Use authLoading from the hook
                         <Loader text="trying to Logging you in. please wait.." />
-
                     ) : (
                         <>
-                            <h2 className="text-4xl font-bold text-center text-gray-800 mb-6">Login</h2>
+                            <h2 className="text-4xl font-bold text-center text-gray-800 mb-6">
+                                Login as {" "}
+                                <span
+                                    title="Click to choose another role"
+                                    onClick={() => setRole("")}
+                                    className="text-teal-600 hover:text-teal-800 cursor-pointer underline-offset-4 hover:underline transition-all duration-200"
+                                >
+                                    {role.charAt(0).toUpperCase() + role.slice(1)}
+                                </span>
+                            </h2>
 
                             {errorMessage && <p className="text-red-500 text-center mb-4">{errorMessage}</p>}
 
@@ -139,7 +118,7 @@ const Login = () => {
                             <Button
                                 text="Login"
                                 onClick={handleLogin}
-                                className="bg-blue-500 text-white hover:bg-blue-600"
+                                className="bg-teal-500 text-white hover:bg-teal-600"
                             />
 
                             {/* Forgot Password Link */}
@@ -164,19 +143,21 @@ const Login = () => {
                                         <FaGoogle className="mr-2" /> Sign in with Google
                                     </>
                                 }
-                                onClick={handleLoginWithGoogle}
+                                onClick={handleGoogleLogin} // Use the new handler
                                 className="bg-red-500 text-white hover:bg-red-600 mt-4 flex items-center justify-center"
+                                disabled={authLoading} // Disable button when auth is loading
                             />
 
-                            {/* Register Link */}
-                            <Link to="/auth/register" className="p-2 flex justify-center items-center gap-1">
+                            {/* Register Button */}
+                            <div className="p-2 flex justify-center items-center gap-1">
                                 <span>
                                     Don't have an account?{" "}
-                                    <span className="text-blue-500 hover:underline cursor-pointer">
-                                        Register here
-                                    </span>
+                                    <span
+                                        onClick={handleNavigateToRegister} // Call the new navigation function
+                                        className="text-blue-500 hover:underline cursor-pointer bg-transparent border-none p-0 inline-block" // Styling to make it look like a link
+                                    >Register</span>
                                 </span>
-                            </Link>
+                            </div>
                         </>
                     )}
                 </div>
