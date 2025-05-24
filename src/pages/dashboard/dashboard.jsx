@@ -12,28 +12,32 @@ const Dashboard = () => {
     const firebase = useFirebase();
     const [messageCount, setMessageCount] = useState(2);
     const [role, setRole] = useState(null); // null = loading
+    const { getData } = userRTB(firebase);
 
     useEffect(() => {
-        const { getData } = userRTB(firebase);
-        const unsubscribe = firebase.auth.onAuthStateChanged(async (user) => {
+
+        const unsubscribe = firebase.auth.onAuthStateChanged((user) => {
             if (!user) {
                 navigate("/auth/login", { state: { from: location } });
             } else {
-                try {
-                    const res = await getData(user.uid);
-                    if (res?.role) {
-                        setRole(res.role);
-                    } else {
-                        console.warn("User role is not set. Contact admin.");
-                    }
-                } catch (error) {
-                    console.error("Error fetching user data:", error);
-                }
+                getData(user.uid)
+                    .then((res) => {
+                        if (res?.role) {
+                            console.log(res)
+                            setRole(res.role);
+                        } else {
+                            console.warn("User role is not set. Contact admin.");
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error fetching user data:", error);
+                    });
             }
         });
 
         return () => unsubscribe();
-    }, [firebase]);
+    }, [firebase, navigate, location]);
+
 
     // When role is determined, check if current base path matches
     useEffect(() => {
@@ -63,8 +67,8 @@ const Dashboard = () => {
 
     if (role === null) {
         return (
-            <main className="flex items-center justify-center">
-                <div className="container flex flex-row rounded-md bg-white p-10 shadow-md overflow-hidden">
+            <main className="flex items-center justify-center min-h-[calc(100vh-80px)] bg-white">
+                <div className="container flex flex-row rounded-md p-10 overflow-hidden">
                     <Loader text="Loading Dashboard, Please Wait..." />
                 </div>
             </main>
