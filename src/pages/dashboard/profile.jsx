@@ -116,12 +116,10 @@ const Profile = () => {
             // Save to Realtime Database
             await uploadPhoto(uid, url);
 
-            console.log(formData);
             // Update UI immediately
             // ✅ Patch formData here so saveData uses updated info
             formData.photoURL = url;
             setFormData((prev) => ({ ...prev, photoURL: url }));
-            console.log(formData);
 
             // Clear file and reload
             setFile(null);

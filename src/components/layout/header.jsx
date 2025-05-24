@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useFirebase } from "../../context/firebase";
 import { useEffect, useState } from "react";
 import { userRTB } from "../../context/firebase-rtb";
@@ -9,11 +9,13 @@ const Header = () => {
     const firebase = useFirebase();
     const [user, setUser] = useState(null);
     const [role, setRole] = useState(null);
+    const { getData } = userRTB(firebase);
+    const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
-        const { getData } = userRTB(firebase);
 
-        const unsubscribe = firebase.auth.onAuthStateChanged(async (user) => {
+        const unsubscribe = firebase.auth.onAuthStateChanged((user) => {
             if (user) {
                 setUser({
                     uid: user.uid,
@@ -21,16 +23,19 @@ const Header = () => {
                     image: user.photoURL || null,
                 });
 
-                try {
-                    const res = await getData(user.uid);
-                    if (res?.role) {
-                        setRole(res.role);
-                    } else {
-                        console.log("Role not found.");
-                    }
-                } catch (error) {
-                    console.log("Error fetching user role:", error);
-                }
+                getData(user.uid)
+                    .then((res) => {
+                        if (res?.role) {
+                            console.log("2", res)
+                            setRole(res.role);
+                        } else {
+                            console.log("2", res)
+                            console.log("Role not found.");
+                        }
+                    })
+                    .catch((error) => {
+                        console.log("Error fetching user role:", error);
+                    });
             } else {
                 setUser(null);
                 setRole(null);
@@ -38,7 +43,7 @@ const Header = () => {
         });
 
         return () => unsubscribe();
-    }, [firebase]);
+    }, [firebase, navigate, location]);
 
     const dropdownItems = role && NAV_ITEMS[role] ? NAV_ITEMS[role] : [];
 
