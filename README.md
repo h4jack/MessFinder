@@ -36,33 +36,90 @@ MessFinder is a final-year graduation project designed to bridge the gap between
 ## 📂 Project Structure
 ```bash
 MessFinder/
-└── client/                       # Frontend React application
-    ├── public/                  # Static files served directly
-    │   ├── assets/             # Image and SVG assets
-    │   └── module/             # Optional modular CSS/JS
-    ├── src/                     # Source code
-    │   ├── components/         # All UI and functional components
-    │   │   ├── auth/           # Login, register, reset components
-    │   │   ├── error/          # Error pages or handlers
-    │   │   ├── home/           # Home page related components
-    │   │   ├── info/           # About, contact, FAQs, terms, etc.
-    │   │   ├── layout/         # Header, footer, layout components
-    │   │   ├── owner/          # Owner dashboard and PG submission
-    │   │   │   └── form/       # Stepwise PG/Mess submission form
-    │   │   ├── rooms/          # Room listing and search
-    │   │   ├── ui/             # Reusable UI components like input, logo
-    │   │   └── user/           # User-specific features like chat
-    │   ├── context/            # Firebase and state context providers
-    │   ├── module/             # Utility JS and modular CSS
-    │   │   ├── js/             # Scripts (e.g., district-pin.js)
-    │   ├── index.css           # Global styles
-    │   ├── Layout.jsx          # App layout wrapper
-    │   ├── main.jsx            # React app entry point
-    │   └── scroll-to-top.js    # Scroll behavior component
-    ├── .env                    # Environment variables
-    ├── index.html              # HTML entry point for Vite
-    
+├── src/
+│   ├──components/
+│   │   ├── error/
+│   │   │   ├── error.jsx
+│   │   │   └── index.jsx
+│   │   ├── layout/
+│   │   │   ├── footer.jsx
+│   │   │   ├── header.jsx
+│   │   │   └── index.jsx
+│   │   ├── owner-form/
+│   │   │   ├── AccommodationDetails.jsx
+│   │   │   ├── FormButtons.jsx
+│   │   │   ├── ImageUpload.jsx
+│   │   │   ├── index.jsx
+│   │   │   └── MessDetails.jsx
+│   │   └── ui/
+│   │       ├── alert.jsx
+│   │       ├── button.jsx
+│   │       ├── index.jsx
+│   │       ├── input.jsx
+│   │       ├── loader.jsx
+│   │       ├── logo.jsx
+│   │       ├── option.jsx
+│   │       └── set-role.jsx
+│   ├── context/
+│   │   ├── firebase.jsx
+│   │   ├── firebase-config.js
+│   │   ├── firebase-rtb.jsx
+│   │   ├── firebase-storage.jsx
+│   │   └── useGoogleAuth.jsx
+│   ├── module/
+│   │   ├── css/
+│   │   └── js/
+│   │       ├── district-pin.js
+│   │       ├── navItems.js
+│   │       ├── relative-time.js
+│   │       └── string.js
+│   └── pages/
+│       ├── auth/
+│       │   ├── index.jsx
+│       │   ├── login.jsx
+│       │   ├── logout.jsx
+│       │   ├── register.jsx
+│       │   └── reset.jsx
+│       ├── dashboard/
+│       │   ├── bookmarks.jsx
+│       │   ├── dashboard.jsx
+│       │   ├── index.jsx
+│       │   ├── messages.jsx
+│       │   ├── owner/
+│       │   │   ├── mypgs.jsx
+│       │   │   └── submit-pg.jsx
+│       │   ├── profile.jsx
+│       │   └── settings.jsx
+│       ├── home/
+│       │   ├── homeSearch.jsx
+│       │   └── index.jsx
+│       ├── info/
+│       │   ├── about.jsx
+│       │   ├── contact.jsx
+│       │   ├── faqs.jsx
+│       │   ├── index.jsx
+│       │   ├── report.jsx
+│       │   └── terms.jsx
+│       ├── profile/
+│       │   ├── index.jsx
+│       │   └── publicProfile.jsx
+│       └── rooms/
+│           ├── index.jsx
+│           ├── room.jsx
+│           └── search.jsx
+├── index.css
+├── Layout.jsx
+├── main.jsx
+├── routes.jsx
+├── scroll-to-top.jsx
+├── public/
+│   └── ... # (images, favicon, logo, etc.)
+├── index.html
+├── LICENSE
+├── README.md
+├── ... # (all other configuration and integration files)
 ```
+
 ## 🛠️ Technologies Used
 **Frontend:** HTML, CSS, JavaScript, React, TailwindCSS
 
