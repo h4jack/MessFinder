@@ -26,10 +26,8 @@ const Header = () => {
                 getData(user.uid)
                     .then((res) => {
                         if (res?.role) {
-                            console.log("2", res)
                             setRole(res.role);
                         } else {
-                            console.log("2", res)
                             console.log("Role not found.");
                         }
                     })
