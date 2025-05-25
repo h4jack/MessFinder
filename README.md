@@ -117,7 +117,7 @@ MessFinder/
 ├── index.html
 ├── LICENSE
 ├── README.md
-├── ... # (all other configuration and integration files)
+└── ... # (all other configuration and integration files)
 ```
 
 ## 🛠️ Technologies Used
