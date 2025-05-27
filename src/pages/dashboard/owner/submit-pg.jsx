@@ -11,62 +11,13 @@ import { useFirebase } from "../../../context/firebase"
 import { roomStorage } from "../../../context/firebase-storage";
 import { userRTB, roomsRTB } from "../../../context/firebase-rtb"
 
-import ImageUpload from '../../../components/owner-form/ImageUpload';
-import AccommodationDetails from '../../../components/owner-form/AccommodationDetails';
-import MessDetails from '../../../components/owner-form/MessDetails';
-import FormButtons from '../../../components/owner-form/FormButtons';
-
-const DescriptiveDetails = ({ ...props }) => {
-    return (
-        <>
-            <InputField
-                label="Facilities"
-                name="facilities"
-                placeholder="List facilities (one per line):
-AC
-Fridge
-Cooler"
-                type="textarea"
-                rows="4"
-                value={props.facilities?.replace(/\\n/g, "\n")}
-                {...props}
-            />
-            <InputField
-                label="Services"
-                name="services"
-                placeholder="List services (one per line)
-Security Guard
-Home Cleaner
-"
-                type="textarea"
-                rows="4"
-                value={props.services?.replace(/\\n/g, "\n")}
-                {...props}
-            />
-            <InputField
-                label="Rules"
-                name="rules"
-                placeholder="List rules (one per line)
-No Entry after 10pm
-No Smocking
-No Drinking"
-                type="textarea"
-                rows="4"
-                value={props.rules?.replace(/\\n/g, "\n")}
-                {...props}
-            />
-            <InputField
-                label="Description"
-                name="description"
-                placeholder="Write detailed description of your Mess or Hostel, include any extra information, if you want.."
-                type="textarea"
-                rows="6"
-                value={props.description?.replace(/\\n/g, "\n")}
-                {...props}
-            />
-        </>
-    )
-}
+import { 
+    ImageUpload,
+    AccommodationDetails,
+    MessDetails,
+    FormButtons,
+    DescriptiveDetails,
+} from '../../../components/owner-form';
 
 const SubmitPG = () => {
     const [formData, setFormData] = useState({
