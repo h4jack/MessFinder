@@ -23,7 +23,6 @@ const Dashboard = () => {
                 getData(user.uid)
                     .then((res) => {
                         if (res?.role) {
-                            console.log(res)
                             setRole(res.role);
                         } else {
                             console.warn("User role is not set. Contact admin.");

@@ -461,11 +461,15 @@ const ContactForm = ({ ownerInfo, userInfo }) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
-
+    // Handle form submission
     const handleSubmit = (e) => {
         e.preventDefault();
-        const message = `Hey, my name is ${formData?.name}. You can reach me at ${formData?.phone}. ${formData?.message}`;
         if (ownerInfo.id && userInfo.uid) {
+            if (ownerInfo.id === userInfo.uid) {
+                setErrorMessage("You cannot send a message to yourself. Please contact admin for any issues.");
+                return;
+            }
+            const message = `Hey, my name is ${formData?.name}. You can reach me at ${formData?.phone}. ${formData?.message}`;
             createChat(ownerInfo.id, userInfo.uid, "", message)
                 .then((res) => {
                     setSuccessMessage("Message Sent to Owner. click on profile and then Messages to see the messages");
