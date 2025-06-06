@@ -62,7 +62,7 @@ const OwnerPublicProfile = () => {
 
                 // Filter rooms owned by this user
                 const userRooms = Object.entries(allRooms || {})
-                    .filter(([_, room]) => room.ownerId === matchedUser.id)
+                    .filter(([_, room]) => room.ownerId === matchedUser.id && room.status === "public")
                     .map(([roomId, room]) => ({
                         roomId,
                         ...room,
