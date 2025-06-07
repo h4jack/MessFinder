@@ -1,8 +1,8 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useFirebase } from "../../context/firebase";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { userRTB } from "../../context/firebase-rtb";
-import { NAV_ITEMS } from "../../module/js/navItems"
+import { NAV_ITEMS } from "../../module/js/navItems";
 import { Logo } from '../ui';
 
 const Header = () => {
@@ -12,9 +12,10 @@ const Header = () => {
     const { getData } = userRTB(firebase);
     const navigate = useNavigate();
     const location = useLocation();
+    const dropdownRef = useRef(null);
+    const [dropdownVisible, setDropdownVisible] = useState(false);
 
     useEffect(() => {
-
         const unsubscribe = firebase.auth.onAuthStateChanged((user) => {
             if (user) {
                 setUser({
@@ -45,6 +46,24 @@ const Header = () => {
 
     const dropdownItems = role && NAV_ITEMS[role] ? NAV_ITEMS[role] : [];
 
+    const handleDropdownToggle = (e) => {
+        e.stopPropagation();
+        setDropdownVisible((prev) => !prev);
+    };
+
+    const handleClickOutside = (e) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+            setDropdownVisible(false);
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener("click", handleClickOutside);
+        return () => {
+            document.removeEventListener("click", handleClickOutside);
+        };
+    }, []);
+
     return (
         <header className="bg-white/50 backdrop-blur-sm text-gray-800 shadow-md sticky top-0 z-50">
             <div className="container mx-auto flex justify-between items-center py-4 px-6">
@@ -72,11 +91,7 @@ const Header = () => {
                         <div className="relative">
                             <div
                                 className="h-10 w-10 rounded-full border border-blue-100 bg-blue-100 shadow-md overflow-hidden cursor-pointer flex items-center justify-center"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    const dropdown = e.currentTarget.nextElementSibling;
-                                    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
-                                }}
+                                onClick={handleDropdownToggle}
                             >
                                 <img
                                     src={user.image || "/assets/avatar-default.svg"}
@@ -84,27 +99,29 @@ const Header = () => {
                                     className="h-full w-full object-cover"
                                 />
                             </div>
-                            <div
-                                className="absolute right-0 mt-2 w-48 overflow-hidden bg-blue-100 shadow-lg rounded-md z-50"
-                                style={{ display: "none" }}
-                                onClick={(e) => e.stopPropagation()}
-                            >
-                                {dropdownItems.map((item) => (
+                            {dropdownVisible && (
+                                <div
+                                    ref={dropdownRef}
+                                    className="absolute right-0 mt-2 w-48 overflow-hidden bg-blue-100 shadow-lg rounded-md z-50"
+                                    onClick={handleDropdownToggle}
+                                >
+                                    {dropdownItems.map((item) => (
+                                        <Link
+                                            key={item.path}
+                                            to={`/${role}/${item.path}`}
+                                            className="block px-4 py-2 text-gray-600 hover:bg-blue-200 hover:text-gray-800 transition"
+                                        >
+                                            {item.label}
+                                        </Link>
+                                    ))}
                                     <Link
-                                        key={item.path}
-                                        to={`/${role}/${item.path}`}
+                                        to="/auth/logout"
                                         className="block px-4 py-2 text-gray-600 hover:bg-blue-200 hover:text-gray-800 transition"
                                     >
-                                        {item.label}
+                                        Logout
                                     </Link>
-                                ))}
-                                <Link
-                                    to="/auth/logout"
-                                    className="block px-4 py-2 text-gray-600 hover:bg-blue-200 hover:text-gray-800 transition"
-                                >
-                                    Logout
-                                </Link>
-                            </div>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
