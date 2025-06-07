@@ -79,8 +79,12 @@ const Dashboard = () => {
     }
 
     return (
-        <main className="flex items-start justify-center min-h-[calc(100vh-80px)] h-full m-6 mx-6">
-            <div className="container flex flex-row bg-white max-w-[1080px] w-full min-h-[calc(100vh-120px)] rounded-md shadow-md overflow-hidden">
+        <main className="flex items-start justify-center min-h-[calc(100vh-72px)] sm:min-h-[calc(100vh-120px)] h-full sm:m-6">
+            <div className="
+                container flex flex-row bg-white
+                w-full sm:max-w-[1080px]
+                min-h-[calc(100vh-72px)] sm:min-h-[calc(100vh-120px)]
+                sm:rounded-md sm:shadow-md overflow-hidden">
                 <div className="hidden sm:flex flex-col justify-start min-w-1/4 bg-gray-900 p-4 rounded-l-md">
                     <h1 className="text-white text-lg mb-4 font-bold text-center">MENU</h1>
                     <nav className="flex flex-col space-y-4">

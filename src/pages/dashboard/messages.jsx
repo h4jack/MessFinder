@@ -153,6 +153,7 @@ const ChatApp = () => {
         setShowHeaderOptions(prev => !prev);
     };
 
+    // 🔹 Chat options (delete), not allowed for now.
     const handleDeleteChat = async () => {
         if (!selectedChat) return;
         try {
@@ -226,7 +227,7 @@ const ChatApp = () => {
     };
 
     return (
-        <div className="flex flex-col h-[calc(100vh-120px)] w-full mx-auto rounded-lg shadow-md bg-white select-none custom-scrollbar">
+        <div className="flex flex-col sm:h-[calc(100vh-120px)] h-[calc(100vh-72px)] w-full mx-auto rounded-lg shadow-md bg-white select-none custom-scrollbar">
             {!selectedChat && (
                 <ChatList chats={chats} onSelectChat={handleSelectChat} />
             )}
