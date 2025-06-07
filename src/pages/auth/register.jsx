@@ -128,7 +128,7 @@ const Register = () => {
     };
 
     return (
-        <main className="flex flex-col items-center justify-center min-h-[calc(100vh-72px)] p-4">
+        <main className="flex flex-col items-center justify-center min-h-[calc(100svh-72px)] p-4">
             {!role ? (
                 <SetRoleBox setRole={setRole} />
             ) : (

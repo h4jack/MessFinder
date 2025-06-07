@@ -62,7 +62,7 @@ const OwnerPublicProfile = () => {
 
                 // Filter rooms owned by this user
                 const userRooms = Object.entries(allRooms || {})
-                    .filter(([_, room]) => room.ownerId === matchedUser.id)
+                    .filter(([_, room]) => room.ownerId === matchedUser.id && room.status === "public")
                     .map(([roomId, room]) => ({
                         roomId,
                         ...room,
@@ -150,7 +150,7 @@ const OwnerPublicProfile = () => {
 
     return (
         <>
-            <main className="bg-gray-100 max-[400px]:p-0 w-full box-border p-6 min-h-[calc(100vh-80px)] flex flex-col justify-center items-center">
+            <main className="bg-gray-100 max-[400px]:p-0 w-full box-border p-6 min-h-[calc(100svh-80px)] flex flex-col justify-center items-center">
                 <div className="bg-white shadow-[10px_10px_2px] shadow-gray-300 overflow-hidden p-4 max-w-4xl w-full">
                     <div className="max-w-3xl mx-auto p-6">
                         {/* Header Section */}

@@ -595,7 +595,7 @@ const RoomDetails = () => {
     }, [roomInfo.ownerId]);
 
     return (
-        <div className="bg-gray-100 w-full min-h-[calc(100vh-80px)] mx-auto h-full px-4 sm:px-6 py-6 justify-center flex">
+        <div className="bg-gray-100 w-full min-h-[calc(100svh-80px)] mx-auto h-full px-4 sm:px-6 py-6 justify-center flex">
             {errorMessage ? (
                 <Alert type="error" message={errorMessage} />
             ) : loading ? (

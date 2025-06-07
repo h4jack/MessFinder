@@ -2,7 +2,7 @@ const About = () => {
     return (
         <>
             {/* Main Content */}
-            <main className="flex-grow p-6 min-h-[calc(100vh-72px)] md:min-h-[calc(100vh-80px)]">
+            <main className="flex-grow p-6 min-h-[calc(100svh-72px)] md:min-h-[calc(100svh-80px)]">
                 <section className="max-w-4xl mx-auto bg-gray-200 shadow-md rounded-lg p-6">
                     <h2 className="text-3xl font-bold mb-4">About MessFinder</h2>
                     <p className="text-gray-900 mb-4">

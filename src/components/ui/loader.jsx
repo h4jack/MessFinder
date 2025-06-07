@@ -1,4 +1,10 @@
+import { useEffect } from "react";
+import { scrollToTop } from "../../module/js/scrollToTop";
+
 const Loader = ({ text = "Loading" }) => {
+    useEffect(() => {
+        scrollToTop();
+    }, []);
     return (
         <div className="flex flex-col items-center justify-center mx-auto">
             <div className="relative w-24 h-24 mb-4">

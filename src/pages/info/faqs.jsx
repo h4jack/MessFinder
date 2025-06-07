@@ -62,7 +62,7 @@ const Faqs = () => {
     };
 
     return (
-        <main className="min-h-[calc(100vh-72px)] md:min-h-[calc(100vh-80px)] flex items-center justify-center p-2">
+        <main className="min-h-[calc(100svh-72px)] md:min-h-[calc(100svh-80px)] flex items-center justify-center p-2">
             <div className="bg-blue-50 shadow-md rounded-lg w-full sm:w-120 p-6">
                 <h1 className="text-3xl font-extrabold text-center mb-8 text-gray-800">
                     Frequently Asked Questions

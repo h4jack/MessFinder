@@ -1,6 +1,6 @@
 const TermsAndConditions = () => {
     return (
-        <main className="flex-grow bg-gray-100 p-6 bg-[url('/assets/rooms-cover.png')] min-h-[calc(100vh-72px)] md:min-h-[calc(100vh-80px)] bg-cover bg-center bg-no-repeat">
+        <main className="flex-grow bg-gray-100 p-6 bg-[url('/assets/rooms-cover.png')] min-h-[calc(100svh-72px)] md:min-h-[calc(100svh-80px)] bg-cover bg-center bg-no-repeat">
             <div className="bg-white p-8 rounded shadow-md max-w-4xl mx-auto">
                 <h1 className="text-2xl font-bold mb-4">Terms and Conditions</h1>
                 <p className="mb-4">

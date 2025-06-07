@@ -394,7 +394,7 @@ const SearchResult = () => {
 
     if (loading) {
         return (
-            <main className="flex flex-col min-h-[calc(100vh-72px)] bg-gray-100 px-4">
+            <main className="flex flex-col min-h-[calc(100svh-72px)] bg-gray-100 px-4">
                 <SearchBar onSearch={handleSearch} filters={filters} setFilters={setFilters} />
                 <div className="pt-6 pb-6 flex flex-wrap gap-4 items-center justify-center">
                     <Loader text="Searching your query to the database.. please wait.." />
@@ -404,7 +404,7 @@ const SearchResult = () => {
     }
 
     return (
-        <main className="flex flex-col min-h-[calc(100vh-72px)] bg-gray-100 px-4 items-center">
+        <main className="flex flex-col min-h-[calc(100svh-72px)] bg-gray-100 px-4 items-center">
             <SearchBar onSearch={handleSearch} filters={filters} setFilters={setFilters} />
 
             <div className="max-w-[1024px] pt-6 pb-6 flex flex-wrap gap-6 justify-center">

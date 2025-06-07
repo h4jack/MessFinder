@@ -1,3 +1,6 @@
+import { useEffect } from "react";
+import { scrollToTop } from "../../module/js/scrollToTop";
+
 const alertStyles = {
   success: {
     bg: 'bg-green-100',
@@ -27,7 +30,9 @@ const alertStyles = {
 
 const Alert = ({ type = 'info', header = '', message = '' }) => {
   const style = alertStyles[type] || alertStyles.info;
-
+  useEffect(() => {
+    scrollToTop();
+  }, []);
   return (
     <div
       className={`w-full m-6 border-l-4 p-4 rounded-md shadow-sm ${style.bg} ${style.border}`}
