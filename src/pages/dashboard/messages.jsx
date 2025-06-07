@@ -227,7 +227,7 @@ const ChatApp = () => {
     };
 
     return (
-        <div className="flex flex-col sm:h-[calc(100vh-120px)] h-[calc(100vh-72px)] w-full mx-auto rounded-lg shadow-md bg-white select-none custom-scrollbar">
+        <div className="relative flex flex-col sm:h-[calc(100svh-120px)] h-[calc(100svh-72px)] w-full mx-auto rounded-lg shadow-md bg-white select-none custom-scrollbar">
             {!selectedChat && (
                 <ChatList chats={chats} onSelectChat={handleSelectChat} />
             )}
@@ -235,7 +235,7 @@ const ChatApp = () => {
             {selectedChat && (
                 <>
                     {/* Header */}
-                    <div className="flex items-center shadow-sm px-4 py-3 relative">
+                    <div className="fixed top-0 z-100 h-[72px] bg-white w-full flex items-center shadow-sm px-4 py-3">
                         <button
                             onClick={handleBack}
                             aria-label="Back to chat list"
@@ -284,7 +284,7 @@ const ChatApp = () => {
                     {/* Chat Messages */}
                     <div
                         ref={chatWindowRef}
-                        className="flex-1 overflow-y-auto p-4 space-y-2 bg-gray-50 custom-scrollbar"
+                        className="flex-1 overflow-y-auto p-4 space-y-2 bg-gray-50 custom-scrollbar pb-20"
                         aria-label="Messages"
                     >
                         {selectedChat.messages.length === 0 ? (
@@ -292,23 +292,34 @@ const ChatApp = () => {
                                 No messages yet. Start the conversation!
                             </div>
                         ) : (
-                            selectedChat.messages.map((message, index) => (
-                                <Message
-                                    key={index}
-                                    chatId={selectedChat.id}
-                                    message={message}
-                                    index={index}
-                                    onMessageClick={handleMessageClick}
-                                    isOwner={selectedChat.ownerId === currentUserId}
-                                />
-                            ))
+                            <>
+                                {
+                                    selectedChat.messages.length > 10 && (
+                                        <div className="text-center text-gray-400 select-text">
+                                            No more messages!
+                                        </div>
+                                    )
+                                }
+                                {
+                                    selectedChat.messages.map((message, index) => (
+                                        <Message
+                                            key={index}
+                                            chatId={selectedChat.id}
+                                            message={message}
+                                            index={index}
+                                            onMessageClick={handleMessageClick}
+                                            isOwner={selectedChat.ownerId === currentUserId}
+                                        />
+                                    ))
+                                }
+                            </>
                         )}
                     </div>
 
                     {/* Message Input */}
                     <form
                         onSubmit={handleFormSubmit}
-                        className="flex items-center shadow-[0_3px_5px] p-3"
+                        className="absolute bottom-0 w-full flex items-center p-3 backdrop-blur-lg bg-white/80"
                         role="form"
                         aria-label="Send message form"
                     >
@@ -367,49 +378,54 @@ const ChatApp = () => {
     );
 };
 
-const ChatList = ({ chats, onSelectChat }) => (
-    <div className="relative flex flex-col overflow-auto p-4 bg-white rounded-t-lg shadow-inner custom-scrollbar">
-        <h2 className="text-2xl font-semibold mb-6 text-gray-900 sticky top-0">Chats</h2>
-        {chats.length === 0 ? (
-            <p className="text-gray-500 select-text">No chats available.</p>
-        ) : (
-            <ul className="divide-y divide-gray-200 overflow-auto custom-scrollbar">
-                {chats.map(chat => (
-                    <li
-                        key={chat.id}
-                        tabIndex={0}
-                        role="button"
-                        className="flex items-center cursor-pointer py-3 px-2 rounded hover:bg-gray-100 focus-visible:ring focus-visible:ring-blue-500 focus:outline-none"
-                        onClick={() => onSelectChat(chat.id)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                                e.preventDefault();
-                                onSelectChat(chat.id);
-                            }
-                        }}
-                    >
-                        <img
-                            src={chat.photoURL}
-                            alt={`${chat.name} profile`}
-                            className="w-12 h-12 rounded-full object-cover mr-4 flex-shrink-0"
-                            loading="lazy"
-                        />
-                        <div className="flex flex-col flex-1 min-w-0">
-                            <span className="text-lg font-medium text-gray-900 truncate select-text">
-                                {chat.name}
-                            </span>
-                            <span className="text-sm text-gray-500 truncate select-text">
-                                {chat.messages.length > 0
-                                    ? chat.messages[chat.messages.length - 1].text
-                                    : <span className="text-gray-400 italic">No messages yet</span>}
-                            </span>
-                        </div>
-                    </li>
-                ))}
-            </ul>
-        )}
-    </div>
-);
+const ChatList = ({ chats, onSelectChat }) => {
+    // Create a reversed copy of chats for newest first order
+    const reversedChats = [...chats].reverse();
+
+    return (
+        <div className="relative flex flex-col overflow-auto p-4 bg-white rounded-t-lg shadow-inner custom-scrollbar">
+            <h2 className="text-2xl font-semibold mb-6 text-gray-900 sticky top-0">Chats</h2>
+            {reversedChats.length === 0 ? (
+                <p className="text-gray-500 select-text">No chats available.</p>
+            ) : (
+                <ul className="divide-y divide-gray-200 overflow-auto custom-scrollbar">
+                    {reversedChats.map(chat => (
+                        <li
+                            key={chat.id}
+                            tabIndex={0}
+                            role="button"
+                            className="flex items-center cursor-pointer py-3 px-2 rounded hover:bg-gray-100 focus-visible:ring focus-visible:ring-blue-500 focus:outline-none"
+                            onClick={() => onSelectChat(chat.id)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    onSelectChat(chat.id);
+                                }
+                            }}
+                        >
+                            <img
+                                src={chat.photoURL}
+                                alt={`${chat.name} profile`}
+                                className="w-12 h-12 rounded-full object-cover mr-4 flex-shrink-0"
+                                loading="lazy"
+                            />
+                            <div className="flex flex-col flex-1 min-w-0">
+                                <span className="text-lg font-medium text-gray-900 truncate select-text">
+                                    {chat.name}
+                                </span>
+                                <span className="text-sm text-gray-500 truncate select-text">
+                                    {chat.messages.length > 0
+                                        ? chat.messages[chat.messages.length - 1].text
+                                        : <span className="text-gray-400 italic">No messages yet</span>}
+                                </span>
+                            </div>
+                        </li>
+                    ))}
+                </ul>
+            )}
+        </div>
+    );
+}
 
 
 const Message = ({ chatId, message, index, onMessageClick, isOwner }) => {

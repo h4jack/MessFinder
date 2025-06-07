@@ -66,7 +66,7 @@ const Dashboard = () => {
 
     if (role === null) {
         return (
-            <main className="flex items-center justify-center min-h-[calc(100vh-80px)] bg-white">
+            <main className="flex items-center justify-center min-h-[calc(100svh-80px)] bg-white">
                 <div className="container flex flex-row rounded-md p-10 overflow-hidden">
                     <Loader text="Loading Dashboard, Please Wait..." />
                 </div>
@@ -79,11 +79,11 @@ const Dashboard = () => {
     }
 
     return (
-        <main className="flex items-start justify-center min-h-[calc(100vh-72px)] sm:min-h-[calc(100vh-120px)] h-full sm:m-6">
+        <main className="flex items-start justify-center min-h-[calc(100svh-72px)] sm:min-h-[calc(100svh-120px)] h-full sm:m-6">
             <div className="
                 container flex flex-row bg-white
                 w-full sm:max-w-[1080px]
-                min-h-[calc(100vh-72px)] sm:min-h-[calc(100vh-120px)]
+                min-h-[calc(100svh-72px)] sm:min-h-[calc(100svh-120px)]
                 sm:rounded-md sm:shadow-md overflow-hidden">
                 <div className="hidden sm:flex flex-col justify-start min-w-1/4 bg-gray-900 p-4 rounded-l-md">
                     <h1 className="text-white text-lg mb-4 font-bold text-center">MENU</h1>
