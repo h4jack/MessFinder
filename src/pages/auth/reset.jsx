@@ -43,7 +43,7 @@ const ResettPassword = () => {
     };
 
     return (
-        <main className="flex flex-col items-center justify-center min-h-[calc(100vh-72px)] px-4">
+        <main className="flex flex-col items-center justify-center min-h-[calc(100svh-72px)] px-4">
             <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
                 <h2 className="text-4xl font-bold text-center text-gray-800 mb-6">Forgot Password</h2>
                 {alertMessage && (
