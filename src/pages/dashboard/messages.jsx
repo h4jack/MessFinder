@@ -235,7 +235,7 @@ const ChatApp = () => {
             {selectedChat && (
                 <>
                     {/* Header */}
-                    <div className="fixed top-0 z-100 h-[72px] bg-white w-full flex items-center shadow-sm px-4 py-3">
+                    <div className="fixed sm:relative top-0 z-100 h-[72px] bg-white w-full flex items-center shadow-sm px-4 py-3">
                         <button
                             onClick={handleBack}
                             aria-label="Back to chat list"
