@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { statesAndDistricts } from '../../module/js/district-pin'; // Import the JSON data
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const FilterButton = ({ label, isActive, onClick }) => {
     return (
@@ -44,6 +44,8 @@ const HomeSearch = () => {
     const [pincode, setPincode] = useState("");
     const [pincodeError, setPincodeError] = useState("");
 
+    const navigate = useNavigate();
+
     const stateOptions = Object.keys(statesAndDistricts).map(state => ({
         value: state,
         label: state
@@ -82,6 +84,18 @@ const HomeSearch = () => {
         }
     };
 
+    const handleSubmit = (e) => {
+        if (e.key === "Enter") {
+            var craftedLink = "/search/";
+            craftedLink += query;
+            craftedLink += (selectedFilter && selectedFilter !== "ALL") ? ("accommodationFor=" + selectedFilter.toLowerCase() + "s&") : "";
+            craftedLink += selectedState ? `state=${selectedState}&` : ""
+            craftedLink += selectedDistrict ? `dist=${selectedDistrict}&` : ""
+            craftedLink += pincode ? `pin=${pincode}&` : "";
+            navigate(craftedLink);
+        }
+    }
+
     return (
         <main className="flex flex-row items-center justify-center min-h-[calc(100svh-72px)] md:min-h-[calc(100svh-80px)] px-6 py-8">
             <div className="bg-white/70 backdrop-blur-2xl shadow-xl rounded-lg p-8 w-full max-w-2xl">
@@ -103,6 +117,7 @@ const HomeSearch = () => {
                             className="w-full border border-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
+                            onKeyDown={handleSubmit}
                         />
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -114,6 +129,7 @@ const HomeSearch = () => {
                                     className="border border-gray-400 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     value={query}
                                     onChange={(e) => setQuery(e.target.value)}
+                                    onKeyDown={handleSubmit}
                                 />
                             </div>
                             <Dropdown
