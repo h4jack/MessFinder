@@ -102,6 +102,7 @@ const RoomDetailsCard = ({
     const [showServices, setShowServices] = useState(false);
     const [showRules, setShowRules] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("")
 
     const parseMultilineString = (text) => text.split("\\n").map(line => line.trim()).filter(Boolean);
 
@@ -147,10 +148,15 @@ const RoomDetailsCard = ({
 
     const handleSave = async () => {
         const currentUser = firebase.auth.currentUser;
-        if (!currentUser || !roomId) return;
+        if (!currentUser || !roomId) {
+            setErrorMessage("Login Required to Perform this Operatioin..");
+            setTimeout(() => {
+                setErrorMessage("");
+            }, 3000);
+            return;
+        }
 
         const uid = currentUser.uid;
-
         try {
             if (isSaved && bookmarkId) {
                 // Delete bookmark
@@ -200,6 +206,14 @@ const RoomDetailsCard = ({
         });
     };
 
+
+    if (errorMessage) {
+        return (
+            <div className="w-full box-border overflow-auto">
+                <Alert type="error" header="Oops, Problem.." message={errorMessage} />
+            </div>
+        )
+    }
 
     return (
         <div className="bg-white shadow-md rounded-lg p-6">
@@ -464,6 +478,10 @@ const ContactForm = ({ ownerInfo, userInfo }) => {
     // Handle form submission
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (!userInfo) {
+            setErrorMessage("Oops, it seems like you are not logged in..")
+            return;
+        }
         if (ownerInfo.id && userInfo.uid) {
             if (ownerInfo.id === userInfo.uid) {
                 setErrorMessage("You cannot send a message to yourself. Please contact admin for any issues.");
